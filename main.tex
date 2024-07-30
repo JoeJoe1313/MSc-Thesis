@@ -1,6 +1,7 @@
 \documentclass{mldsmsc}
+% \setlength{\parindent}{20pt}
 
-\title{Title of the Thesis}
+\title{Probabilistic Matrix Factorisation Algorithms for 12-lead ECG Data}
 \author{Joana Levtcheva}
 \CID{01252821}
 \supervisor{Dr Deniz Akyildiz}
@@ -24,25 +25,22 @@
 
 
 % Generates plagiarism declaration
-\declarationname{STUDENT'S NAME}
-\declarationdate{DATE}
+\declarationname{Joana Levtcheva}
+\declarationdate{\today}
 \declaration 
 
 
 \begin{abstract}
-    ABSTRACT GOES HERE
-    \cite{NIPS2007_d7322ed7}
-    \cite{akyildiz2021probabilistic}
-    \cite{cite-key}
-    \cite{cite1}
-    \cite{cite2}
-    \cite{cite3}
-    \cite{rina}
-    \cite{8743654}
-\end{abstract}
+Probabilistic matrix factorisation for high-deimensional time-series data with nonlinear subspace: 12-lead ECG data exploration \newline
+
+\noindent Example: In recent years, matrix factorisation (MF) algorithms have gained popularity in the field of machine learning and have found applications in various fields, such as recommendation systems, image processing and missing data imputation. The MF problem concerns factorising a high dimensional data matrix into two lower dimensional factors. The aim of MF methods is to find the factors such that we have a lower dimensional representation of the data.\newline
+
+\noindent In this thesis, we propose a novel
 
 \begin{acknowledgements}
-    ANY ACKNOWLEDGEMENTS GO HERE
+
+I would like to...
+
 \end{acknowledgements}
 
 % add glossary?
@@ -57,18 +55,79 @@
 
 \chapter{Introduction}
 
+Matrix factorisation (MF) techniques are highly effective and widely used in unsupervised machine learning. Simply said (LA context), the methods decompose the original matrix into multiple lower-dimensional? matrices. By breaking the matrix in these simpler components MF aim to uncover latent structures that are not immediately apparent in the original matrix. Some applications are in image processing: for reducing dimensionality and noise in images, NLP for topic modelling, word embeddings, etc... \newline
+
+\noindent Introduce mathrmatical nottation here as well:
+
+\begin{equation}
+Y \approx CX
+\end{equation}
+
+\begin{equation}
+\underbrace{
+\begin{bmatrix}
+  \times & \times & \times & \times \\
+  \times & \times & \times & \times \\
+  \times & \times & \times & \times
+\end{bmatrix}
+}_{\text{Y $\in \mathbb{R}^{m \times n}$ }}
+\approx
+\underbrace{
+\begin{bmatrix}
+  \times & \times \\
+  \times & \times \\
+  \times & \times
+\end{bmatrix}
+}_{\text{C $\in \mathbb{R}^{m \times r}$ }}
+\underbrace{
+\begin{bmatrix}
+  \times & \times & \times & \times \\
+  \times & \times & \times & \times
+\end{bmatrix}
+}_{\text{X $\in \mathbb{R}^{r \times n}$ }}
+\end{equation}
+
+\noindent There are also probabilistic versions of MF which incorporate probabilistic models to better handle uncertainty and variability in the data. They not only decompose the matrix but also provide probabilistic interpretations of the factors. Despite considerable progression in the probabilistic versions, there is demand for such methods in applications such as uncertainty quantification, managing time-series data, and executing efficient probabilistic components. \newline
+
+\hline
+
+Matrix factorisation (Linear algebra case -> factorisation into multiple...) computational/numerical LA and so on... \\
+
+MF in the ML context ... \\
+
+Our context and problem... \\
+
 The introduction section goes here\footnote{Tip: write this section last.}.
-Matrix factorisation (MF) algorithms...
+Matrix factorisation (MF) algorithms... \\
 
-\section{My section 1}
+\hline
 
-Contributions?
+\noindent The paper "Probabilistic matrix factorisation" (PMF) (\cite{NIPS2007_d7322ed7}) introduces an efficient and scalable model for collaborative filtering. The algorithm performs well on large, sparse and im- balanced datasets. This is demonstrated by using a Netflix dataset, alongside with an adaptive prior to control model complexity, and a constrained version to handle users with few ratings. PMF treats each rating as an independent event which means that the time varying component is not taken into consideration, and the algorithm is not suitable for sequential data. \newline
 
-\section{My section 2}
+\noindent In the paper "Dictionary Filtering: A Probabilistic Approach to Online Matrix Factorization" (\cite{cite-key}), the authors introduce a novel online MF algorithm known as dictionary filtering. It leverages probabilistic models, specifically using recursive linear filters, and efficiently factorises the original data matrix into a dictionary matrix and a coefficients matrix. This is an online algorithm, meaning it is suitable for high-dimensional and time-varying data, and it also has easy to tune parameters. Although the model can learn nonstationary and dynamic data, it is developed for linear and Gaussian state space models (SSM). (Particularly for ECG data, ECG has a nonlinear SSM which doesn't suit the dictionary filtering.) -> Efficient for high-dimensional data, adaptable to non-stationary environments, removes the need for step-size tuning; flexible and computationally efficient: $O(mr^2)$ independent of the number of data points. \newline
 
-Notation?
+\noindent Later, Akyildiz et.al. develop Probabilistic Sequential Matrix Factorization (PSMF) (\cite{akyildiz2021probabilistic}). This method is tailored to time-varying and non-stationary datasets consisting of high-dimensional time-series. Nonlinear Gaussian SSM are considered, decomposing the original matrix into a dictionary matrix and time-variying coefficient matrix. This time, the matrices are with potentially nonlinear dependencies. The model is demonstrated to work on tasks such as forecasting, changepoint detection, missing data imputation, and is shown to work on real-world data with a periodic subspace. There is also a robust version using Student-t filters to handle model misspecification. -> PSMF efficiently captures temporal dependencies through Markovian structures on the coefficients, making it possible to encode the dependencies into a lower dimensional latent space. Strengths: Handles non-stationary and time-varying data, robust to model misspecification, efficient sequen- tial inference. Suitable for: modelling data with periodic subpaces, high-dimensional data by reducing it to lower-dimensional latent space, data imputation,
+Weaknesses: Potential problems with very large datasets, having many data points. \newline
 
-\section{ECG introduction?}
+\noindent In the unpublished MSc thesis (Imperial College London) of Rina Maletta (\cite{rina}), the author introduces Matrix-Variate Gaussian Matrix Factorization (MVGMF). This is a novel PMF method using matrix-variate Gaussian distributions. The algorithm has fast Gaussian updates which take the form of a preconditioned MF algorithm which is stable. An extension for handling missing data and data imputation is also proposed. The method is tested on the Netflix Prize dataset, London air quality (NO2) data, and Olivetti face image dataset.
+
+\section{Contributions}
+
+PSMF applied to 12-lead ECG data -> imputation, forecasting, R peaks detection \\
+
+Multiple Fourier terms, higher rank for this case (check the paper) \\
+
+Why R peaks is important \\
+
+Not many algoorithms, processing, ... espiecially not Probabilistic \\
+
+\section{Notation}
+
+Mathematics notation $f_{\theta}$
+
+\section{ECG/medical introduction}
+
+PQRST complex, R-peak..., diagram, data
 
 \chapter{Background}
 
@@ -254,38 +313,136 @@ and the third line follows from linearity of expectation:
     $\mathrm{Var}[X] \leq \tfrac{1}{4}$.
 \end{example}
 
+\chapter{PSMF/etc for ECG}
+
+Describe algorithm \\
+
+Focus on the application to ECG data -> challenges, characteristics, data pre, post, processing 
 
 \chapter{Experiemnts and Results}
 
 Some text
 
-\section{Synthetic example?}
+Pre,post, processing
 
-Some text
-
-\subsection{Synthetic data generation?}
-
-some text
-
-\subsection{Algorithm applied...}
-
-some text
+What exactly is tested -> 5k points, sample from the points, results, smoothing, no smoothing, differrnt ranks, fourier terms
 
 \section{Missing data}
 
-Some text
-
-\section{Forecasting}
-
-Some text
+Both algorithms
 
 \section{R peaks?}
 
-Some text
+Original - Forecast -> for R peaks detection
+
+One paper about NMF
+
+Scipy function
+
+remove the reconstruction from the original signal
+
+\section{Forecasting}
+
+This fails 
+
+- issues, R-peak
+
+Lower frequency is better -> rank 6, fourier terms 6, iterations 100, 200, 500, leraning rate
+
+%% DO NOT EDIT - AUTOMATICALLY GENERATED FROM RESULTS!
+%% This table requires booktabs and multirow!
+%% Table for missing percentage 20
+\begin{tabular}{lc}
+\toprule
+ & ECG \\
+\cmidrule(lr){2-2}
+PSMF & 0.39 \\
+rPSMF & \textbf{0.85} \\
+MLE-SMF & 0.18 \\
+\bottomrule
+\end{tabular}
+
+%% DO NOT EDIT - AUTOMATICALLY GENERATED FROM RESULTS!
+%% This table requires booktabs and multirow!
+%% Table for missing percentage 30
+\begin{tabular}{lc}
+\toprule
+ & ECG \\
+\cmidrule(lr){2-2}
+PSMF & 0.32 \\
+rPSMF & \textbf{0.79} \\
+MLE-SMF & 0.17 \\
+\bottomrule
+\end{tabular}
+
+%% DO NOT EDIT - AUTOMATICALLY GENERATED FROM RESULTS!
+%% This table requires booktabs and multirow!
+%% Table for missing percentage 40
+\begin{tabular}{lc}
+\toprule
+ & ECG \\
+\cmidrule(lr){2-2}
+PSMF & 0.24 \\
+rPSMF & \textbf{0.70} \\
+MLE-SMF & 0.15 \\
+\bottomrule
+\end{tabular}
+
+%% DO NOT EDIT - AUTOMATICALLY GENERATED FROM RESULTS!
+%% This table requires booktabs, amsmath, and multirow!
+\begin{tabular}{lrr}
+\toprule
+ & \multicolumn{1}{c}{Imputation RMSE} & \multicolumn{1}{c}{Runtime (s)} \\\cmidrule(lr){2-6} \cmidrule(lr){7-11}
+ & ECG & ECG \\ \cmidrule(lr){2-6} \cmidrule(lr){7-11}
+PSMF & $\underset{{\scriptscriptstyle \;\;(18.06)}}{\textbf{62.79}}$ & 1.02\\
+rPSMF & $\underset{{\scriptscriptstyle \;\;(17.57)}}{63.32}$ & 1.21\\
+MLE-SMF & $\underset{{\scriptscriptstyle \;\;\;(21.13)}}{251.06}$ & 1.19\\
+TMF & $\underset{{\scriptscriptstyle \;\;\;(15.05)}}{172.87}$ & 0.57\\
+PMF* & $\underset{{\scriptscriptstyle \;\;\;(nan)}}{nan}$ & 0.21\\
+\bottomrule
+\end{tabular}
+
+%% DO NOT EDIT - AUTOMATICALLY GENERATED FROM RESULTS!
+%% This table requires booktabs, amsmath, and multirow!
+\begin{tabular}{lrr}
+\toprule
+ & \multicolumn{1}{c}{Imputation RMSE} & \multicolumn{1}{c}{Runtime (s)} \\\cmidrule(lr){2-6} \cmidrule(lr){7-11}
+ & ECG & ECG \\ \cmidrule(lr){2-6} \cmidrule(lr){7-11}
+PSMF & $\underset{{\scriptscriptstyle \;\;(19.76)}}{78.93}$ & 1.07\\
+rPSMF & $\underset{{\scriptscriptstyle \;\;(16.56)}}{\textbf{73.74}}$ & 1.11\\
+MLE-SMF & $\underset{{\scriptscriptstyle \;\;\;(82.96)}}{267.00}$ & 0.93\\
+TMF & $\underset{{\scriptscriptstyle \;\;\;(17.25)}}{166.36}$ & 0.43\\
+PMF* & $\underset{{\scriptscriptstyle \;\;\;(nan)}}{nan}$ & 0.18\\
+\bottomrule
+\end{tabular}
+
+%% DO NOT EDIT - AUTOMATICALLY GENERATED FROM RESULTS!
+%% This table requires booktabs, amsmath, and multirow!
+\begin{tabular}{lrr}
+\toprule
+ & \multicolumn{1}{c}{Imputation RMSE} & \multicolumn{1}{c}{Runtime (s)} \\\cmidrule(lr){2-6} \cmidrule(lr){7-11}
+ & ECG & ECG \\ \cmidrule(lr){2-6} \cmidrule(lr){7-11}
+PSMF & $\underset{{\scriptscriptstyle \;\;\;(21.92)}}{106.57}$ & 1.01\\
+rPSMF & $\underset{{\scriptscriptstyle \;\;(22.32)}}{\textbf{96.08}}$ & 1.10\\
+MLE-SMF & $\underset{{\scriptscriptstyle \;\;\;(61.04)}}{268.91}$ & 0.92\\
+TMF & $\underset{{\scriptscriptstyle \;\;\;(20.59)}}{157.12}$ & 0.45\\
+PMF* & $\underset{{\scriptscriptstyle \;\;\;(nan)}}{nan}$ & 0.16\\
+\bottomrule
+\end{tabular}
 
 \chapter{Conclusion}
 
+data imputation 
+
+forecasting challneged or success
+
+R-peaks
+
 \section{Future work}
+
+More complex model etc...
+
+Faster computation, etc...
 
 Conclusion goes here. 
 
