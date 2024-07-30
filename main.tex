@@ -113,33 +113,150 @@ Weaknesses: Potential problems with very large datasets, having many data points
 
 \section{Contributions}
 
+We outline the contributions made in this thesis. In this thesis, we aim to introduce
+a novel approach to the MF problem, by proposing a Matrix-Variate Gaussian Matrix
+Factorisation (MVGMF) algorithm.
+
+\begin{itemize}
+  \item Apply PSMF to 12-lead ECG data -> not applied to such data before
+  \item Fourier basis and higher rank (bug in the original code) -> not applied before
+  \item Forecast, data imputation, R-peaks
+\end{itemize}
+
+The main focus of the research project would be to explore PMF methods applied to high-dimensional time- series data with nonlinear subspace: both considering the time varying component, and treating the whole time series as a batch without considering the time component. More precisely, the project would focus on applying such methods to 12-lead ECG data which is 12-dimensional time-series data with a nonlinear subspace. Some of the tasks which could be explored include: modelling the data so that the future behaviour can be predicted, anomaly detection, imputing missing data, or performing peak detection. \newline
+
+\noindent Using probabilistic methods (and specifically the PMF ones) on ECG data is not widely explored. Applying methods such as Probabilistic Matrix Factorisation (PMF) [1], Probabilistic Sequential Matrix Factorisation (PSMF) [2], Matrix-Variate Gaussian Matrix Factorization (MVGMF) [3], etc. to 12-lead ECG data would showcase novel real-world PMF applications in the medical field, and potentially improve the accuracy and efficiency of ECG data analysis. \newline
+
 PSMF applied to 12-lead ECG data -> imputation, forecasting, R peaks detection \\
 
 Multiple Fourier terms, higher rank for this case (check the paper) \\
 
-Why R peaks is important \\
-
-Not many algoorithms, processing, ... espiecially not Probabilistic \\
-
 \section{Notation}
 
-Mathematics notation $f_{\theta}$
+Throughout this thesis, we will denote the data matrix with $Y$, and the factors as $C$
+and $X$. We denote the vectorised forms of the matrices with their respective lower case letters. We can formally define c = vec(C), where vec(·) is the vectorisation operation. The columns of C are stacked on each other, so if C ∈ Rm×r, then c ∈ Rmr×1. We can
+also define the inverse vectorisation operator C = vec−1(c). \newline
 
-\section{ECG/medical introduction}
+\noindent We have that p(x) denotes the probability density function (pdf) of x and p(y|x) is the
+conditional density of y given x. Where A ∈ Rm×n is a matrix, then MN(A;M,U, V )
+denotes the matrix normal pdf for A, where M ∈ Rm×n is the mean, U ∈ Rn×n is the
+among-row co-variance and V ∈ Rm×m is the among-column co-variance. We also define
+the multivariate normal distribution in the following way; let a ∈ Rm, then N(a; μ, Σ)
+denotes the pdf of the multivariate normal distribution for the random variable a, where
+μ ∈ Rm is the mean and Σ ∈ Rm×m is the covariance matrix. Im ∈ Rm×m is the m×m
+identity matrix. \newline
 
-PQRST complex, R-peak..., diagram, data
+\noindent Mathematics notation $f_{\theta}$
 
 \chapter{Background}
 
 Background chapter.
 
-\section{Prelims}
+\section{ECG/medical introduction}
 
-Section content goes here. 
+A 12-Lead ECG (Electrocardiogram) is a standard diagnostic tool used to assess the electrical activity of the heart. Here's a brief introduction:
 
-\subsection{PMF}
+Purpose: It provides a comprehensive view of the heart's electrical activity from different angles.
+Leads: The 12 leads consist of:
 
-A subsection.
+6 precordial leads (V1-V6) placed on the chest
+3 limb leads (I, II, III)
+3 augmented limb leads (aVR, aVL, aVF)
+
+
+Data captured: Each lead records the heart's electrical activity from a different perspective, providing information on:
+
+Heart rate and rhythm
+Conduction abnormalities
+Chamber enlargement
+Myocardial ischemia or infarction
+Electrolyte imbalances
+
+
+Recording: The ECG machine typically records data for about 10 seconds, producing a graph of voltage versus time.
+Interpretation: Trained medical professionals analyze the patterns and waveforms to diagnose various cardiac conditions.
+Applications: Used in emergency settings, routine check-ups, and monitoring of cardiac patients.
+
+
+
+Physical electrodes: There are 10 physical electrodes placed on the patient's body.
+12 Leads: Despite having only 10 electrodes, the system provides 12 different "views" or "leads" of the heart's electrical activity. This is achieved through:
+
+6 precordial leads (V1-V6): These come directly from 6 of the electrodes on the chest.
+3 limb leads (I, II, III): These are derived from electrodes placed on the limbs.
+3 augmented limb leads (aVR, aVL, aVF): These are calculated mathematically from the limb electrodes.
+
+
+
+So while there are 10 physical connection points, the ECG machine uses these to generate 12 different perspectives or "leads" of the heart's electrical activity.
+
+
+The Electrocardiogram (ECG) is a crucial diagnostic tool in cardiology that records the electrical activity of the heart. A standard 12-lead ECG system provides multiple perspectives of cardiac electrical activity, facilitating comprehensive analysis.
+Key points for a mathematical focus:
+
+Signal Acquisition: ECG data is acquired through electrodes placed on the body surface, measuring potential differences over time.
+Waveform Components: The ECG waveform consists of P, Q, R, S, and T waves, each representing specific cardiac events.
+Lead System: The 12-lead system comprises:
+
+6 precordial leads (V1-V6)
+3 limb leads (I, II, III)
+3 augmented limb leads (aVR, aVL, aVF)
+
+
+Data Structure: ECG data can be represented as a multivariate time series, with each lead providing a distinct signal.
+Mathematical Relevance: ECG analysis involves various mathematical techniques, including:
+
+Signal processing (e.g., filtering, feature extraction)
+Time series analysis
+Pattern recognition
+Statistical methods
+Machine learning algorithms
+
+add images sources
+
+\begin{figure}[h!]
+    \centering
+    \subfigure{
+        \includegraphics[width=0.48\linewidth]{images/ECG_Electrode_Placement.png}
+        \label{fig:ecg-electrode}
+    }
+    \hfill
+    \subfigure{
+        \includegraphics[width=0.48\linewidth]{images/SinusRhythmLabels.png}
+        \label{fig:sinus-rhythm}
+    }
+    \caption{Left: . Right: }
+    \label{fig:combined}
+\end{figure}
+
+PQRST complex, R-peak..., diagram, data 
+
+\section{PMF}
+
+In this section, we will outline the Probabilistic Matrix Factorisation (PMF) algorithm.
+This MF technique was proposed by Mnih and Salakhutdinov (2007). PMF is also concerned with factorising a data matrix, not necessarily non-negative,
+Y ∈ Rm×n into two lower dimensional matrix factors C ∈ Rm×r and X ∈ Rr×n. However,
+unlike NMF, PMF adopts a probabilistic framework. In the PMF case, the matrix
+C contains the basis vectors, and X contains the co-efficients. The linear combination
+of these reconstruct the data matrix Y . The best reconstruction is determined by the
+rank-approximation, r. The exact inference of the probabilistic models proposed by
+Hofmann (1999) and Marlin (2003), which make the connection between unobserved
+latent features and the observed features, is intractable. The PMF technique is useful
+in settings where the data set we are working with is sparse, large and imbalanced.
+The method was applied to the Netflix Prize dataset (Bennett et al., 2007), it contains
+ratings from 480, 189 users, for 17, 770 movies, with over 100 million observations. The
+pre-processing of this dataset consists of creating an m × n ratings matrix, where m is
+the number of users, and n is the number of movies, so the i, jth element of the matrix
+is user i′s rating of movie j. The ratings are numbered from 1 to 5, with missing ratings
+indicated by 0. Since it is not expected that every user rates every movie, the dataset
+is very sparse and also imbalanced, since users have different frequencies of rating movies.
+In the context of the Netflix Prize dataset, our formulation Y ≈ CX becomes, Y is the
+ratings matrix with m users and n movies, C is the latent user matrix and X is the
+movie feature matrix.
+
+Model 
+
+Algorithm
 
 \subsection{DF}
 
@@ -157,161 +274,8 @@ Section content goes here.
 
 Section content goes here.
 
-\section{Figures}
-
-It is better to create figures in a vector-based format, such as PDF.
-
-\begin{figure}[!h]
-    \centering
-    \includegraphics[width=\textwidth]{fig1.pdf}
-    \caption{Remember to make fonts in figures large enough (compare the two figures.)}
-    \label{fig:fig1}
-\end{figure}
-
-\section{Tables}
-
-\label{sec:tablesection}
-
-Here is an example of a table
-
-\begin{table}[ht]
-\centering
-\begin{tabular}{rr}
-  \hline
-    $z$& $\textrm{P}(Z < z)$ \\
-  \hline
-    1.281& 0.900\\
-    1.645& 0.950\\
-    1.960& 0.975\\
-    2.326& 0.990 \\
-    2.576& 0.995 \\
-   \hline
-\end{tabular}
-    \caption{Partial table showing values of $z$ for $\textrm{P}(Z < z)$, 
-    where $Z$ has a standard normal distribution.}
-    \label{tab:normal}
-\end{table}
-
-
-
-\section{Referencing sources, sections and items}
-
-A good book on the bootstrap is \cite{cite1}, although the idea
-appeared in an earlier paper \citep{cite1}.
-
-Note that to make the references appear, you will need to compile
-the bibtex, otherwise you may just see question marks where the references
-should be.
-
-
-\subsection{Referencing sections, results and equations}
-
-Theorem~\ref{thm:theorem1} is proved in Section~\ref{sec:defnthms}; see 
-Equation~\eqref{eqn:second}.
-
-
-
-\subsubsection{Referencing tables and figures}
-
-When labelling figures and tables, it is important that the label command
-\texttt{\textbackslash label\{LABELNAME\}} comes \textbf{after} the caption command.
-See Table~\ref{tab:normal} and Figure~\ref{fig:fig1} above.
-
-\subsection{Quoting sources}
-If you wish to quote a source, be sure to use quotation marks and cite the
-reference. The \texttt{\textbackslash{usequote}} command is useful here:
-
-\usequote{It was the best of times, it was the worst of times, it was the age of wisdom, it was the age of foolishness, it was the epoch of belief, it was the epoch of incredulity, it was the season of Light, it was the season of Darkness, it was the spring of hope, it was the winter of despair, we had everything before us, we had nothing before us, we were all going direct to Heaven, we were all going direct the other way - in short, the period was so far like the present period, that some of its noisiest authorities insisted on its being received, for good or for evil, in the superlative degree of comparison only.} \citep{cite1}
-
 % forcing a page break
 \clearpage
-
-
-\section{Definitions, theorems and examples}
-\label{sec:defnthms}
-
-The following environments are supported:
-Definition, Theorem, Proof, Proposition, Lemma, Remark, Example.
-
-\begin{definition}
-    The \textbf{variance} of a random variable $X$ is defined as
-    \begin{equation}
-        \mathrm{Var}(X) = \mathrm{E}[(X - \mathrm{E}[X])^2].
-    \end{equation}
-\end{definition}
-
-\begin{theorem}
-    \label{thm:theorem1}
-Given a random variable $X$, over all values $a \in \mathbb{R}$, 
-\begin{equation}
-    \min_{a \in \mathbb{R}} \mathrm{E}[(X - a)^2] 
-    = \mathrm{E}[(X - \mathrm{E}[X])^2].
-    \label{eqn:second}
-\end{equation}
-\end{theorem}
-
-\begin{proof}   
-    Starting with the left-hand side,
-\begin{align}
-% Example of using \newcommands; see above
-\EE{ \inparenth{\X - \consta}^2 } 
-&=  \EE{  \inparenth{\X - \EE{\X} + \EE{\X} - \consta}^2 } 
-    \nonumber \\
-&=  \EE{  \inparenth{ \X - \EE{\X} }^2 } 
-    + 2 \EE{ \inparenth{ \X - \EE{\X} } \inparenth{ \EE{\X} - \consta} } +  
-  \EE{ \inparenth{ \EE{\X} - \consta}^2  }    
-    \nonumber \\
-&=  \EE{  \inparenth{ \X - \EE{\X} }^2 } +  \inparenth{ \EE{\X} - \consta}^2
-    \nonumber \\
-& \geq \EE{  \inparenth{ \X - \EE{\X} }^2 },  
-\nonumber 
-\end{align}
-since $\EE{\X}$ is a real number and $\inparenth{ \EE{\X} - \consta}^2 \geq 0$,
-and the third line follows from linearity of expectation:
-\begin{align}
-    \EE{ \inparenth{ \X - \EE{\X} } \inparenth{ \EE{\X} - \consta} }
-    =
-    \inparenth{ \EE{\X} - \consta} \EE{ \inparenth{ \X - \EE{\X} } }
-    =
-    \inparenth{ \EE{\X} - \consta}  \inparenth{\EE{ \X} - \EE{\X} } 
-    =
-    0,
-    \nonumber
-\end{align}
-    since $\EE{\EE{\X}} = \EE{\X}$, which proves the result.
-\end{proof}
-
-\begin{remark}
-    This theorem shows that that the minimum of the quantity
-    $\mathrm{E}[(X - a)^2]$ is equal to $\mathrm{Var}(X)$.
-    In some sense, this makes the variance a natural measure of dispersion if 
-    we are taking the metric to be the squared deviation of $X$.
-\end{remark}
-
-
-\begin{lemma}[Stein's Lemma]
-    Let $X \sim \mathrm{N}(\mu, \sigma^2)$, and let $g$ be a differentiable 
-    function satisfying $\mathrm{E}[|g'(X)|] < \infty$. Then
-    \begin{equation}
-        \mathrm{E}[g(X)(X-\mu)] = \sigma^2 \mathrm{E}[g'(X)].
-        \nonumber
-    \end{equation}
-\end{lemma}
-
-\begin{proposition}[Popoviciu's inequality]
-    Suppose that the random variable $X$ is known to only take values in the 
-    bounded range $[a, b]$. Then  
-    \begin{align}
-        \mathrm{Var}[X] \leq \dfrac{(b-a)^2}{4}.
-        \nonumber
-    \end{align}
-\end{proposition}
-
-\begin{example}
-    Suppose $X \sim \mathrm{Bern} (p)$, for some $p \in [0,1]$. Then, 
-    since $X \in \{0, 1\}$, $X$ is bounded between $0$ and $1$ and so
-    $\mathrm{Var}[X] \leq \tfrac{1}{4}$.
-\end{example}
 
 \chapter{PSMF/etc for ECG}
 
@@ -321,15 +285,23 @@ Focus on the application to ECG data -> challenges, characteristics, data pre, p
 
 \chapter{Experiemnts and Results}
 
-Some text
+The research aims to use the already available A Large Scale 12-lead Electrocardiogram Database for Arrhythmia Study [5], [6], [7]. This is a comprehensive database of high-quality 12-lead ECG signals collected from 45,152 patients. Each signal is with length of 10 seconds corresponding to 5000 data points. The dataset is designed to support arrhythmia research, containing labeled data for various cardiac conditions such as atrial fibrillation, premature ventricular contractions, and bundle branch blocks. This large dataset has high-quality labels from professional experts, diverse arrhythmia types, and additional cardiovascular conditions, making it suitable for performing different research tasks on it without spending time on gathering, cleaning and processing data. \newline
+
+
+• Presents a comprehensive database of 12-lead ECG signals collected from 45,152 patients. Each signal is with length of 10 seconds corresponding to 5000 data points.
+• The dataset is designed to support arrhythmia research, containing labeled data for various cardiac conditions such as atrial fibrillation, premature ventricular contractions, and bundle branch blocks.
+• ECG data is non-invasive and critical for diagnosing cardiovascular conditions, but analyzing such large
+datasets requires efficient automated methods.
+• Large dataset, high-quality labels from professional experts, diverse arrhythmia types, and additional cardiovascular conditions. \newline
+
 
 Pre,post, processing
 
-What exactly is tested -> 5k points, sample from the points, results, smoothing, no smoothing, differrnt ranks, fourier terms
+What exactly is tested -> 5k points, sample from the points, results, smoothing, no smoothing, differеnt ranks, fourier terms
 
 \section{Missing data}
 
-Both algorithms
+Both algorithms -> psmf, rpsmf, mle-smf, mvgmf?
 
 \section{R peaks?}
 
@@ -352,39 +324,13 @@ Lower frequency is better -> rank 6, fourier terms 6, iterations 100, 200, 500, 
 %% DO NOT EDIT - AUTOMATICALLY GENERATED FROM RESULTS!
 %% This table requires booktabs and multirow!
 %% Table for missing percentage 20
-\begin{tabular}{lc}
+\begin{tabular}{lccc}
 \toprule
- & ECG \\
-\cmidrule(lr){2-2}
-PSMF & 0.39 \\
-rPSMF & \textbf{0.85} \\
-MLE-SMF & 0.18 \\
-\bottomrule
-\end{tabular}
-
-%% DO NOT EDIT - AUTOMATICALLY GENERATED FROM RESULTS!
-%% This table requires booktabs and multirow!
-%% Table for missing percentage 30
-\begin{tabular}{lc}
-\toprule
- & ECG \\
-\cmidrule(lr){2-2}
-PSMF & 0.32 \\
-rPSMF & \textbf{0.79} \\
-MLE-SMF & 0.17 \\
-\bottomrule
-\end{tabular}
-
-%% DO NOT EDIT - AUTOMATICALLY GENERATED FROM RESULTS!
-%% This table requires booktabs and multirow!
-%% Table for missing percentage 40
-\begin{tabular}{lc}
-\toprule
- & ECG \\
-\cmidrule(lr){2-2}
-PSMF & 0.24 \\
-rPSMF & \textbf{0.70} \\
-MLE-SMF & 0.15 \\
+ & 20\% & 30\% & 40\% \\
+\cmidrule(lr){2-4}
+PSMF & 0.39 & 0.32 & 0.24 \\
+rPSMF & \textbf{0.85} & \textbf{0.79} & \textbf{0.70} \\
+MLE-SMF & 0.18 & 0.17 & 0.15 \\
 \bottomrule
 \end{tabular}
 
