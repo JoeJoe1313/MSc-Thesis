@@ -55,20 +55,25 @@ I would like to...
 
 \chapter{Introduction}
 
-Matrix factorisation (MF) techniques are highly effective and widely used in unsupervised machine learning. Simply said (LA context), the methods decompose the original matrix into multiple lower-dimensional? matrices. By breaking the matrix in these simpler components MF aim to uncover latent structures that are not immediately apparent in the original matrix. Some applications are in image processing: for reducing dimensionality and noise in images, NLP for topic modelling, word embeddings, etc... \newline
+Matrix factorisation (or also matrix decomposition) in the context of linear algebra is simply a factorisation of a matrix into a product of multiple matrices. Many different decompositions exist, and they find various applications in mathematical problems such as solving systems of linear equations, matrix inversion, determinant computation, eigenvalues problems, solving systems of first order ODEs, etc. \newline
 
-\noindent Introduce mathrmatical nottation here as well:
+\noindent In this thesis, we are interested in matrix factorisation (MF) in the context of machine learning. Nowadays, MF techniques are highly effective and widely used in unsupervised machine learning. These methods decompose the original matrix into multiple lower-dimensional matrices. By breaking the matrix in these simpler components MF aims to uncover latent structures that are not immediately apparent in the original matrix. Some applications are in image processing: for reducing dimensionality and noise in images, NLP for topic modelling, missing data imputation, recommendation systems, etc. \newline
+
+\noindent There are also probabilistic versions of MF which incorporate probabilistic models to better handle uncertainty and variability in the data. They not only decompose the matrix but also provide probabilistic interpretations of the factors. Despite considerable progression in the probabilistic versions, there is demand for such methods in applications such as uncertainty quantification, managing time-series data, and executing efficient probabilistic components. Throughout this thesis we are going to focus on probabilistic MF algorithms, along with their application to 12-lead ECG data, targeting the problem of managing high-dimensional time-series data. \newline
+
+\noindent Formally, we are interested in the general problem of factorising a data matrix $Y \in \mathbb{R}^{m \times n}$ as
 
 \begin{equation}
-Y \approx CX
-\end{equation}
+Y \approx CX,
+\end{equation} \newline
+\noindent where $C \in \mathbb{R}^{m \times r}$ is the \textit{dictionary matrix}, $X \in \mathbb{R}^{r \times n}$ is the \textit{coefficients matrix} (with columns the coefficients), and $r$ is the \textit{approximation rank} (\cite{cite-key}). Visually we can present the problem as
 
 \begin{equation}
 \underbrace{
 \begin{bmatrix}
-  \times & \times & \times & \times \\
-  \times & \times & \times & \times \\
-  \times & \times & \times & \times
+  \times & \times & \times & \times & \times \\
+  \times & \times & \times & \times & \times \\
+  \times & \times & \times & \times & \times
 \end{bmatrix}
 }_{\text{Y $\in \mathbb{R}^{m \times n}$ }}
 \approx
@@ -81,26 +86,13 @@ Y \approx CX
 }_{\text{C $\in \mathbb{R}^{m \times r}$ }}
 \underbrace{
 \begin{bmatrix}
-  \times & \times & \times & \times \\
-  \times & \times & \times & \times
+  \times & \times & \times & \times & \times \\
+  \times & \times & \times & \times & \times
 \end{bmatrix}
-}_{\text{X $\in \mathbb{R}^{r \times n}$ }}
+}_{\text{X $\in \mathbb{R}^{r \times n}$ }}.
 \end{equation}
 
-\noindent There are also probabilistic versions of MF which incorporate probabilistic models to better handle uncertainty and variability in the data. They not only decompose the matrix but also provide probabilistic interpretations of the factors. Despite considerable progression in the probabilistic versions, there is demand for such methods in applications such as uncertainty quantification, managing time-series data, and executing efficient probabilistic components. \newline
 
-\hline
-
-Matrix factorisation (Linear algebra case -> factorisation into multiple...) computational/numerical LA and so on... \\
-
-MF in the ML context ... \\
-
-Our context and problem... \\
-
-The introduction section goes here\footnote{Tip: write this section last.}.
-Matrix factorisation (MF) algorithms... \\
-
-\hline
 
 \noindent The paper "Probabilistic matrix factorisation" (PMF) (\cite{NIPS2007_d7322ed7}) introduces an efficient and scalable model for collaborative filtering. The algorithm performs well on large, sparse and im- balanced datasets. This is demonstrated by using a Netflix dataset, alongside with an adaptive prior to control model complexity, and a constrained version to handle users with few ratings. PMF treats each rating as an independent event which means that the time varying component is not taken into consideration, and the algorithm is not suitable for sequential data. \newline
 
@@ -154,42 +146,37 @@ Background chapter.
 
 \section{ECG/medical introduction}
 
-A 12-Lead ECG (Electrocardiogram) is a standard diagnostic tool used to assess the electrical activity of the heart. Here's a brief introduction:
+A 12-Lead ECG (Electrocardiogram) is a standard diagnostic tool used to assess the electrical activity of the heart. It provides a comprehensive view of the heart's electrical activity from different angles. The 12 leads consist of:
 
-Purpose: It provides a comprehensive view of the heart's electrical activity from different angles.
-Leads: The 12 leads consist of:
+\begin{itemize}
+  \item 6 precordial leads (V1-V6) placed on the chest
+  \item 3 limb leads (I, II, III)
+  \item 3 augmented limb leads (aVR, aVL, aVF)
+\end{itemize}
 
-6 precordial leads (V1-V6) placed on the chest
-3 limb leads (I, II, III)
-3 augmented limb leads (aVR, aVL, aVF)
+Each lead records the heart's electrical activity from a different perspective, providing information on:
 
+\begin{itemize}
+  \item Heart rate and rhythm
+  \item Conduction abnormalities
+  \item Chamber enlargement
+  \item Myocardial ischemia or infarction
+  \item Electrolyte imbalances
+\end{itemize}
 
-Data captured: Each lead records the heart's electrical activity from a different perspective, providing information on:
+The ECG machine typically records data for about 10 seconds, producing a graph of voltage versus time.
 
-Heart rate and rhythm
-Conduction abnormalities
-Chamber enlargement
-Myocardial ischemia or infarction
-Electrolyte imbalances
+There are 10 physical electrodes placed on the patient's body. Despite having only 10 electrodes as seen in \ref{fig:combined}, the system provides 12 different "views" or "leads" of the heart's electrical activity. This is achieved through:
 
-
-Recording: The ECG machine typically records data for about 10 seconds, producing a graph of voltage versus time.
-Interpretation: Trained medical professionals analyze the patterns and waveforms to diagnose various cardiac conditions.
-Applications: Used in emergency settings, routine check-ups, and monitoring of cardiac patients.
-
-
-
-Physical electrodes: There are 10 physical electrodes placed on the patient's body.
-12 Leads: Despite having only 10 electrodes, the system provides 12 different "views" or "leads" of the heart's electrical activity. This is achieved through:
-
-6 precordial leads (V1-V6): These come directly from 6 of the electrodes on the chest.
-3 limb leads (I, II, III): These are derived from electrodes placed on the limbs.
-3 augmented limb leads (aVR, aVL, aVF): These are calculated mathematically from the limb electrodes.
-
-
+\begin{itemize}
+    \item 6 precordial leads (V1-V6): These come directly from 6 of the electrodes on the chest.
+    \item 3 limb leads (I, II, III): These are derived from electrodes placed on the limbs.
+    \item 3 augmented limb leads (aVR, aVL, aVF): These are calculated mathematically from the limb electrodes.
+\end{itemize}
 
 So while there are 10 physical connection points, the ECG machine uses these to generate 12 different perspectives or "leads" of the heart's electrical activity.
 
+\hline
 
 The Electrocardiogram (ECG) is a crucial diagnostic tool in cardiology that records the electrical activity of the heart. A standard 12-lead ECG system provides multiple perspectives of cardiac electrical activity, facilitating comprehensive analysis.
 Key points for a mathematical focus:
@@ -201,16 +188,6 @@ Lead System: The 12-lead system comprises:
 6 precordial leads (V1-V6)
 3 limb leads (I, II, III)
 3 augmented limb leads (aVR, aVL, aVF)
-
-
-Data Structure: ECG data can be represented as a multivariate time series, with each lead providing a distinct signal.
-Mathematical Relevance: ECG analysis involves various mathematical techniques, including:
-
-Signal processing (e.g., filtering, feature extraction)
-Time series analysis
-Pattern recognition
-Statistical methods
-Machine learning algorithms
 
 add images sources
 
@@ -258,19 +235,20 @@ Model
 
 Algorithm
 
-\subsection{DF}
+\section{DF}
 
 Section content goes here.
 
-\subsection{PSMF}
+\section{PSMF}
+
+Section content goes here.
+\a
+
+\section{NMF}
 
 Section content goes here.
 
-\subsection{NMF}
-
-Section content goes here.
-
-\subsection{MVGMF}
+\section{MVGMF}
 
 Section content goes here.
 
