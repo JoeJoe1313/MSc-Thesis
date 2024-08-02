@@ -29,13 +29,14 @@
 \declarationdate{\today}
 \declaration 
 
-
 \begin{abstract}
-Probabilistic matrix factorisation for high-deimensional time-series data with nonlinear subspace: 12-lead ECG data exploration \newline
+Probabilistic matrix factorisation for high-dimensional time-series data with nonlinear subspace: 12-lead ECG data exploration \newline
 
 \noindent Example: In recent years, matrix factorisation (MF) algorithms have gained popularity in the field of machine learning and have found applications in various fields, such as recommendation systems, image processing and missing data imputation. The MF problem concerns factorising a high dimensional data matrix into two lower dimensional factors. The aim of MF methods is to find the factors such that we have a lower dimensional representation of the data.\newline
 
 \noindent In this thesis, we propose a novel
+
+\end{abstract}
 
 \begin{acknowledgements}
 
@@ -58,8 +59,6 @@ I would like to...
 Matrix factorisation (or also matrix decomposition) in the context of linear algebra is simply a factorisation of a matrix into a product of multiple matrices. Many different decompositions exist, and they find various applications in mathematical problems such as solving systems of linear equations, matrix inversion, determinant computation, eigenvalues problems, solving systems of first order ODEs, etc. \newline
 
 \noindent In this thesis, we are interested in matrix factorisation (MF) in the context of machine learning. Nowadays, MF techniques are highly effective and widely used in unsupervised machine learning. These methods decompose the original matrix into multiple lower-dimensional matrices. By breaking the matrix in these simpler components MF aims to uncover latent structures that are not immediately apparent in the original matrix. Some applications are in image processing: for reducing dimensionality and noise in images, NLP for topic modelling, missing data imputation, recommendation systems, etc. \newline
-
-\noindent There are also probabilistic versions of MF which incorporate probabilistic models to better handle uncertainty and variability in the data. They not only decompose the matrix but also provide probabilistic interpretations of the factors. Despite considerable progression in the probabilistic versions, there is demand for such methods in applications such as uncertainty quantification, managing time-series data, and executing efficient probabilistic components. Throughout this thesis we are going to focus on probabilistic MF algorithms, along with their application to 12-lead ECG data, targeting the problem of managing high-dimensional time-series data. \newline
 
 \noindent Formally, we are interested in the general problem of factorising a data matrix $Y \in \mathbb{R}^{m \times n}$ as
 
@@ -92,13 +91,23 @@ Y \approx CX,
 }_{\text{X $\in \mathbb{R}^{r \times n}$ }}.
 \end{equation}
 
+\noindent There are also probabilistic versions of MF which incorporate probabilistic models to better handle uncertainty and variability in the data, leading to more accurate predictions. Such methodologies postulate a prior distribution over the latent factors and necessitate the computation of the posterior distribution to derive updated estimates. With that the matrix is not only decomposed but probabilistic interpretations of the factors are also possible. Despite considerable progression in the probabilistic versions, there is demand for such methods in applications such as uncertainty quantification, managing time-series data, and executing efficient probabilistic components. \newline
 
+\noindent We should also note that some algorithms are suitable for sequential data, and others are not - treating the whole dataset as a batch without considering the time varying component. These MF techniques are known respectively as online - updating $C$ and $X$ by processing the elements of the data matrix $Y$ in a streaming fashion or operating on a restricted subset of the available data, and offline. \newline 
 
-\noindent The paper "Probabilistic matrix factorisation" (PMF) (\cite{NIPS2007_d7322ed7}) introduces an efficient and scalable model for collaborative filtering. The algorithm performs well on large, sparse and im- balanced datasets. This is demonstrated by using a Netflix dataset, alongside with an adaptive prior to control model complexity, and a constrained version to handle users with few ratings. PMF treats each rating as an independent event which means that the time varying component is not taken into consideration, and the algorithm is not suitable for sequential data. \newline
+\noindent Throughout this thesis we are going to focus on probabilistic MF algorithms, along with their application to 12-lead ECG data, targeting the problem of managing high-dimensional time-series data. Some examples of such probabilistic MF algorithms are Probabilistic Matrix Factorisation (PMF) (\cite{NIPS2007_d7322ed7}), Dictionary filtering (\cite{cite-key}) - although not fully probabilistic, Probabilistic Sequential Matrix Factorization (PSMF) (\cite{akyildiz2021probabilistic}), MLE-SMF?. \newline
 
-\noindent In the paper "Dictionary Filtering: A Probabilistic Approach to Online Matrix Factorization" (\cite{cite-key}), the authors introduce a novel online MF algorithm known as dictionary filtering. It leverages probabilistic models, specifically using recursive linear filters, and efficiently factorises the original data matrix into a dictionary matrix and a coefficients matrix. This is an online algorithm, meaning it is suitable for high-dimensional and time-varying data, and it also has easy to tune parameters. Although the model can learn nonstationary and dynamic data, it is developed for linear and Gaussian state space models (SSM). (Particularly for ECG data, ECG has a nonlinear SSM which doesn't suit the dictionary filtering.) -> Efficient for high-dimensional data, adaptable to non-stationary environments, removes the need for step-size tuning; flexible and computationally efficient: $O(mr^2)$ independent of the number of data points. \newline
+\noindent FOCUS ON SEQUENTIAL MODELS ONLY? \newline
 
-\noindent Later, Akyildiz et.al. develop Probabilistic Sequential Matrix Factorization (PSMF) (\cite{akyildiz2021probabilistic}). This method is tailored to time-varying and non-stationary datasets consisting of high-dimensional time-series. Nonlinear Gaussian SSM are considered, decomposing the original matrix into a dictionary matrix and time-variying coefficient matrix. This time, the matrices are with potentially nonlinear dependencies. The model is demonstrated to work on tasks such as forecasting, changepoint detection, missing data imputation, and is shown to work on real-world data with a periodic subspace. There is also a robust version using Student-t filters to handle model misspecification. -> PSMF efficiently captures temporal dependencies through Markovian structures on the coefficients, making it possible to encode the dependencies into a lower dimensional latent space. Strengths: Handles non-stationary and time-varying data, robust to model misspecification, efficient sequen- tial inference. Suitable for: modelling data with periodic subpaces, high-dimensional data by reducing it to lower-dimensional latent space, data imputation,
+\noindent The paper "Probabilistic matrix factorisation" (PMF) (\cite{NIPS2007_d7322ed7}) introduces an efficient and scalable model for collaborative filtering. The algorithm performs well on large, sparse and imbalanced datasets. This is demonstrated by using a Netflix dataset, alongside with an adaptive prior to control model complexity, and a constrained version to handle users with few ratings. PMF treats each rating as an independent event which means that the time varying component is not taken into consideration, and the algorithm is not suitable for sequential data. \newline
+
+\noindent In the paper "Dictionary Filtering: A Probabilistic Approach to Online Matrix Factorization" (\cite{cite-key}), the authors introduce a novel online MF algorithm known as dictionary filtering. It leverages probabilistic models, specifically using recursive linear filters, and efficiently factorises the original data matrix into a dictionary matrix and a coefficients matrix. This is an online algorithm, meaning it is suitable for high-dimensional and time-varying data, and it also has easy to tune parameters. Although the model can learn nonstationary and dynamic data, it is developed for linear and Gaussian state space models (SSM). 
+
+(Particularly for ECG data, ECG has a nonlinear SSM which doesn't suit the dictionary filtering.) -> Efficient for high-dimensional data, adaptable to non-stationary environments, removes the need for step-size tuning; flexible and computationally efficient: $O(mr^2)$ independent of the number of data points. \newline
+
+\noindent Later, Akyildiz et.al. develop Probabilistic Sequential Matrix Factorization (PSMF) (\cite{akyildiz2021probabilistic}). This method is tailored to time-varying and non-stationary datasets consisting of high-dimensional time-series. Nonlinear Gaussian SSM are considered, decomposing the original matrix into a dictionary matrix and time-variying coefficient matrix. This time, the matrices are with potentially nonlinear dependencies. The model is demonstrated to work on tasks such as forecasting, changepoint detection, missing data imputation, and is shown to work on real-world data with a periodic subspace. There is also a robust version using Student-t filters to handle model misspecification.
+
+PSMF efficiently captures temporal dependencies through Markovian structures on the coefficients, making it possible to encode the dependencies into a lower dimensional latent space. Strengths: Handles non-stationary and time-varying data, robust to model misspecification, efficient sequen- tial inference. Suitable for: modelling data with periodic subpaces, high-dimensional data by reducing it to lower-dimensional latent space, data imputation,
 Weaknesses: Potential problems with very large datasets, having many data points. \newline
 
 \noindent In the unpublished MSc thesis (Imperial College London) of Rina Maletta (\cite{rina}), the author introduces Matrix-Variate Gaussian Matrix Factorization (MVGMF). This is a novel PMF method using matrix-variate Gaussian distributions. The algorithm has fast Gaussian updates which take the form of a preconditioned MF algorithm which is stable. An extension for handling missing data and data imputation is also proposed. The method is tested on the Netflix Prize dataset, London air quality (NO2) data, and Olivetti face image dataset.
@@ -124,6 +133,7 @@ PSMF applied to 12-lead ECG data -> imputation, forecasting, R peaks detection \
 Multiple Fourier terms, higher rank for this case (check the paper) \\
 
 \section{Notation}
+
 
 Throughout this thesis, we will denote the data matrix with $Y$, and the factors as $C$
 and $X$. We denote the vectorised forms of the matrices with their respective lower case letters. We can formally define c = vec(C), where vec(·) is the vectorisation operation. The columns of C are stacked on each other, so if C ∈ Rm×r, then c ∈ Rmr×1. We can
@@ -242,7 +252,10 @@ Section content goes here.
 \section{PSMF}
 
 Section content goes here.
-\a
+
+\subsection{rPSMF}
+
+Some text
 
 \section{NMF}
 
@@ -251,6 +264,10 @@ Section content goes here.
 \section{MVGMF}
 
 Section content goes here.
+
+\section{MLE-SMF}
+
+Check this
 
 % forcing a page break
 \clearpage
@@ -262,6 +279,8 @@ Describe algorithm \\
 Focus on the application to ECG data -> challenges, characteristics, data pre, post, processing 
 
 \chapter{Experiemnts and Results}
+
+Add citations 
 
 The research aims to use the already available A Large Scale 12-lead Electrocardiogram Database for Arrhythmia Study [5], [6], [7]. This is a comprehensive database of high-quality 12-lead ECG signals collected from 45,152 patients. Each signal is with length of 10 seconds corresponding to 5000 data points. The dataset is designed to support arrhythmia research, containing labeled data for various cardiac conditions such as atrial fibrillation, premature ventricular contractions, and bundle branch blocks. This large dataset has high-quality labels from professional experts, diverse arrhythmia types, and additional cardiovascular conditions, making it suitable for performing different research tasks on it without spending time on gathering, cleaning and processing data. \newline
 
@@ -281,23 +300,7 @@ What exactly is tested -> 5k points, sample from the points, results, smoothing,
 
 Both algorithms -> psmf, rpsmf, mle-smf, mvgmf?
 
-\section{R peaks?}
-
-Original - Forecast -> for R peaks detection
-
-One paper about NMF
-
-Scipy function
-
-remove the reconstruction from the original signal
-
-\section{Forecasting}
-
-This fails 
-
-- issues, R-peak
-
-Lower frequency is better -> rank 6, fourier terms 6, iterations 100, 200, 500, leraning rate
+results and images 
 
 %% DO NOT EDIT - AUTOMATICALLY GENERATED FROM RESULTS!
 %% This table requires booktabs and multirow!
@@ -353,6 +356,25 @@ TMF & $\underset{{\scriptscriptstyle \;\;\;(20.59)}}{157.12}$ & 0.45\\
 PMF* & $\underset{{\scriptscriptstyle \;\;\;(nan)}}{nan}$ & 0.16\\
 \bottomrule
 \end{tabular}
+
+\section{R peaks?}
+
+Original - Forecast -> for R peaks detection
+
+One paper about NMF
+
+Scipy function
+
+remove the reconstruction from the original signal
+
+\section{Forecasting}
+
+This fails 
+
+- issues, R-peak
+
+Lower frequency is better -> rank 6, fourier terms 6, iterations 100, 200, 500, leraning rate
+
 
 \chapter{Conclusion}
 
