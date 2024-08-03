@@ -16,6 +16,7 @@
 % From icmathsthesis.cls
 \RequirePackage{ifthen}
 \RequirePackage{booktabs}
+\RequirePackage{algpseudocode}
 
 % Remove blank page between chapters
 \KOMAoptions{twoside=false}

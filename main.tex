@@ -1,7 +1,7 @@
 \documentclass{mldsmsc}
 % \setlength{\parindent}{20pt}
 
-\title{Probabilistic Matrix Factorisation Algorithms for 12-lead ECG Data}
+\title{Probabilistic Sequential Matrix Factorisation for 12-lead ECG Data}
 \author{Joana Levtcheva}
 \CID{01252821}
 \supervisor{Dr Deniz Akyildiz}
@@ -43,6 +43,8 @@ Probabilistic matrix factorisation for high-dimensional time-series data with no
 \end{abstract}
 
 \begin{acknowledgements}
+
+TODO 
 
 I would like to...
 
@@ -146,62 +148,253 @@ Background chapter.
 
 Cite paper
 
-\section{PMF}
+\subsection{Kronecker}
 
-In this section, we will outline the Probabilistic Matrix Factorisation (PMF) algorithm.
-This MF technique was proposed by Mnih and Salakhutdinov (2007). PMF is also concerned with factorising a data matrix, not necessarily non-negative,
-Y ∈ Rm×n into two lower dimensional matrix factors C ∈ Rm×r and X ∈ Rr×n. However,
-unlike NMF, PMF adopts a probabilistic framework. In the PMF case, the matrix
-C contains the basis vectors, and X contains the co-efficients. The linear combination
-of these reconstruct the data matrix Y . The best reconstruction is determined by the
-rank-approximation, r. The exact inference of the probabilistic models proposed by
-Hofmann (1999) and Marlin (2003), which make the connection between unobserved
-latent features and the observed features, is intractable. The PMF technique is useful
-in settings where the data set we are working with is sparse, large and imbalanced.
-The method was applied to the Netflix Prize dataset (Bennett et al., 2007), it contains
-ratings from 480, 189 users, for 17, 770 movies, with over 100 million observations. The
-pre-processing of this dataset consists of creating an m × n ratings matrix, where m is
-the number of users, and n is the number of movies, so the i, jth element of the matrix
-is user i′s rating of movie j. The ratings are numbered from 1 to 5, with missing ratings
-indicated by 0. Since it is not expected that every user rates every movie, the dataset
-is very sparse and also imbalanced, since users have different frequencies of rating movies.
-In the context of the Netflix Prize dataset, our formulation Y ≈ CX becomes, Y is the
-ratings matrix with m users and n movies, C is the latent user matrix and X is the
-movie feature matrix.
-
-\subsection{Model}
-
-\subsection{Algorithm}
-
-\section{DF}
-
-Section content goes here.
-
-\subsection{Model}
-
-\subsection{Algorithm}
+\subsection{Fourier Series?}
 
 \section{PSMF}
 
-Section content goes here.
+Intro again?
 
-\subsection{rPSMF}
+\subsection{PSMF Model}
 
-Some text
+The PSMF model can be described with the following state-space equations:
 
-\section{NMF}
+- **Dictionary Prior**:
+  \[
+  p(C) = \mathcal{MN}(C; C_0, I_d, V_0)
+  \]
+  where \( \mathcal{MN} \) denotes the matrix-variate Gaussian distribution, \( C_0 \) is the mean matrix, \( I_d \) is the identity matrix of appropriate dimension, and \( V_0 \) is the covariance matrix.
 
-Section content goes here.
+- **Initial State of Coefficients**:
+  \[
+  p(x_0) = \mathcal{N}(x_0; \mu_0, P_0)
+  \]
+  where \( \mu_0 \) and \( P_0 \) are the mean and covariance of the initial state.
 
-\section{MVGMF}
+- **State Transition**:
+  \[
+  p(x_k \mid x_{k-1}) = \mathcal{N}(x_k; f_{\theta}(x_{k-1}), Q_k)
+  \]
+  \( f_{\theta} \) is a nonlinear function parameterized by \( \theta \), and \( Q_k \) is the process noise covariance.
 
-Section content goes here.
+- **Observation Model**:
+  \[
+  p(y_k \mid x_k, C) = \mathcal{N}(y_k; Cx_k, R_k)
+  \]
+  where \( R_k \) is the observation noise covariance.
 
-\section{MLE-SMF}
+The likelihood function associated with observing all the data \( Y \) given the latent variables and parameters is computed as:
+\[
+p(Y \mid X, C, \theta) = \prod_{k=1}^n \mathcal{N}(y_k; Cx_k, R_k)
+\]
 
-Check this
+\begin{align*}
+p(\mathbf{C}) &= \mathcal{MN}(\mathbf{C}; \mathbf{C}_0, \mathbf{I}_d, \mathbf{V}_0) \\
+p(\mathbf{x}_0) &= \mathcal{N}(\mathbf{x}_0; \boldsymbol{\mu}0, \mathbf{P}0) \\
+p{\theta}(\mathbf{x}k | \mathbf{x}{k-1}) &= \mathcal{N}(\mathbf{x}k; f{\theta}(\mathbf{x}{k-1}), \mathbf{Q}_k) \\
+p(\mathbf{y}_k | \mathbf{x}_k, \mathbf{C}) &= \mathcal{N}(\mathbf{y}_k; \mathbf{C}\mathbf{x}_k, \mathbf{R}_k)
+\end{align*}
+
+\subsection{PSMF Inference}
+
+The inference process in PSMF involves the following steps, each corresponding to the elements of the probabilistic model.
+
+- **Prediction**:
+  \[
+  p(x_k \mid y_{1:k-1}) = \int p(x_k \mid x_{k-1}) p(x_{k-1} \mid y_{1:k-1}) dx_{k-1}
+  \]
+
+- **Update**: After computing the predictive distribution of \(x_k\), the update steps for \(x_k\) and \(C\) are given by:
+  \[
+  p(y_k \mid y_{1:k-1}) = \int \int p(y_k \mid C, x_k) p(x_k \mid y_{1:k-1}) p(C \mid y_{1:k-1}) dx_k dC
+  \]
+  \[
+  p(x_k \mid y_{1:k}) = \frac{p(x_k \mid y_{1:k-1}) p(y_k \mid x_k, y_{1:k-1})}{p(y_k \mid y_{1:k-1})}
+  \]
+  \[
+  p(C \mid y_{1:k}) = \frac{p(C \mid y_{1:k-1}) p(y_k \mid C, y_{1:k-1})}{p(y_k \mid y_{1:k-1})}
+  \]
+
+\subsection{PSMF Algorithm}
+
+\begin{algorithm}
+\caption{Probabilistic Sequential Matrix Factorization (PSMF)}
+\begin{algorithmic}[1]
+\State Initialize \( C_0, V_0, \mu_0, P_0, (Q_k)_{k \geq 1}, (R_k)_{k \geq 1} \)
+\For{\( k = 1 \) to \( n \)}
+    \State \textbf{Prediction:}
+    \State \( p(x_k \mid y_{1:k-1}) = \int p(x_k \mid x_{k-1}) p(x_{k-1} \mid y_{1:k-1}) dx_{k-1} \)
+    \State \textbf{Update:}
+    \State \( p(y_k \mid y_{1:k-1}) = \int \int p(y_k \mid C, x_k) p(x_k \mid y_{1:k-1}) p(C \mid y_{1:k-1}) dx_k dC \)
+    \State \( p(x_k \mid y_{1:k}) = \frac{p(x_k \mid y_{1:k-1}) p(y_k \mid x_k, y_{1:k-1})}{p(y_k \mid y_{1:k-1})} \)
+    \State \( p(C \mid y_{1:k}) = \frac{p(C \mid y_{1:k-1}) p(y_k \mid C, y_{1:k-1})}{p(y_k \mid y_{1:k-1})} \)
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+
+\section{rPSMF}
+
+\subsection{rPSMF Model}
+
+The robust variant, rPSMF, incorporates robustness to outliers and model misspecifications by integrating a heavy-tailed t-distribution into the framework.
+
+- **Scale Mixing Prior**:
+  \[
+  p(s) = \text{IG}(s; \lambda_0 / 2, \lambda_0 / 2)
+  \]
+  where \( \text{IG} \) denotes the inverse gamma distribution and \( \lambda_0 \) is a scale parameter.
+
+- **Modified Dictionary and State Transitions**:
+  \[
+  p(C \mid s) = \mathcal{MN}(C; C_0, I_d, sV_0)
+  \]
+  \[
+  p(x_0 \mid s) = \mathcal{N}(x_0; \mu_0, sP_0)
+  \]
+  \[
+  p(x_k \mid x_{k-1}, s) = \mathcal{N}(x_k; f_{\theta}(x_{k-1}), sQ_k)
+  \]
+  \[
+  p(y_k \mid x_k, C, s) = \mathcal{N}(y_k; Cx_k, sR_k)
+  \]
+
+The likelihood for rPSMF considering the robust modifications and the scale variable \( s \) is:
+\[
+p(Y \mid X, C, s, \theta) = \prod_{k=1}^n \mathcal{N}(y_k; Cx_k, sR_k)
+\]
+
+
+\begin{align*}
+p(s) &= \mathcal{IG}(s; \lambda_0/2, \lambda_0/2) \\
+p(\mathbf{C} | s) &= \mathcal{MN}(\mathbf{C}; \mathbf{C}_0, \mathbf{I}_d, s\mathbf{V}_0) \\
+p(\mathbf{x}_0 | s) &= \mathcal{N}(\mathbf{x}_0; \boldsymbol{\mu}0, s\mathbf{P}0) \\
+p{\theta}(\mathbf{x}k | \mathbf{x}{k-1}, s) &= \mathcal{N}(\mathbf{x}k; f{\theta}(\mathbf{x}{k-1}), s\mathbf{Q}_0) \\
+p(\mathbf{y}_k | \mathbf{x}_k, \mathbf{C}, s) &= \mathcal{N}(\mathbf{y}_k; \mathbf{C}\mathbf{x}_k, s\mathbf{R}_0)
+\end{align*}
+
+\subsection{rPSMF Inference}
+
+Inference in rPSMF incorporates the handling of the robust parameters and scale mixing variable \( s \) introduced to manage outliers and model misspecifications.
+
+- **Prediction**:
+  \[
+  p(x_k \mid y_{1:k-1}, s) = \int p(x_k \mid x_{k-1}, s) p(x_{k-1} \mid y_{1:k-1}, s) dx_{k-1}
+  \]
+
+- **Update**: This part involves the update of \(x_k\), \(C\), and \(s\) using robust estimation methods:
+  \[
+  p(y_k \mid y_{1:k-1}, s) = \int \int p(y_k \mid C, x_k, s) p(x_k \mid y_{1:k-1}, s) p(C \mid y_{1:k-1}, s) dx_k dC
+  \]
+  \[
+  p(x_k \mid y_{1:k}, s) = \frac{p(x_k \mid y_{1:k-1}, s) p(y_k \mid x_k, y_{1:k-1}, s)}{p(y_k \mid y_{1:k-1}, s)}
+  \]
+  \[
+  p(C \mid y_{1:k}, s) = \frac{p(C \mid y_{1:k-1}, s) p(y_k \mid C, y_{1:k-1}, s)}{p(y_k \mid y_{1:k-1}, s)}
+  \]
+  \[
+  p(s \mid y_{1:k}) = \text{IG}(s; \text{updated parameters based on data likelihood})
+  \]
+
+\subsection{rPSMF Algorithm}
+
+\begin{algorithm}
+\caption{Robust Probabilistic Sequential Matrix Factorization (rPSMF)}
+\begin{algorithmic}[1]
+\State Initialize \( C_0, V_0, \mu_0, P_0, (Q_k)_{k \geq 1}, (R_k)_{k \geq 1}, s_0, \lambda_0 \)
+\For{\( k = 1 \) to \( n \)}
+    \State \textbf{Prediction:}
+    \State \( p(x_k \mid y_{1:k-1}, s) = \int p(x_k \mid x_{k-1}, s) p(x_{k-1} \mid y_{1:k-1}, s) dx_{k-1} \)
+    \State \textbf{Update:}
+    \State \( p(y_k \mid y_{1:k-1}, s) = \int \int p(y_k \mid C, x_k, s) p(x_k \mid y_{1:k-1}, s) p(C \mid y_{1:k-1}, s) dx_k dC \)
+    \State \( p(x_k \mid y_{1:k}, s) = \frac{p(x_k \mid y_{1:k-1}, s) p(y_k \mid x_k, y_{1:k-1}, s)}{p(y_k \mid y_{1:k-1}, s)} \)
+    \State \( p(C \mid y_{1:k}, s) = \frac{p(C \mid y_{1:k-1}, s) p(y_k \mid C, y_{1:k-1}, s)}{p(y_k \mid y_{1:k-1}, s)} \)
+    \State Update \( s \) using the robust estimation method
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+\section{PSMF for Handling Missing Data}
+
+Given:
+\begin{itemize}
+    \item A data matrix \( Y \in \mathbb{R}^{d \times n} \) with missing entries
+    \item A dictionary matrix \( C \in \mathbb{R}^{d \times r} \)
+    \item Latent coefficients matrix \( X \in \mathbb{R}^{r \times n} \)
+\end{itemize}
+
+\subsection*{Model Definition}
+\begin{align*}
+    p(C) & = \mathcal{MN}(C; C_0, I_d, V_0) \quad \text{(Matrix-variate Gaussian prior on dictionary)} \\
+    p(x_0) & = \mathcal{N}(x_0; \mu_0, P_0) \quad \text{(Gaussian prior on initial coefficients)} \\
+    p(x_k | x_{k-1}) & = \mathcal{N}(x_k; f_{\theta}(x_{k-1}), Q_k) \quad \text{(State transition model)} \\
+    p(y_k | x_k, C) & = \mathcal{N}(y_k; Cx_k, R_k) \quad \text{(Observation model)} \\
+    p(s) & = \text{IG}(s; \lambda_0 / 2, \lambda_0 / 2) \quad \text{(Scale mixing variable for rPSMF)}
+\end{align*}
+
+\subsection*{Missing Data Imputation}
+Missing entries in \( Y \) are handled by:
+\begin{itemize}
+    \item Assuming \( Y_{\text{obs}} \) are the observed entries
+    \item \( Y_{\text{miss}} \) are the missing entries
+\end{itemize}
+
+The likelihood for the observed data is given by:
+\[
+p(Y_{\text{obs}} | X, C) = \prod_{k=1}^n \mathcal{N}(y_{k,\text{obs}}; Cx_k, R_{k,\text{obs}})
+\]
+
+where \( R_{k,\text{obs}} \) is the covariance matrix adjusted for the observed dimensions of \( y_k \).
+
+\subsection*{Objective}
+Maximize the likelihood of the observed data while appropriately estimating the missing data through the model's latent structure:
+\[
+\max_{X, C} \log p(Y_{\text{obs}} | X, C)
+\]
+
+\subsection{Model}
+
+\subsection{Inference}
+
+\subsection{Algorithm}
+
+\begin{algorithm}
+\caption{Missing Data Imputation using PSMF and rPSMF}
+\begin{algorithmic}[1]
+\State Initialize \( C_0, V_0, \mu_0, P_0, s_0 \) (for rPSMF), \( (Q_k)_{k \geq 1}, (R_k)_{k \geq 1} \)
+\State Set model parameters based on whether using PSMF or rPSMF
+\For{\( k = 1 \) to \( n \)}
+    \State \textbf{Predict Next State:}
+    \State \( p(x_k \mid y_{1:k-1}) = \int p(x_k \mid x_{k-1}) p(x_{k-1} \mid y_{1:k-1}) dx_{k-1} \)
+    \State \textbf{Update Estimates:}
+    \State Incorporate observations \( y_k \), handling missing data via the model's structure
+    \State \( p(y_k \mid y_{1:k-1}) = \int \int p(y_k \mid C, x_k) p(x_k \mid y_{1:k-1}) p(C \mid y_{1:k-1}) dx_k dC \)
+    \State \( p(x_k \mid y_{1:k}) = \frac{p(x_k \mid y_{1:k-1}) p(y_k \mid x_k, y_{1:k-1})}{p(y_k \mid y_{1:k-1})} \)
+    \State \( p(C \mid y_{1:k}) = \frac{p(C \mid y_{1:k-1}) p(y_k \mid C, y_{1:k-1})}{p(y_k \mid y_{1:k-1})} \)
+    \State Update \( s \) if using rPSMF
+    \State \textbf{Impute Missing Data:}
+    \State Utilize the updated estimates of \( x_k \) and \( C \) to impute missing entries in \( y_k \)
+\EndFor
+\State \textbf{Output:} Imputed matrix \( Y \) with missing entries filled
+\end{algorithmic}
+\end{algorithm}
+
 
 \section{ECG/medical introduction}
+
+The ECG is a crucial diagnostic tool in clinical practice. It is especially useful in diagnosing rhythm disturbances, changes in electrical conduction, and myocardial ischemia and infarction.
+
+As cardiac cells depolarize and repolarize, electrical currents spread throughout the body because the tissues surrounding the heart are able to conduct electrical currents generated by the heart. When these electrical currents are measured by an array of electrodes placed at specifi c locations on the body surface, the recorded tracing is called an ECG (Fig. 2.13). The repeating waves of the ECG represent the sequence of depolarization and repolarization of the atria and ventricles. The ECG does not measure absolute voltages, but voltage changes from a baseline (isoelectric) voltage. ECGs are generally recorded on paper at a speed of 25 mm/s and with a vertical calibration of 1 mV/cm.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=1\linewidth]{images/ecg.png}
+\caption{Components of the ECG trace. An enlargement of one of the repeating waveform units in the rhythm strip shows the P wave, QRS complex, and T wave, which represent atrial depolarization, ventricular depolarization, and ventricular repolarization, respectively. The PR interval represents the time required for the depolarization wave to transverse the atria and the AV node; the QT interval represents the period of ventricular depolarization and repolarization; and the ST segment is the isoelectric period when the entire ventricle is depolarized. Each small square is 1 mm.}
+\label{fig:r-peaks}
+\end{figure}
+
+\hline
 
 A 12-Lead ECG (Electrocardiogram) is a standard diagnostic tool used to assess the electrical activity of the heart. It provides a comprehensive view of the heart's electrical activity from different angles. The 12 leads consist of:
 
@@ -223,20 +416,7 @@ Each lead records the heart's electrical activity from a different perspective, 
 
 The ECG machine typically records data for about 10 seconds, producing a graph of voltage versus time.
 
-There are 10 physical electrodes placed on the patient's body. Despite having only 10 electrodes as seen in \ref{fig:combined}, the system provides 12 different "views" or "leads" of the heart's electrical activity. This is achieved through:
-
-\begin{itemize}
-    \item 6 precordial leads (V1-V6): These come directly from 6 of the electrodes on the chest.
-    \item 3 limb leads (I, II, III): These are derived from electrodes placed on the limbs.
-    \item 3 augmented limb leads (aVR, aVL, aVF): These are calculated mathematically from the limb electrodes.
-\end{itemize}
-
-So while there are 10 physical connection points, the ECG machine uses these to generate 12 different perspectives or "leads" of the heart's electrical activity.
-
-\hline
-
 The Electrocardiogram (ECG) is a crucial diagnostic tool in cardiology that records the electrical activity of the heart. A standard 12-lead ECG system provides multiple perspectives of cardiac electrical activity, facilitating comprehensive analysis.
-Key points for a mathematical focus:
 
 Signal Acquisition: ECG data is acquired through electrodes placed on the body surface, measuring potential differences over time.
 Waveform Components: The ECG waveform consists of P, Q, R, S, and T waves, each representing specific cardiac events.
@@ -268,12 +448,6 @@ PQRST complex, R-peak..., diagram, data
 % forcing a page break
 \clearpage
 
-\chapter{PSMF/etc for ECG}
-
-Describe algorithm \\
-
-Focus on the application to ECG data -> challenges, characteristics, data pre, post, processing 
-
 \chapter{Experiemnts and Results}
 
 Add citations 
@@ -302,20 +476,23 @@ results and images \newline
 %% This table requires booktabs and multirow!
 %% Table for missing percentage 20
 \begin{table}[h!]
-\caption{Average coverage proportion of the missing data by the $2\sigma$ uncertainty bars of the posterior predictive estimates, averaged over 100 repetitions.}
-\begin{tabular}{lccc}
- & 20\% & 30\% & 40\% \\
-\hline
-PSMF & 0.39 & 0.32 & 0.24 \\
-rPSMF & \textbf{0.85} & \textbf{0.78} & \textbf{0.71} \\
-MLE-SMF & 0.18 & 0.16 & 0.15 \\
-\hline
-\end{tabular}
+    \centering
+    \begin{threeparttable}
+        \begin{tabular}{lccc}
+            \hline
+             & 20\% & 30\% & 40\% \\
+            \hline
+            PSMF & 0.39 & 0.32 & 0.24 \\
+            rPSMF & \textbf{0.85} & \textbf{0.78} & \textbf{0.71} \\
+            MLE-SMF & 0.18 & 0.16 & 0.15 \\
+            \hline
+        \end{tabular}
+        \caption{Average coverage proportion of the missing data by the $2\sigma$ uncertainty bars of the posterior predictive estimates, averaged over 100 repetitions.}
+    \end{threeparttable}
 \end{table}
 
 \begin{table}[h!]
 \centering
-\caption{Imputation error and runtime on several datasets using 20\%, 30\% and 40\% missing values, averaged over 100 random repetitions. An asterisk marks offline methods.}
 \label{tab:my_label}
 \begin{tabular}{@{}lccc|ccccc@{}}
 \toprule
@@ -328,11 +505,20 @@ MLE-SMF & $\underset{{\scriptscriptstyle \;\;\;(22.15)}}{255.87}$ & $\underset{{
 TMF & $\underset{{\scriptscriptstyle \;\;\;(15.78)}}{169.83}$ & $\underset{{\scriptscriptstyle \;\;\;(16.33)}}{167.91}$ & $\underset{{\scriptscriptstyle \;\;\;(17.91)}}{155.58}$ & 2.11 & 0.50 & 0.58 \\
 \bottomrule
 \end{tabular}
+\caption{Imputation error and runtime using 20\%, 30\% and 40\% missing values, averaged over 100 random repetitions.}
 \end{table}
+
+TODO: add figures showcasing the original data, missing parts and imputed parts
 
 \section{R peaks?}
 
-When forecasting... its hard to model the sharp peaks... smoother -> rmove reconstrution and set threshold and get the r-peaks
+\begin{figure}[h!]
+\centering
+\includegraphics[width=1\linewidth]{images/r_peaks.png}
+\label{fig:r-peaks}
+\end{figure}
+
+When forecasting... its hard to model the sharp peaks... smoother -> remove reconstrution and set threshold and get the r-peaks
 
 Original - Forecast -> for R peaks detection
 
@@ -343,6 +529,14 @@ Scipy function
 remove the reconstruction from the original signal
 
 \section{Forecasting}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[scale=1]{images/periodic_fit_1500_6_6_150it.pdf}
+\caption{My caption here}
+\label{somelabelforreference}
+\end{center}
+\end{figure}
 
 This fails 
 
