@@ -116,49 +116,35 @@ Weaknesses: Potential problems with very large datasets, having many data points
 
 \section{Contributions}
 
-We outline the contributions made in this thesis. In this thesis, we 
-
-introduce
-a novel approach to the MF problem, by proposing a Matrix-Variate Gaussian Matrix
-Factorisation (MVGMF) algorithm.
+We outline the contributions made in this thesis:
 
 \begin{itemize}
-  \item Apply PSMF to 12-lead ECG data -> not applied to such data before
-  \item Fourier basis and higher rank (bug in the original code) -> not applied before
-  \item Forecast, data imputation, R-peaks
+    \item We show a novel application of PSMF to complex 12-lead ECG data
+    \item We tackle three tasks: missing data imputation, R-peaks detection and forecast
+    \item We show PSMF with Fourier basis with multiple Fourier terms and rank higher than 1
 \end{itemize}
 
-The main focus of the research project would be to explore PMF methods applied to high-dimensional time-series data with nonlinear subspace: both considering the time varying component, and treating the whole time series as a batch without considering the time component. More precisely, the project would focus on applying such methods to 12-lead ECG data which is 12-dimensional time-series data with a nonlinear subspace. Some of the tasks which could be explored include: modelling the data so that the future behaviour can be predicted, anomaly detection, imputing missing data, or performing peak detection. \newline
+\noindent The main focus of the research project would be to explore PMF methods applied to high-dimensional time-series data with nonlinear subspace: both considering the time varying component, and treating the whole time series as a batch without considering the time component. More precisely, the project would focus on applying such methods to 12-lead ECG data which is 12-dimensional time-series data with a nonlinear subspace. Some of the tasks which could be explored include: modelling the data so that the future behaviour can be predicted, anomaly detection, imputing missing data, or performing peak detection. \newline
 
 \noindent Using probabilistic methods (and specifically the PMF ones) on ECG data is not widely explored. Applying methods such as Probabilistic Matrix Factorisation (PMF) [1], Probabilistic Sequential Matrix Factorisation (PSMF) [2], Matrix-Variate Gaussian Matrix Factorization (MVGMF) [3], etc. to 12-lead ECG data would showcase novel real-world PMF applications in the medical field, and potentially improve the accuracy and efficiency of ECG data analysis. \newline
 
-PSMF applied to 12-lead ECG data -> imputation, forecasting, R peaks detection \\
-
-Multiple Fourier terms, higher rank for this case (check the paper) \\
-
 \section{Notation}
 
+We are going to denote the original data matrix as $Y$, and let $Y \in \mathbb{R}^{m \times n}$. Let $C \in \mathbb{R}^{m \times r}$ be the dictionary matrix, $X \in \mathbb{R}^{r \times n}$ be the coefficients matrix, and $r$ be the approximation rank. With $f_{\theta} $\newline
 
-Throughout this thesis, we will denote the data matrix with $Y$, and the factors as $C$
-and $X$. We denote the vectorised forms of the matrices with their respective lower case letters. We can formally define c = vec(C), where vec(·) is the vectorisation operation. The columns of C are stacked on each other, so if C ∈ Rm×r, then c ∈ Rmr×1. We can
-also define the inverse vectorisation operator C = vec−1(c). \newline
+\noindent Throughout this thesis, we will denote the data matrix with $Y$, and the factors as $C$ and $X$. We denote the vectorised forms of the matrices with their respective lower case letters. We can formally define c = vec(C), where vec(·) is the vectorisation operation. The columns of C are stacked on each other, so if C ∈ Rm×r, then c ∈ Rmr×1. We can also define the inverse vectorisation operator C = vec−1(c). \newline
 
-\noindent We have that p(x) denotes the probability density function (pdf) of x and p(y|x) is the
-conditional density of y given x. Where A ∈ Rm×n is a matrix, then MN(A;M,U, V )
-denotes the matrix normal pdf for A, where M ∈ Rm×n is the mean, U ∈ Rn×n is the
-among-row co-variance and V ∈ Rm×m is the among-column co-variance. We also define
-the multivariate normal distribution in the following way; let a ∈ Rm, then N(a; μ, Σ)
-denotes the pdf of the multivariate normal distribution for the random variable a, where
-μ ∈ Rm is the mean and Σ ∈ Rm×m is the covariance matrix. Im ∈ Rm×m is the m×m
-identity matrix. \newline
-
-\noindent Mathematics notation $f_{\theta}$
+\noindent We have that p(x) denotes the probability density function (pdf) of x and p(y|x) is the conditional density of y given x. Where A ∈ Rm×n is a matrix, then MN(A;M,U, V ) denotes the matrix normal pdf for A, where M ∈ Rm×n is the mean, U ∈ Rn×n is the among-row co-variance and V ∈ Rm×m is the among-column co-variance. We also define the multivariate normal distribution in the following way; let a ∈ Rm, then N(a; μ, Σ) denotes the pdf of the multivariate normal distribution for the random variable a, where μ ∈ Rm is the mean and Σ ∈ Rm×m is the covariance matrix. Im ∈ Rm×m is the m×m identity matrix. \newline
 
 \chapter{Background}
 
 Background chapter.
 
 \section{Preliminaries}
+
+\subsection{Matrix Normal Distribution} 
+
+Cite paper
 
 \section{PMF}
 
@@ -183,13 +169,17 @@ In the context of the Netflix Prize dataset, our formulation Y ≈ CX becomes, Y
 ratings matrix with m users and n movies, C is the latent user matrix and X is the
 movie feature matrix.
 
-Model 
+\subsection{Model}
 
-Algorithm
+\subsection{Algorithm}
 
 \section{DF}
 
 Section content goes here.
+
+\subsection{Model}
+
+\subsection{Algorithm}
 
 \section{PSMF}
 
