@@ -15,6 +15,7 @@
 \RequirePackage{setspace}
 % From icmathsthesis.cls
 \RequirePackage{ifthen}
+\RequirePackage{booktabs}
 
 % Remove blank page between chapters
 \KOMAoptions{twoside=false}

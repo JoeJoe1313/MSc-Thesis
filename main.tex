@@ -290,70 +290,49 @@ datasets requires efficient automated methods.
 
 Pre,post, processing
 
-What exactly is tested -> 5k points, sample from the points, results, smoothing, no smoothing, differеnt ranks, fourier terms
+What exactly is tested - 5k points, sample from the points, results, smoothing, no smoothing, differеnt ranks, fourier terms
 
 \section{Missing data}
 
 Both algorithms -> psmf, rpsmf, mle-smf, mvgmf?
 
-results and images 
+results and images \newline
 
 %% DO NOT EDIT - AUTOMATICALLY GENERATED FROM RESULTS!
 %% This table requires booktabs and multirow!
 %% Table for missing percentage 20
+\begin{table}[h!]
+\caption{Average coverage proportion of the missing data by the $2\sigma$ uncertainty bars of the posterior predictive estimates, averaged over 100 repetitions.}
 \begin{tabular}{lccc}
-\toprule
  & 20\% & 30\% & 40\% \\
-\cmidrule(lr){2-4}
+\hline
 PSMF & 0.39 & 0.32 & 0.24 \\
-rPSMF & \textbf{0.85} & \textbf{0.79} & \textbf{0.70} \\
-MLE-SMF & 0.18 & 0.17 & 0.15 \\
-\bottomrule
+rPSMF & \textbf{0.85} & \textbf{0.78} & \textbf{0.71} \\
+MLE-SMF & 0.18 & 0.16 & 0.15 \\
+\hline
 \end{tabular}
+\end{table}
 
-%% DO NOT EDIT - AUTOMATICALLY GENERATED FROM RESULTS!
-%% This table requires booktabs, amsmath, and multirow!
-\begin{tabular}{lrr}
+\begin{table}[h!]
+\centering
+\caption{Imputation error and runtime on several datasets using 20\%, 30\% and 40\% missing values, averaged over 100 random repetitions. An asterisk marks offline methods.}
+\label{tab:my_label}
+\begin{tabular}{@{}lccc|ccccc@{}}
 \toprule
- & \multicolumn{1}{c}{Imputation RMSE} & \multicolumn{1}{c}{Runtime (s)} \\\cmidrule(lr){2-6} \cmidrule(lr){7-11}
- & ECG & ECG \\ \cmidrule(lr){2-6} \cmidrule(lr){7-11}
-PSMF & $\underset{{\scriptscriptstyle \;\;(18.06)}}{\textbf{62.79}}$ & 1.02\\
-rPSMF & $\underset{{\scriptscriptstyle \;\;(17.57)}}{63.32}$ & 1.21\\
-MLE-SMF & $\underset{{\scriptscriptstyle \;\;\;(21.13)}}{251.06}$ & 1.19\\
-TMF & $\underset{{\scriptscriptstyle \;\;\;(15.05)}}{172.87}$ & 0.57\\
-PMF* & $\underset{{\scriptscriptstyle \;\;\;(nan)}}{nan}$ & 0.21\\
+ & \multicolumn{3}{c}{Imputation RMSE} & \multicolumn{3}{c}{Runtime (s)} \\
+ & 20\% & 30\% & 40\% & 20\% & 30\% & 40\% \\
+\midrule
+PSMF & $\underset{{\scriptscriptstyle \;\;(20.80)}}{63.93}$ & $\underset{{\scriptscriptstyle \;\;(22.15)}}{80.90}$ & $\underset{{\scriptscriptstyle \;\;\;(21.30)}}{104.68}$ & 1.05 & 1.25 & 1.19 \\
+rPSMF & $\underset{{\scriptscriptstyle \;\;(17.29)}}{\textbf{60.58}}$ & $\underset{{\scriptscriptstyle \;\;(18.50)}}{\textbf{74.56}}$ & $\underset{{\scriptscriptstyle \;\;(20.12)}}{\textbf{93.22}}$ & 1.22 & 1.31 & 1.17 \\
+MLE-SMF & $\underset{{\scriptscriptstyle \;\;\;(22.15)}}{255.87}$ & $\underset{{\scriptscriptstyle \;\;\;(67.00)}}{263.76}$ & $\underset{{\scriptscriptstyle \;\;\;(81.31)}}{271.45}$ & 6.17 & 1.00 & 1.12 \\
+TMF & $\underset{{\scriptscriptstyle \;\;\;(15.78)}}{169.83}$ & $\underset{{\scriptscriptstyle \;\;\;(16.33)}}{167.91}$ & $\underset{{\scriptscriptstyle \;\;\;(17.91)}}{155.58}$ & 2.11 & 0.50 & 0.58 \\
 \bottomrule
 \end{tabular}
-
-%% DO NOT EDIT - AUTOMATICALLY GENERATED FROM RESULTS!
-%% This table requires booktabs, amsmath, and multirow!
-\begin{tabular}{lrr}
-\toprule
- & \multicolumn{1}{c}{Imputation RMSE} & \multicolumn{1}{c}{Runtime (s)} \\\cmidrule(lr){2-6} \cmidrule(lr){7-11}
- & ECG & ECG \\ \cmidrule(lr){2-6} \cmidrule(lr){7-11}
-PSMF & $\underset{{\scriptscriptstyle \;\;(19.76)}}{78.93}$ & 1.07\\
-rPSMF & $\underset{{\scriptscriptstyle \;\;(16.56)}}{\textbf{73.74}}$ & 1.11\\
-MLE-SMF & $\underset{{\scriptscriptstyle \;\;\;(82.96)}}{267.00}$ & 0.93\\
-TMF & $\underset{{\scriptscriptstyle \;\;\;(17.25)}}{166.36}$ & 0.43\\
-PMF* & $\underset{{\scriptscriptstyle \;\;\;(nan)}}{nan}$ & 0.18\\
-\bottomrule
-\end{tabular}
-
-%% DO NOT EDIT - AUTOMATICALLY GENERATED FROM RESULTS!
-%% This table requires booktabs, amsmath, and multirow!
-\begin{tabular}{lrr}
-\toprule
- & \multicolumn{1}{c}{Imputation RMSE} & \multicolumn{1}{c}{Runtime (s)} \\\cmidrule(lr){2-6} \cmidrule(lr){7-11}
- & ECG & ECG \\ \cmidrule(lr){2-6} \cmidrule(lr){7-11}
-PSMF & $\underset{{\scriptscriptstyle \;\;\;(21.92)}}{106.57}$ & 1.01\\
-rPSMF & $\underset{{\scriptscriptstyle \;\;(22.32)}}{\textbf{96.08}}$ & 1.10\\
-MLE-SMF & $\underset{{\scriptscriptstyle \;\;\;(61.04)}}{268.91}$ & 0.92\\
-TMF & $\underset{{\scriptscriptstyle \;\;\;(20.59)}}{157.12}$ & 0.45\\
-PMF* & $\underset{{\scriptscriptstyle \;\;\;(nan)}}{nan}$ & 0.16\\
-\bottomrule
-\end{tabular}
+\end{table}
 
 \section{R peaks?}
+
+When forecasting... its hard to model the sharp peaks... smoother -> rmove reconstrution and set threshold and get the r-peaks
 
 Original - Forecast -> for R peaks detection
 
