@@ -34,7 +34,11 @@ Probabilistic matrix factorisation for high-dimensional time-series data with no
 
 \noindent Example: In recent years, matrix factorisation (MF) algorithms have gained popularity in the field of machine learning and have found applications in various fields, such as recommendation systems, image processing and missing data imputation. The MF problem concerns factorising a high dimensional data matrix into two lower dimensional factors. The aim of MF methods is to find the factors such that we have a lower dimensional representation of the data.\newline
 
-\noindent In this thesis, we propose a novel
+\noindent In this thesis, we propose a novel \newline
+
+\noindent The main focus of the research project would be to explore PMF methods applied to high-dimensional time-series data with nonlinear subspace: both considering the time varying component, and treating the whole time series as a batch without considering the time component. More precisely, the project would focus on applying such methods to 12-lead ECG data which is 12-dimensional time-series data with a nonlinear subspace. Some of the tasks which could be explored include: modelling the data so that the future behaviour can be predicted, anomaly detection, imputing missing data, or performing peak detection. \newline
+
+\noindent Using probabilistic methods (and specifically the PMF ones) on ECG data is not widely explored. Applying methods such as Probabilistic Matrix Factorisation (PMF) [1], Probabilistic Sequential Matrix Factorisation (PSMF) [2], Matrix-Variate Gaussian Matrix Factorization (MVGMF) [3], etc. to 12-lead ECG data would showcase novel real-world PMF applications in the medical field, and potentially improve the accuracy and efficiency of ECG data analysis. \newline
 
 \end{abstract}
 
@@ -58,7 +62,7 @@ I would like to...
 
 Matrix factorisation (or also matrix decomposition) in the context of linear algebra is simply a factorisation of a matrix into a product of multiple matrices. Many different decompositions exist, and they find various applications in mathematical problems such as solving systems of linear equations, matrix inversion, determinant computation, eigenvalues problems, solving systems of first order ODEs, etc. \newline
 
-\noindent In this thesis, we are interested in matrix factorisation (MF) in the context of machine learning. Nowadays, MF techniques are highly effective and widely used in unsupervised machine learning. These methods decompose the original matrix into multiple lower-dimensional matrices. By breaking the matrix in these simpler components MF aims to uncover latent structures that are not immediately apparent in the original matrix. Some applications are in image processing: for reducing dimensionality and noise in images, NLP for topic modelling, missing data imputation, recommendation systems, etc. \newline
+\noindent In this thesis, we are interested in matrix factorisation (MF) in the context of machine learning. Nowadays, MF techniques are highly effective and widely used in unsupervised machine learning. These methods aim to decompose the original matrix into multiple lower-dimensional matrices. By breaking the matrix in these simpler components MF aims to uncover latent structures that are not immediately apparent in the original matrix. Some applications are in image processing: for reducing dimensionality and noise in images, NLP for topic modelling, missing data imputation, recommendation systems, etc. \newline
 
 \noindent Formally, we are interested in the general problem of factorising a data matrix $Y \in \mathbb{R}^{m \times n}$ as
 
@@ -93,15 +97,13 @@ Y \approx CX,
 
 \noindent There are also probabilistic versions of MF which incorporate probabilistic models to better handle uncertainty and variability in the data, leading to more accurate predictions. Such methodologies postulate a prior distribution over the latent factors and necessitate the computation of the posterior distribution to derive updated estimates. With that the matrix is not only decomposed but probabilistic interpretations of the factors are also possible. Despite considerable progression in the probabilistic versions, there is demand for such methods in applications such as uncertainty quantification, managing time-series data, and executing efficient probabilistic components. \newline
 
-\noindent We should also note that some algorithms are suitable for sequential data, and others are not - treating the whole dataset as a batch without considering the time varying component. These MF techniques are known respectively as online - updating $C$ and $X$ by processing the elements of the data matrix $Y$ in a streaming fashion or operating on a restricted subset of the available data, and offline. \newline 
+\noindent We should also note that some algorithms are suitable for sequential data - updating $C$ and $X$ incrementally as new data points are observed and thus incorporating temporal dynamics and sequential dependencies into the factorisation process, and others are non-sequential - treating the dataset as a batch independent of the time varying component. \newline
 
-\noindent Throughout this thesis we are going to focus on probabilistic MF algorithms, along with their application to 12-lead ECG data, targeting the problem of managing high-dimensional time-series data. Some examples of such probabilistic MF algorithms are Probabilistic Matrix Factorisation (PMF) (\cite{NIPS2007_d7322ed7}), Dictionary filtering (\cite{cite-key}) - although not fully probabilistic, Probabilistic Sequential Matrix Factorization (PSMF) (\cite{akyildiz2021probabilistic}), MLE-SMF?. \newline
+\noindent Throughout this thesis we are going to focus on probabilistic MF algorithms, along with their application to 12-lead ECG data, targeting the problem of managing high-dimensional time-series data. Some examples of such probabilistic MF algorithms are Probabilistic Matrix Factorisation (PMF) (\cite{NIPS2007_d7322ed7}), Dictionary filtering (\cite{cite-key}), Probabilistic Sequential Matrix Factorization (PSMF) (\cite{akyildiz2021probabilistic}), MLE-SMF?. \newline
 
-\noindent FOCUS ON SEQUENTIAL MODELS ONLY? \newline
+\noindent The paper "Probabilistic matrix factorisation" (PMF) (\cite{NIPS2007_d7322ed7}) introduces an efficient and scalable probabilistic model for collaborative filtering. The algorithm performs well on large, sparse and imbalanced datasets. This is demonstrated by using a Netflix dataset, where PMF models the user preference matrix $R$ as a product of two lower-dimensional matrices: user feature matrix $U$ and movie feature matrix $V$. The conditional distribution over observed ratings is modeled using Gaussian noise, and zero-mean spherical Gaussian priors are placed on the user and movie feature vectors. The paper also presents two extensions to the initial PMF model: incorporating \textit{adaptive priors} to automatically control the model complexity through these priors over the model parameters, and a \textit{constrained PMF} version to handle and improve predictions for users with few ratings by incorporating constraints based on the assumption that users with similar movie ratings have similar preferences. The authors show that PMF significantly outperforms traditional Singular Value Decomposition (SVD) (\cite{4ba978eb-d878-342d-a11e-6d7554474b2d}) models and scales linearly with the number of observations. It's worth noting that PMF treats each rating as an independent event meaning the time varying component is not taken into consideration, making PMF a batch learning model designed to process large datasets in a non-sequential manner. \newline
 
-\noindent The paper "Probabilistic matrix factorisation" (PMF) (\cite{NIPS2007_d7322ed7}) introduces an efficient and scalable model for collaborative filtering. The algorithm performs well on large, sparse and imbalanced datasets. This is demonstrated by using a Netflix dataset, alongside with an adaptive prior to control model complexity, and a constrained version to handle users with few ratings. PMF treats each rating as an independent event which means that the time varying component is not taken into consideration, and the algorithm is not suitable for sequential data. \newline
-
-\noindent In the paper "Dictionary Filtering: A Probabilistic Approach to Online Matrix Factorization" (\cite{cite-key}), the authors introduce a novel online MF algorithm known as dictionary filtering. It leverages probabilistic models, specifically using recursive linear filters, and efficiently factorises the original data matrix into a dictionary matrix and a coefficients matrix. This is an online algorithm, meaning it is suitable for high-dimensional and time-varying data, and it also has easy to tune parameters. Although the model can learn nonstationary and dynamic data, it is developed for linear and Gaussian state space models (SSM). 
+\noindent In the paper "Dictionary Filtering: A Probabilistic Approach to Online Matrix Factorization" (\cite{cite-key}), the authors introduce a novel online MF algorithm known as dictionary filtering. It leverages probabilistic models, specifically using recursive linear filters, and efficiently factorises the original data matrix into a dictionary matrix and a coefficients matrix. This is an online and sequential algorithm, meaning it is suitable for high-dimensional and time-varying data, and it also has easy to tune parameters. Although the model can learn nonstationary and dynamic data, it is developed for linear and Gaussian state space models (SSM). 
 
 (Particularly for ECG data, ECG has a nonlinear SSM which doesn't suit the dictionary filtering.) -> Efficient for high-dimensional data, adaptable to non-stationary environments, removes the need for step-size tuning; flexible and computationally efficient: $O(mr^2)$ independent of the number of data points. \newline
 
@@ -114,7 +116,9 @@ Weaknesses: Potential problems with very large datasets, having many data points
 
 \section{Contributions}
 
-We outline the contributions made in this thesis. In this thesis, we aim to introduce
+We outline the contributions made in this thesis. In this thesis, we 
+
+introduce
 a novel approach to the MF problem, by proposing a Matrix-Variate Gaussian Matrix
 Factorisation (MVGMF) algorithm.
 
@@ -124,7 +128,7 @@ Factorisation (MVGMF) algorithm.
   \item Forecast, data imputation, R-peaks
 \end{itemize}
 
-The main focus of the research project would be to explore PMF methods applied to high-dimensional time- series data with nonlinear subspace: both considering the time varying component, and treating the whole time series as a batch without considering the time component. More precisely, the project would focus on applying such methods to 12-lead ECG data which is 12-dimensional time-series data with a nonlinear subspace. Some of the tasks which could be explored include: modelling the data so that the future behaviour can be predicted, anomaly detection, imputing missing data, or performing peak detection. \newline
+The main focus of the research project would be to explore PMF methods applied to high-dimensional time-series data with nonlinear subspace: both considering the time varying component, and treating the whole time series as a batch without considering the time component. More precisely, the project would focus on applying such methods to 12-lead ECG data which is 12-dimensional time-series data with a nonlinear subspace. Some of the tasks which could be explored include: modelling the data so that the future behaviour can be predicted, anomaly detection, imputing missing data, or performing peak detection. \newline
 
 \noindent Using probabilistic methods (and specifically the PMF ones) on ECG data is not widely explored. Applying methods such as Probabilistic Matrix Factorisation (PMF) [1], Probabilistic Sequential Matrix Factorisation (PSMF) [2], Matrix-Variate Gaussian Matrix Factorization (MVGMF) [3], etc. to 12-lead ECG data would showcase novel real-world PMF applications in the medical field, and potentially improve the accuracy and efficiency of ECG data analysis. \newline
 
@@ -153,6 +157,59 @@ identity matrix. \newline
 \chapter{Background}
 
 Background chapter.
+
+\section{Preliminaries}
+
+\section{PMF}
+
+In this section, we will outline the Probabilistic Matrix Factorisation (PMF) algorithm.
+This MF technique was proposed by Mnih and Salakhutdinov (2007). PMF is also concerned with factorising a data matrix, not necessarily non-negative,
+Y ∈ Rm×n into two lower dimensional matrix factors C ∈ Rm×r and X ∈ Rr×n. However,
+unlike NMF, PMF adopts a probabilistic framework. In the PMF case, the matrix
+C contains the basis vectors, and X contains the co-efficients. The linear combination
+of these reconstruct the data matrix Y . The best reconstruction is determined by the
+rank-approximation, r. The exact inference of the probabilistic models proposed by
+Hofmann (1999) and Marlin (2003), which make the connection between unobserved
+latent features and the observed features, is intractable. The PMF technique is useful
+in settings where the data set we are working with is sparse, large and imbalanced.
+The method was applied to the Netflix Prize dataset (Bennett et al., 2007), it contains
+ratings from 480, 189 users, for 17, 770 movies, with over 100 million observations. The
+pre-processing of this dataset consists of creating an m × n ratings matrix, where m is
+the number of users, and n is the number of movies, so the i, jth element of the matrix
+is user i′s rating of movie j. The ratings are numbered from 1 to 5, with missing ratings
+indicated by 0. Since it is not expected that every user rates every movie, the dataset
+is very sparse and also imbalanced, since users have different frequencies of rating movies.
+In the context of the Netflix Prize dataset, our formulation Y ≈ CX becomes, Y is the
+ratings matrix with m users and n movies, C is the latent user matrix and X is the
+movie feature matrix.
+
+Model 
+
+Algorithm
+
+\section{DF}
+
+Section content goes here.
+
+\section{PSMF}
+
+Section content goes here.
+
+\subsection{rPSMF}
+
+Some text
+
+\section{NMF}
+
+Section content goes here.
+
+\section{MVGMF}
+
+Section content goes here.
+
+\section{MLE-SMF}
+
+Check this
 
 \section{ECG/medical introduction}
 
@@ -217,57 +274,6 @@ add images sources
 \end{figure}
 
 PQRST complex, R-peak..., diagram, data 
-
-\section{PMF}
-
-In this section, we will outline the Probabilistic Matrix Factorisation (PMF) algorithm.
-This MF technique was proposed by Mnih and Salakhutdinov (2007). PMF is also concerned with factorising a data matrix, not necessarily non-negative,
-Y ∈ Rm×n into two lower dimensional matrix factors C ∈ Rm×r and X ∈ Rr×n. However,
-unlike NMF, PMF adopts a probabilistic framework. In the PMF case, the matrix
-C contains the basis vectors, and X contains the co-efficients. The linear combination
-of these reconstruct the data matrix Y . The best reconstruction is determined by the
-rank-approximation, r. The exact inference of the probabilistic models proposed by
-Hofmann (1999) and Marlin (2003), which make the connection between unobserved
-latent features and the observed features, is intractable. The PMF technique is useful
-in settings where the data set we are working with is sparse, large and imbalanced.
-The method was applied to the Netflix Prize dataset (Bennett et al., 2007), it contains
-ratings from 480, 189 users, for 17, 770 movies, with over 100 million observations. The
-pre-processing of this dataset consists of creating an m × n ratings matrix, where m is
-the number of users, and n is the number of movies, so the i, jth element of the matrix
-is user i′s rating of movie j. The ratings are numbered from 1 to 5, with missing ratings
-indicated by 0. Since it is not expected that every user rates every movie, the dataset
-is very sparse and also imbalanced, since users have different frequencies of rating movies.
-In the context of the Netflix Prize dataset, our formulation Y ≈ CX becomes, Y is the
-ratings matrix with m users and n movies, C is the latent user matrix and X is the
-movie feature matrix.
-
-Model 
-
-Algorithm
-
-\section{DF}
-
-Section content goes here.
-
-\section{PSMF}
-
-Section content goes here.
-
-\subsection{rPSMF}
-
-Some text
-
-\section{NMF}
-
-Section content goes here.
-
-\section{MVGMF}
-
-Section content goes here.
-
-\section{MLE-SMF}
-
-Check this
 
 % forcing a page break
 \clearpage
