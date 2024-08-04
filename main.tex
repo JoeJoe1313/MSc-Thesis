@@ -1,7 +1,7 @@
 \documentclass{mldsmsc}
 % \setlength{\parindent}{20pt}
 
-\title{Probabilistic Sequential Matrix Factorisation for 12-lead ECG Data}
+\title{Probabilistic Sequential Matrix Factorisation for 12-lead \\ ECG Data}
 \author{Joana Levtcheva}
 \CID{01252821}
 \supervisor{Dr Deniz Akyildiz}
@@ -30,23 +30,16 @@
 \declaration 
 
 \begin{abstract}
-Probabilistic matrix factorisation for high-dimensional time-series data with nonlinear subspace: 12-lead ECG data exploration \newline
 
-\noindent Example: In recent years, matrix factorisation (MF) algorithms have gained popularity in the field of machine learning and have found applications in various fields, such as recommendation systems, image processing and missing data imputation. The MF problem concerns factorising a high dimensional data matrix into two lower dimensional factors. The aim of MF methods is to find the factors such that we have a lower dimensional representation of the data.\newline
+Matrix factorisation (MF) techniques are highly effective and widely used in unsupervised machine learning. By decomposing the original matrix into multiple simpler lower-dimensional matrices, MF aims to uncover latent structures that are not immediately obvious in the original matrix. MF finds applications in areas such as image processing, natural language processing, missing data imputation, and recommendation systems. Despite considerable progression in the probabilistic versions, there is demand for such methods in applications such as uncertainty quantification, managing time-series data, and executing efficient probabilistic components. \newline
 
-\noindent In this thesis, we propose a novel \newline
-
-\noindent The main focus of the research project would be to explore PMF methods applied to high-dimensional time-series data with nonlinear subspace: both considering the time varying component, and treating the whole time series as a batch without considering the time component. More precisely, the project would focus on applying such methods to 12-lead ECG data which is 12-dimensional time-series data with a nonlinear subspace. Some of the tasks which could be explored include: modelling the data so that the future behaviour can be predicted, anomaly detection, imputing missing data, or performing peak detection. \newline
-
-\noindent Using probabilistic methods (and specifically the PMF ones) on ECG data is not widely explored. Applying methods such as Probabilistic Matrix Factorisation (PMF) [1], Probabilistic Sequential Matrix Factorisation (PSMF) [2], Matrix-Variate Gaussian Matrix Factorization (MVGMF) [3], etc. to 12-lead ECG data would showcase novel real-world PMF applications in the medical field, and potentially improve the accuracy and efficiency of ECG data analysis. \newline
+\noindent In this thesis, we show novel applications of the probabilistic sequential MF algorithm Probabilistic Sequential Matrix Factorisation (PSMF) (\cite{akyildiz2021probabilistic}) to 12-lead ECG data. We explore three tasks related to this complex high-dimensional time-series data with nonlinear subspace: missing data imputation with PSMF and the robust version of PSMF (rPSMF) (\cite{akyildiz2021probabilistic}) and compare their performance with other probabilistic sequential MF algorithms, R-peaks detection, and forecasting an ECG component based on previous normal heart beats using a Fourier basis with multiple terms and rank higher than one. We perform our experiments using the high-quality comprehensive dataset "A Large Scale 12-lead Electrocardiogram Database for Arrhythmia Study" (\cite{cite1}, \cite{cite2}, \cite{cite3}). We describe and outline the experimenting process and the challenges we encountered modelling the complex ECG data, and summarise the experiments results. We find that PSMF performs well when used for imputing missing data, but when it comes to forecasting there are certain challenges which open the door for further research on extending the PSMF algorithm to better handle the complex structure of ECG data. \newline
 
 \end{abstract}
 
 \begin{acknowledgements}
 
 TODO 
-
-I would like to...
 
 \end{acknowledgements}
 
@@ -64,7 +57,7 @@ I would like to...
 
 Matrix factorisation (or also matrix decomposition) in the context of linear algebra is simply a factorisation of a matrix into a product of multiple matrices. Many different decompositions exist, and they find various applications in mathematical problems such as solving systems of linear equations, matrix inversion, determinant computation, eigenvalues problems, solving systems of first order ODEs, etc. \newline
 
-\noindent In this thesis, we are interested in matrix factorisation (MF) in the context of machine learning. Nowadays, MF techniques are highly effective and widely used in unsupervised machine learning. These methods aim to decompose the original matrix into multiple lower-dimensional matrices. By breaking the matrix in these simpler components MF aims to uncover latent structures that are not immediately apparent in the original matrix. Some applications are in image processing: for reducing dimensionality and noise in images, NLP for topic modelling, missing data imputation, recommendation systems, etc. \newline
+\noindent In this thesis, we are interested in matrix factorisation (MF) in the context of machine learning. Nowadays, MF techniques are highly effective and widely used in unsupervised machine learning. These methods aim to decompose the original matrix into multiple lower-dimensional matrices. By breaking the matrix into these simpler components MF aims to uncover latent structures that are not immediately apparent in the original matrix. Some applications are in image processing: for reducing dimensionality and noise in images, NLP for topic modelling, missing data imputation, recommendation systems, etc. \newline
 
 \noindent Formally, we are interested in the general problem of factorising a data matrix $Y \in \mathbb{R}^{m \times n}$ as
 
@@ -97,21 +90,23 @@ Y \approx CX,
 }_{\text{X $\in \mathbb{R}^{r \times n}$ }}.
 \end{equation}
 
-\noindent There are also probabilistic versions of MF which incorporate probabilistic models to better handle uncertainty and variability in the data, leading to more accurate predictions. Such methodologies postulate a prior distribution over the latent factors and necessitate the computation of the posterior distribution to derive updated estimates. With that the matrix is not only decomposed but probabilistic interpretations of the factors are also possible. Despite considerable progression in the probabilistic versions, there is demand for such methods in applications such as uncertainty quantification, managing time-series data, and executing efficient probabilistic components. \newline
+\noindent There are also probabilistic versions of MF which incorporate probabilistic models to better handle uncertainty and variability in the data, leading to more accurate predictions. Such methodologies postulate a prior distribution over the latent factors and necessitate the computation of the posterior distribution to derive updated estimates. With that the matrix is not only decomposed but probabilistic interpretations of the factors are also possible. \newline
 
-\noindent We should also note that some algorithms are suitable for sequential data - updating $C$ and $X$ incrementally as new data points are observed and thus incorporating temporal dynamics and sequential dependencies into the factorisation process, and others are non-sequential - treating the dataset as a batch independent of the time varying component. \newline
+\noindent We should also note that some algorithms are suitable for sequential data - updating $C$ and $X$ incrementally as new data points are observed and thus incorporating temporal dynamics and sequential dependencies into the factorisation process, and others are non-sequential - treating the dataset as a batch, independent of the time varying component. \newline
 
-\noindent Throughout this thesis we are going to focus on probabilistic MF algorithms, along with their application to 12-lead ECG data, targeting the problem of managing high-dimensional time-series data. Some examples of such probabilistic MF algorithms are Probabilistic Matrix Factorisation (PMF) (\cite{NIPS2007_d7322ed7}), Dictionary filtering (\cite{cite-key}), Probabilistic Sequential Matrix Factorization (PSMF) (\cite{akyildiz2021probabilistic}), MLE-SMF?. \newline
+\noindent Throughout this thesis we are going to focus on probabilistic sequential MF algorithms, along with their application to 12-lead ECG data, targeting the problem of managing high-dimensional time-series data with nonlinear subspace. Some examples of probabilistic MF algorithms are Probabilistic Matrix Factorisation (PMF) (\cite{NIPS2007_d7322ed7}) - non-sequential, Dictionary filtering (\cite{cite-key}), Probabilistic Sequential Matrix Factorization (PSMF) (\cite{akyildiz2021probabilistic}). \newline
 
 \noindent The paper "Probabilistic matrix factorisation" (PMF) (\cite{NIPS2007_d7322ed7}) introduces an efficient and scalable probabilistic model for collaborative filtering. The algorithm performs well on large, sparse and imbalanced datasets. This is demonstrated by using a Netflix dataset, where PMF models the user preference matrix $R$ as a product of two lower-dimensional matrices: user feature matrix $U$ and movie feature matrix $V$. The conditional distribution over observed ratings is modeled using Gaussian noise, and zero-mean spherical Gaussian priors are placed on the user and movie feature vectors. The paper also presents two extensions to the initial PMF model: incorporating \textit{adaptive priors} to automatically control the model complexity through these priors over the model parameters, and a \textit{constrained PMF} version to handle and improve predictions for users with few ratings by incorporating constraints based on the assumption that users with similar movie ratings have similar preferences. The authors show that PMF significantly outperforms traditional Singular Value Decomposition (SVD) (\cite{4ba978eb-d878-342d-a11e-6d7554474b2d}) models and scales linearly with the number of observations. It's worth noting that PMF treats each rating as an independent event meaning the time varying component is not taken into consideration, making PMF a batch learning model designed to process large datasets in a non-sequential manner. \newline
 
-\noindent In the paper "Dictionary Filtering: A Probabilistic Approach to Online Matrix Factorization" (\cite{cite-key}), the authors introduce a novel online MF algorithm known as dictionary filtering. It leverages probabilistic models, specifically using recursive linear filters, and efficiently factorises the original data matrix into a dictionary matrix and a coefficients matrix. This is an online and sequential algorithm, meaning it is suitable for high-dimensional and time-varying data, and it also has easy to tune parameters. Although the model can learn nonstationary and dynamic data, it is developed for linear and Gaussian state space models (SSM). 
+\noindent Later, in the paper "Dictionary Filtering: A Probabilistic Approach to Online Matrix Factorization" (DF) (\cite{cite-key}), the authors introduce a novel online MF algorithm known as dictionary filtering. It leverages probabilistic models, specifically using recursive linear filters, and efficiently factorises the original data matrix into a dictionary matrix and a coefficients matrix. This is an online and sequential algorithm, meaning it is suitable for high-dimensional and time-varying data, and it also has easy to tune parameters. DF is efficient for high-dimensional data with its computational complexity of $O(mr^2)$ independent of the number of data points. Although the model can learn non-stationary and dynamic data, it is developed for linear and Gaussian state space models (SSM). Particularly for ECG data, ECG has a nonlinear state space model (SSM) which doesn't suit the dictionary filtering. \newline
 
-(Particularly for ECG data, ECG has a nonlinear SSM which doesn't suit the dictionary filtering.) -> Efficient for high-dimensional data, adaptable to non-stationary environments, removes the need for step-size tuning; flexible and computationally efficient: $O(mr^2)$ independent of the number of data points. \newline
+\noindent Two years later, Akyildiz et.al. develop Probabilistic Sequential Matrix Factorization (PSMF) (\cite{akyildiz2021probabilistic}). This method is tailored to time-varying and non-stationary datasets consisting of high-dimensional time-series. Nonlinear Gaussian SSM are considered, decomposing the original matrix into a dictionary matrix and time-variying coefficient matrix. 
 
-\noindent Later, Akyildiz et.al. develop Probabilistic Sequential Matrix Factorization (PSMF) (\cite{akyildiz2021probabilistic}). This method is tailored to time-varying and non-stationary datasets consisting of high-dimensional time-series. Nonlinear Gaussian SSM are considered, decomposing the original matrix into a dictionary matrix and time-variying coefficient matrix. This time, the matrices are with potentially nonlinear dependencies. The model is demonstrated to work on tasks such as forecasting, changepoint detection, missing data imputation, and is shown to work on real-world data with a periodic subspace. There is also a robust version using Student-t filters to handle model misspecification.
+PSMF efficiently captures temporal dependencies through Markovian structures on the coefficients, making it possible to encode the dependencies into a lower dimensional latent space.
 
-PSMF efficiently captures temporal dependencies through Markovian structures on the coefficients, making it possible to encode the dependencies into a lower dimensional latent space. Strengths: Handles non-stationary and time-varying data, robust to model misspecification, efficient sequen- tial inference. Suitable for: modelling data with periodic subpaces, high-dimensional data by reducing it to lower-dimensional latent space, data imputation,
+This time, the matrices are with potentially nonlinear dependencies. The model is demonstrated to work on tasks such as forecasting, changepoint detection, missing data imputation, and is shown to work on real-world data with a periodic subspace. There is also a robust version using Student-t filters to handle model misspecification.
+
+Strengths: Handles non-stationary and time-varying data, robust to model misspecification, efficient sequen- tial inference. Suitable for: modelling data with periodic subpaces, high-dimensional data by reducing it to lower-dimensional latent space, data imputation,
 Weaknesses: Potential problems with very large datasets, having many data points. \newline
 
 % \noindent In the unpublished MSc thesis (Imperial College London) of Rina Maletta (\cite{rina}), the author introduces Matrix-Variate Gaussian Matrix Factorization (MVGMF). This is a novel PMF method using matrix-variate Gaussian distributions. The algorithm has fast Gaussian updates which take the form of a preconditioned MF algorithm which is stable. An extension for handling missing data and data imputation is also proposed. The method is tested on the Netflix Prize dataset, London air quality (NO2) data, and Olivetti face image dataset.
@@ -135,6 +130,8 @@ We outline the contributions made in this thesis:
 We are going to denote the original data matrix as $Y$, and let $Y \in \mathbb{R}^{m \times n}$. Let $C \in \mathbb{R}^{m \times r}$ be the dictionary matrix, $X \in \mathbb{R}^{r \times n}$ be the coefficients matrix, and $r$ be the approximation rank. \newline
 
 \noindent With $I_d \in \mathbb{R}^{d \times d}$ we are going to denote the identity matrix, with $MN(X; M, U, V)$ the matrix normal distribution with $M$ the mean-matrix, $U$ the row-covariance, and $V$ the column covariance. Further, with $N(x; \mu, \Sigma)$  let's denote the Gaussian density with mean $\mu$ and $\Sigma$ the covariance matrix, $IG(s; \alpha, \beta)$ is the inverse gamma distribution with shape $\alpha$ and scale $\beta$.  \newline
+
+add IG 
 
 \hline
 
@@ -174,221 +171,178 @@ TODO
 
 \section{PSMF}
 
-Intro again?
+Intro
 
-\subsection{PSMF Model}
+\subsection{Model}
 
-For observations $(y_k)_{k \geq 1} \in \mathbb{R}^{m}$, latent coefficients $(x_k)_{k \geq 1} \in \mathbb{R}^{r}$, and a dictionart matrix $C \in \mathbb{R}^{m \times r}$ the PSMF model can be described with the following state-space equations:
+For observations $(y_k)_{k \geq 1} \in \mathbb{R}^{m}$, latent coefficients $(x_k)_{k \geq 1} \in \mathbb{R}^{r}$, and a dictionary matrix $C \in \mathbb{R}^{m \times r}$ the PSMF model can be described with the following state-space equations:
 
-\begin{equation}
+\begin{equation} \label{eq:1}
     p(C) = \mathcal{MN}(C; C_0, I_d, V_0)
 \end{equation}
-\begin{equation}
+\begin{equation} \label{eq:2}
     p(x_0) = \mathcal{N}(x_0; \mu_0, P_0)
 \end{equation}
-\begin{equation}
-    p(x_k \mid x_{k-1}) = \mathcal{N}(x_k; f_{\theta}(x_{k-1}), Q_k)
+\begin{equation} \label{eq:3}
+    p_{\theta}(x_k \mid x_{k-1}) = \mathcal{N}(x_k; f_{\theta}(x_{k-1}), Q_k)
 \end{equation}
-\begin{equation}
+\begin{equation} \label{eq:4}
     p(y_k \mid x_k, C) = \mathcal{N}(y_k; Cx_k, R_k)
 \end{equation}
 
-\hline
+\noindent where ... \newline
 
-- **Dictionary Prior**:
-  \[
-  p(C) = \mathcal{MN}(C; C_0, I_d, V_0)
-  \]
-  where \( \mathcal{MN} \) denotes the matrix-variate Gaussian distribution, \( C_0 \) is the mean matrix, \( I_d \) is the identity matrix of appropriate dimension, and \( V_0 \) is the covariance matrix.
+\noindent We are going to refer to Equation (\ref{eq:1}) as the dictionary prior, Equation (\ref{eq:2}) as the initial state of the coefficients, Equation (\ref{eq:3}) as the transition density, and Equation (\ref{eq:4}) as the observation model.
 
-- **Initial State of Coefficients**:
-  \[
-  p(x_0) = \mathcal{N}(x_0; \mu_0, P_0)
-  \]
-  where \( \mu_0 \) and \( P_0 \) are the mean and covariance of the initial state.
+\subsection{Parameter Estimation?}
 
-- **State Transition**:
-  \[
-  p(x_k \mid x_{k-1}) = \mathcal{N}(x_k; f_{\theta}(x_{k-1}), Q_k)
-  \]
-  \( f_{\theta} \) is a nonlinear function parameterized by \( \theta \), and \( Q_k \) is the process noise covariance.
+\subsection{Inference}
 
-- **Observation Model**:
-  \[
-  p(y_k \mid x_k, C) = \mathcal{N}(y_k; Cx_k, R_k)
-  \]
-  where \( R_k \) is the observation noise covariance.
+Prediction ...
 
-The likelihood function associated with observing all the data \( Y \) given the latent variables and parameters is computed as:
-\[
-p(Y \mid X, C, \theta) = \prod_{k=1}^n \mathcal{N}(y_k; Cx_k, R_k)
-\]
+\begin{equation}
+    p(x_k \mid y_{1:k-1}) = \int p(x_{k-1} \mid y_{1:k-1}) p(x_k \mid x_{k-1}) dx_{k-1}
+\end{equation}
+  
+Update: After computing the predictive distribution of \(x_k\), the update steps for \(x_k\) and \(C\) are given by:
 
-\subsection{PSMF Inference}
+(Incremental) marginal likelihood:
 
-The inference process in PSMF involves the following steps, each corresponding to the elements of the probabilistic model.
+\begin{equation}
+    p(y_k \mid y_{1:k-1}) = \int \int p(y_k \mid C, x_k) p(x_k \mid y_{1:k-1}) p(C \mid y_{1:k-1}) dx_k dC
+\end{equation}
 
-- **Prediction**:
-  \[
-  p(x_k \mid y_{1:k-1}) = \int p(x_k \mid x_{k-1}) p(x_{k-1} \mid y_{1:k-1}) dx_{k-1}
-  \]
+Dictionary update:
 
-- **Update**: After computing the predictive distribution of \(x_k\), the update steps for \(x_k\) and \(C\) are given by:
-  \[
-  p(y_k \mid y_{1:k-1}) = \int \int p(y_k \mid C, x_k) p(x_k \mid y_{1:k-1}) p(C \mid y_{1:k-1}) dx_k dC
-  \]
-  \[
-  p(x_k \mid y_{1:k}) = \frac{p(x_k \mid y_{1:k-1}) p(y_k \mid x_k, y_{1:k-1})}{p(y_k \mid y_{1:k-1})}
-  \]
-  \[
-  p(C \mid y_{1:k}) = \frac{p(C \mid y_{1:k-1}) p(y_k \mid C, y_{1:k-1})}{p(y_k \mid y_{1:k-1})}
-  \]
+\begin{equation}
+    p(C \mid y_{1:k}) = p(C \mid y_{1:k-1}) \frac{p(y_k \mid C, y_{1:k-1})}{p(y_k \mid y_{1:k-1})},
+\end{equation}
+
+where ...
+  
+Coefficient update:
+
+\begin{equation}
+    p(x_k \mid y_{1:k}) = p(x_k \mid y_{1:k-1})  \frac{p(y_k \mid x_k, y_{1:k-1})}{p(y_k \mid y_{1:k-1})},
+\end{equation}
+
+where ...
+
+TODO: approximate seq. inference
 
 \subsection{PSMF Algorithm}
 
-\begin{algorithm}
-\caption{Probabilistic Sequential Matrix Factorization (PSMF)}
+\begin{algorithm}[H]
+\caption{Iterative PSMF}
 \begin{algorithmic}[1]
-\State Initialize \( C_0, V_0, \mu_0, P_0, (Q_k)_{k \geq 1}, (R_k)_{k \geq 1} \)
-\For{\( k = 1 \) to \( n \)}
-    \State \textbf{Prediction:}
-    \State \( p(x_k \mid y_{1:k-1}) = \int p(x_k \mid x_{k-1}) p(x_{k-1} \mid y_{1:k-1}) dx_{k-1} \)
-    \State \textbf{Update:}
-    \State \( p(y_k \mid y_{1:k-1}) = \int \int p(y_k \mid C, x_k) p(x_k \mid y_{1:k-1}) p(C \mid y_{1:k-1}) dx_k dC \)
-    \State \( p(x_k \mid y_{1:k}) = \frac{p(x_k \mid y_{1:k-1}) p(y_k \mid x_k, y_{1:k-1})}{p(y_k \mid y_{1:k-1})} \)
-    \State \( p(C \mid y_{1:k}) = \frac{p(C \mid y_{1:k-1}) p(y_k \mid C, y_{1:k-1})}{p(y_k \mid y_{1:k-1})} \)
-\EndFor
+\State Initialize $\gamma$, $\theta_0$, $C_0$, $V_0$, $\mu_0$, $P_0$, $(Q)_k{\geq1}$, $(R)_k{\geq1}$.
+\State \textbf{for} $i \geq 1$ \textbf{do}
+\State \hspace{1em} $C_0 = C_n$, $\mu_0 = \mu_n$, $P_0 = P_n$, $V_0 = V_n$
+\State \hspace{1em} \textbf{for} $1 \leq k \leq n$ \textbf{do}
+\State \hspace{2em} Compute predictive mean of $x_k$:
+\State \hspace{3em} $\bar{\mu}_k = f_{\theta_{i-1}}(\mu_{k-1})$ or $\bar{\mu}_k = f_{\theta_k-1}(\mu_{k-1})$
+\State \hspace{2em} Compute predictive covariance of $x_k$:
+\State \hspace{3em} $\bar{P}_k = F_k P_{k-1} F_k^\top + Q_k$, with $F_k = \left. \frac{\partial f(x)}{\partial x} \right|_{x=\bar{\mu}_{k-1}}$
+\State \hspace{2em} Update dictionary mean $C_k$ using (20)
+\State \hspace{2em} Update dictionary covariance $V_k$ with (19)
+\State \hspace{2em} Update coefficient mean $\mu_k$ using (23)
+\State \hspace{2em} Update coefficient covariance $P_k$ with (24)
+\State \hspace{1em} Update parameters with (26) \hspace{1em}
 \end{algorithmic}
 \end{algorithm}
 
-
 \section{rPSMF}
 
-\subsection{rPSMF Model}
+Intro
+
+\subsection{Model}
 
 The robust variant, rPSMF, incorporates robustness to outliers and model misspecifications by integrating a heavy-tailed t-distribution into the framework.
 
-- **Scale Mixing Prior**:
-  \[
-  p(s) = \text{IG}(s; \lambda_0 / 2, \lambda_0 / 2)
-  \]
-  where \( \text{IG} \) denotes the inverse gamma distribution and \( \lambda_0 \) is a scale parameter.
+\begin{equation}
+    p(s) = \mathcal{IG}(s; \lambda_0 / 2, \lambda_0 / 2)
+\end{equation}
+\begin{equation}
+    p(C \mid s) = \mathcal{MN}(C; C_0, I_d, sV_0)
+\end{equation}
+\begin{equation}
+    p(x_0 \mid s) = \mathcal{N}(x_0; \mu_0, sP_0)
+\end{equation}
+\begin{equation}
+    p_{\theta}(x_k \mid x_{k-1}, s) = \mathcal{N}(x_k; f_{\theta}(x_{k-1}), sQ_0)
+\end{equation}
+\begin{equation}
+    p(y_k \mid x_k, C, s) = \mathcal{N}(y_k; Cx_k, sR_0),
+\end{equation}
 
-- **Modified Dictionary and State Transitions**:
-  \[
-  p(C \mid s) = \mathcal{MN}(C; C_0, I_d, sV_0)
-  \]
-  \[
-  p(x_0 \mid s) = \mathcal{N}(x_0; \mu_0, sP_0)
-  \]
-  \[
-  p(x_k \mid x_{k-1}, s) = \mathcal{N}(x_k; f_{\theta}(x_{k-1}), sQ_k)
-  \]
-  \[
-  p(y_k \mid x_k, C, s) = \mathcal{N}(y_k; Cx_k, sR_k)
-  \]
+\noindent where ...
 
-The likelihood for rPSMF considering the robust modifications and the scale variable \( s \) is:
-\[
-p(Y \mid X, C, s, \theta) = \prod_{k=1}^n \mathcal{N}(y_k; Cx_k, sR_k)
-\]
-
-
-\begin{align*}
-p(s) &= \mathcal{IG}(s; \lambda_0/2, \lambda_0/2) \\
-p(\mathbf{C} | s) &= \mathcal{MN}(\mathbf{C}; \mathbf{C}_0, \mathbf{I}_d, s\mathbf{V}_0) \\
-p(\mathbf{x}_0 | s) &= \mathcal{N}(\mathbf{x}_0; \boldsymbol{\mu}0, s\mathbf{P}0) \\
-p{\theta}(\mathbf{x}k | \mathbf{x}{k-1}, s) &= \mathcal{N}(\mathbf{x}k; f{\theta}(\mathbf{x}{k-1}), s\mathbf{Q}_0) \\
-p(\mathbf{y}_k | \mathbf{x}_k, \mathbf{C}, s) &= \mathcal{N}(\mathbf{y}_k; \mathbf{C}\mathbf{x}_k, s\mathbf{R}_0)
-\end{align*}
-
-\subsection{rPSMF Inference}
+\subsection{Inference}
 
 Inference in rPSMF incorporates the handling of the robust parameters and scale mixing variable \( s \) introduced to manage outliers and model misspecifications.
 
-- **Prediction**:
-  \[
-  p(x_k \mid y_{1:k-1}, s) = \int p(x_k \mid x_{k-1}, s) p(x_{k-1} \mid y_{1:k-1}, s) dx_{k-1}
-  \]
-
-- **Update**: This part involves the update of \(x_k\), \(C\), and \(s\) using robust estimation methods:
-  \[
-  p(y_k \mid y_{1:k-1}, s) = \int \int p(y_k \mid C, x_k, s) p(x_k \mid y_{1:k-1}, s) p(C \mid y_{1:k-1}, s) dx_k dC
-  \]
-  \[
-  p(x_k \mid y_{1:k}, s) = \frac{p(x_k \mid y_{1:k-1}, s) p(y_k \mid x_k, y_{1:k-1}, s)}{p(y_k \mid y_{1:k-1}, s)}
-  \]
-  \[
-  p(C \mid y_{1:k}, s) = \frac{p(C \mid y_{1:k-1}, s) p(y_k \mid C, y_{1:k-1}, s)}{p(y_k \mid y_{1:k-1}, s)}
-  \]
-  \[
-  p(s \mid y_{1:k}) = \text{IG}(s; \text{updated parameters based on data likelihood})
-  \]
+TODO: with or wotihout derivation?
 
 \subsection{rPSMF Algorithm}
 
-\begin{algorithm}
-\caption{Robust Probabilistic Sequential Matrix Factorization (rPSMF)}
+WIP
+
+\begin{algorithm}[H]
+\caption{Iterative rPSMF}
 \begin{algorithmic}[1]
-\State Initialize \( C_0, V_0, \mu_0, P_0, (Q_k)_{k \geq 1}, (R_k)_{k \geq 1}, s_0, \lambda_0 \)
-\For{\( k = 1 \) to \( n \)}
-    \State \textbf{Prediction:}
-    \State \( p(x_k \mid y_{1:k-1}, s) = \int p(x_k \mid x_{k-1}, s) p(x_{k-1} \mid y_{1:k-1}, s) dx_{k-1} \)
-    \State \textbf{Update:}
-    \State \( p(y_k \mid y_{1:k-1}, s) = \int \int p(y_k \mid C, x_k, s) p(x_k \mid y_{1:k-1}, s) p(C \mid y_{1:k-1}, s) dx_k dC \)
-    \State \( p(x_k \mid y_{1:k}, s) = \frac{p(x_k \mid y_{1:k-1}, s) p(y_k \mid x_k, y_{1:k-1}, s)}{p(y_k \mid y_{1:k-1}, s)} \)
-    \State \( p(C \mid y_{1:k}, s) = \frac{p(C \mid y_{1:k-1}, s) p(y_k \mid C, y_{1:k-1}, s)}{p(y_k \mid y_{1:k-1}, s)} \)
-    \State Update \( s \) using the robust estimation method
-\EndFor
+\State Initialize $\gamma, \theta_0, C_0, V_0, \mu_0, P_0, Q_0, R_0$.
+\State \textbf{for} $i \geq 1$ \textbf{do}
+\State \hspace{1em} $C_0 = C_T$, $\mu_0 = \mu_T$, $P_0 = P_T$, $V_0 = V_T$
+\State \hspace{1em} \textbf{for} $1 \leq k \leq T$ \textbf{do}
+\State \hspace{2em} Predictive mean of $x_k$: $\bar{\mu}_k = f_{\theta_{i-1}}(\mu_{k-1})$ or $\bar{\mu}_k = f_{\theta_{k-1}}(\mu_{k-1})$
+\State \hspace{2em} Predictive covariance of $x_k$:
+\State \hspace{2em} $\bar{P}_k = F_k P_{k-1} F_k^\top + Q_k$, \hspace{1em} where \hspace{1em} $F_k = \left. \frac{\partial f(x)}{\partial x} \right|_{x=\bar{\mu}_{k-1}}$
+\State \hspace{1em} Compute scaling factor for the dictionary update
+\State \hspace{1em} $\varphi_k = \frac{\lambda_{k-1}}{\lambda_{k-1} + d} + \frac{(y_k - C_{k-1} \bar{\mu}_k)^\top (y_k - C_{k-1} \bar{\mu}_k)}{\bar{\mu}_k^\top V_{k-1} \bar{\mu}_k + \eta_k}$
+
+\State \hspace{2em} where $\eta_k = \text{Tr}(C_{k-1} \bar{P}_k C_{k-1}^\top + R_{k-1}) / d$.
+\State \hspace{1em} Mean and covariance updates of the dictionary
+\State \hspace{1em} $C_k = C_{k-1} + \frac{(y_k - C_{k-1} \bar{\mu}_k) \bar{\mu}_k^\top V_{k-1}}{\bar{\mu}_k^\top V_{k-1} \bar{\mu}_k + \eta_k}$ and \hspace{1em} $V_k = \varphi_k \left( V_{k-1} - \frac{V_{k-1} \bar{\mu}_k \bar{\mu}_k^\top V_{k-1}}{\bar{\mu}_k^\top V_{k-1} \bar{\mu}_k + \eta_k} \right)$
+\State \hspace{1em} Compute scaling factor for the coefficient update
+\State \hspace{1em} $\omega_k = \lambda_{k-1} + (y_k - C_{k-1} \bar{\mu}_k)^\top S_k^{-1} (y_k - C_{k-1} \bar{\mu}_k)$
+
+\State \hspace{2em} where $S_k = C_{k-1} \bar{P}_k C_{k-1}^\top + \bar{R}_k$ and \hspace{1em} $\bar{R}_k = R_{k-1} + \bar{\mu}_k^\top V_{k-1} \bar{\mu}_k \otimes I_d$.
+\State \hspace{1em} Mean and covariance updates of coefficients
+\State \hspace{1em} $\mu_k = \bar{\mu}_k + \bar{P}_k C_{k-1}^\top S_k^{-1} (y_k - C_{k-1} \bar{\mu}_k)$ and \hspace{1em} $P_k = \omega_k (\bar{P}_k - \bar{P}_k C_{k-1}^\top S_k^{-1} C_{k-1} \bar{P}_k)$
+\State \hspace{1em} Update noise covariances: $Q_k = \omega_k Q_{k-1}$ and $R_k = \omega_k R_{k-1}$
+\State \hspace{1em} Update degrees of freedom: $\lambda_k = \lambda_{k-1} + d$
+\State \hspace{1em} Parameter update: $\theta_k = \theta_{k-1} + \gamma \nabla_\theta \log p_\theta (y_k | y_{1:k-1}) |_{\theta = \theta_{i-1}}$
+\State \hspace{1em} Parameter update: $\theta_i = \theta_{i-1} + \gamma \sum_{k=1}^T \nabla_\theta \log p_\theta (y_k | y_{1:k-1}) |_{\theta = \theta_{i-1}}$
 \end{algorithmic}
 \end{algorithm}
 
 \section{PSMF for Handling Missing Data}
 
-Given:
-\begin{itemize}
-    \item A data matrix \( Y \in \mathbb{R}^{d \times n} \) with missing entries
-    \item A dictionary matrix \( C \in \mathbb{R}^{d \times r} \)
-    \item Latent coefficients matrix \( X \in \mathbb{R}^{r \times n} \)
-\end{itemize}
-
-\subsection*{Model Definition}
-\begin{align*}
-    p(C) & = \mathcal{MN}(C; C_0, I_d, V_0) \quad \text{(Matrix-variate Gaussian prior on dictionary)} \\
-    p(x_0) & = \mathcal{N}(x_0; \mu_0, P_0) \quad \text{(Gaussian prior on initial coefficients)} \\
-    p(x_k | x_{k-1}) & = \mathcal{N}(x_k; f_{\theta}(x_{k-1}), Q_k) \quad \text{(State transition model)} \\
-    p(y_k | x_k, C) & = \mathcal{N}(y_k; Cx_k, R_k) \quad \text{(Observation model)} \\
-    p(s) & = \text{IG}(s; \lambda_0 / 2, \lambda_0 / 2) \quad \text{(Scale mixing variable for rPSMF)}
-\end{align*}
-
-\subsection*{Missing Data Imputation}
-Missing entries in \( Y \) are handled by:
-\begin{itemize}
-    \item Assuming \( Y_{\text{obs}} \) are the observed entries
-    \item \( Y_{\text{miss}} \) are the missing entries
-\end{itemize}
-
-The likelihood for the observed data is given by:
-\[
-p(Y_{\text{obs}} | X, C) = \prod_{k=1}^n \mathcal{N}(y_{k,\text{obs}}; Cx_k, R_{k,\text{obs}})
-\]
-
-where \( R_{k,\text{obs}} \) is the covariance matrix adjusted for the observed dimensions of \( y_k \).
-
-\subsection*{Objective}
-Maximize the likelihood of the observed data while appropriately estimating the missing data through the model's latent structure:
-\[
-\max_{X, C} \log p(Y_{\text{obs}} | X, C)
-\]
-
 \subsection{Model}
+
+\begin{equation}
+    p(C) = \mathcal{MN}(C; C_0, I_d, V_0) \quad \text{(Matrix-variate Gaussian prior on dictionary)}
+\end{equation}
+\begin{equation}
+    p(x_0) = \mathcal{N}(x_0; \mu_0, P_0) \quad \text{(Gaussian prior on initial coefficients)}
+\end{equation}
+\begin{equation}
+    p_{\theta}(x_k | x_{k-1}) = \mathcal{N}(x_k; f_{\theta}(x_{k-1}), Q_k) \quad \text{(State transition model)}
+\end{equation}
+\begin{equation}
+    p(z_k | x_k, C) = \mathcal{N}(z_k; M_k Cx_k, M_k R_k M_{k}^{T}), \quad \text{(Observation model)}
+\end{equation}
+
+\noindent where ... \newline
+
+TODO
 
 \subsection{Inference}
 
 \subsection{Algorithm}
 
 \begin{algorithm}
-\caption{Missing Data Imputation using PSMF and rPSMF}
+\caption{Missing Data Imputation using PSMF}
 \begin{algorithmic}[1]
 \State Initialize \( C_0, V_0, \mu_0, P_0, s_0 \) (for rPSMF), \( (Q_k)_{k \geq 1}, (R_k)_{k \geq 1} \)
 \State Set model parameters based on whether using PSMF or rPSMF
@@ -418,7 +372,7 @@ As cardiac cells depolarize and repolarize, electrical currents spread throughou
 \begin{figure}[h!]
 \centering
 \includegraphics[width=1\linewidth]{images/ecg.png}
-\caption{Components of the ECG trace. An enlargement of one of the repeating waveform units in the rhythm strip shows the P wave, QRS complex, and T wave, which represent atrial depolarization, ventricular depolarization, and ventricular repolarization, respectively. The PR interval represents the time required for the depolarization wave to transverse the atria and the AV node; the QT interval represents the period of ventricular depolarization and repolarization; and the ST segment is the isoelectric period when the entire ventricle is depolarized. Each small square is 1 mm.}
+\caption{Components of the ECG trace. An enlargement of one of the repeating waveform units in the rhythm strip shows the P wave, QRS complex, and T wave, which represent atrial depolarization, ventricular depolarization, and ventricular repolarization, respectively. The PR interval represents the time required for the depolarization wave to transverse the atria and the AV node; the QT interval represents the period of ventricular depolarization and repolarization; and the ST segment is the isoelectric period when the entire ventricle is depolarized. Each small square is 1 mm. (\cite{alma991000225790601591})}
 \label{fig:r-peaks}
 \end{figure}
 

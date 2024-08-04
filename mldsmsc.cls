@@ -17,6 +17,7 @@
 \RequirePackage{ifthen}
 \RequirePackage{booktabs}
 \RequirePackage{algpseudocode}
+\RequirePackage{algorithm}
 
 % Remove blank page between chapters
 \KOMAoptions{twoside=false}
