@@ -114,7 +114,7 @@ Y \approx CX,
 PSMF efficiently captures temporal dependencies through Markovian structures on the coefficients, making it possible to encode the dependencies into a lower dimensional latent space. Strengths: Handles non-stationary and time-varying data, robust to model misspecification, efficient sequen- tial inference. Suitable for: modelling data with periodic subpaces, high-dimensional data by reducing it to lower-dimensional latent space, data imputation,
 Weaknesses: Potential problems with very large datasets, having many data points. \newline
 
-\noindent In the unpublished MSc thesis (Imperial College London) of Rina Maletta (\cite{rina}), the author introduces Matrix-Variate Gaussian Matrix Factorization (MVGMF). This is a novel PMF method using matrix-variate Gaussian distributions. The algorithm has fast Gaussian updates which take the form of a preconditioned MF algorithm which is stable. An extension for handling missing data and data imputation is also proposed. The method is tested on the Netflix Prize dataset, London air quality (NO2) data, and Olivetti face image dataset.
+% \noindent In the unpublished MSc thesis (Imperial College London) of Rina Maletta (\cite{rina}), the author introduces Matrix-Variate Gaussian Matrix Factorization (MVGMF). This is a novel PMF method using matrix-variate Gaussian distributions. The algorithm has fast Gaussian updates which take the form of a preconditioned MF algorithm which is stable. An extension for handling missing data and data imputation is also proposed. The method is tested on the Netflix Prize dataset, London air quality (NO2) data, and Olivetti face image dataset.
 
 \section{Contributions}
 
@@ -132,25 +132,45 @@ We outline the contributions made in this thesis:
 
 \section{Notation}
 
-We are going to denote the original data matrix as $Y$, and let $Y \in \mathbb{R}^{m \times n}$. Let $C \in \mathbb{R}^{m \times r}$ be the dictionary matrix, $X \in \mathbb{R}^{r \times n}$ be the coefficients matrix, and $r$ be the approximation rank. With $f_{\theta} $\newline
+We are going to denote the original data matrix as $Y$, and let $Y \in \mathbb{R}^{m \times n}$. Let $C \in \mathbb{R}^{m \times r}$ be the dictionary matrix, $X \in \mathbb{R}^{r \times n}$ be the coefficients matrix, and $r$ be the approximation rank. \newline
 
-\noindent Throughout this thesis, we will denote the data matrix with $Y$, and the factors as $C$ and $X$. We denote the vectorised forms of the matrices with their respective lower case letters. We can formally define c = vec(C), where vec(·) is the vectorisation operation. The columns of C are stacked on each other, so if C ∈ Rm×r, then c ∈ Rmr×1. We can also define the inverse vectorisation operator C = vec−1(c). \newline
+\noindent With $I_d \in \mathbb{R}^{d \times d}$ we are going to denote the identity matrix, with $MN(X; M, U, V)$ the matrix normal distribution with $M$ the mean-matrix, $U$ the row-covariance, and $V$ the column covariance. Further, with $N(x; \mu, \Sigma)$  let's denote the Gaussian density with mean $\mu$ and $\Sigma$ the covariance matrix, $IG(s; \alpha, \beta)$ is the inverse gamma distribution with shape $\alpha$ and scale $\beta$.  \newline
+
+\hline
+
+\noindent  We denote the vectorised forms of the matrices with their respective lower case letters. We can formally define c = vec(C), where vec(·) is the vectorisation operation. The columns of C are stacked on each other, so if C ∈ Rm×r, then c ∈ Rmr×1. We can also define the inverse vectorisation operator C = vec−1(c). \newline
 
 \noindent We have that p(x) denotes the probability density function (pdf) of x and p(y|x) is the conditional density of y given x. Where A ∈ Rm×n is a matrix, then MN(A;M,U, V ) denotes the matrix normal pdf for A, where M ∈ Rm×n is the mean, U ∈ Rn×n is the among-row co-variance and V ∈ Rm×m is the among-column co-variance. We also define the multivariate normal distribution in the following way; let a ∈ Rm, then N(a; μ, Σ) denotes the pdf of the multivariate normal distribution for the random variable a, where μ ∈ Rm is the mean and Σ ∈ Rm×m is the covariance matrix. Im ∈ Rm×m is the m×m identity matrix. \newline
 
 \chapter{Background}
 
-Background chapter.
-
 \section{Preliminaries}
 
 \subsection{Matrix Normal Distribution} 
 
+TODO 
+
 Cite paper
 
-\subsection{Kronecker}
+\subsection{Kronecker Product}
 
-\subsection{Fourier Series?}
+\begin{definition}
+Let $A \in \mathbb{R}^{m \times n}$ and $B \in \mathbb{R}^{p \times q}$ be matrices. Then their \textit{Kronecker product} denoted as $A \otimes B \in \mathbb{R}^{mp \times nq}$ is given by (\cite{alma993596394401591})
+
+\begin{equation}
+    A \otimes B = \begin{bmatrix}
+        a_{11}B & a_{12}B & \hdots & a_{1n}B \\
+        a_{21}B & a_{22}B & \hdots & a_{2n}B \\
+        \vdots & \vdots & \ddots & \vdots \\
+        a_{m1}B & a_{m2}B & \hdots & a_{mn}B
+    \end{bmatrix},
+\end{equation}
+where $\{a_{ij}\}$, $i \in \{1,...,m\}$, $j \in \{1, ..., n\}$ are the elements of $A$.
+\end{definition}
+
+\subsection{Fourier Series}
+
+TODO
 
 \section{PSMF}
 
@@ -158,7 +178,22 @@ Intro again?
 
 \subsection{PSMF Model}
 
-The PSMF model can be described with the following state-space equations:
+For observations $(y_k)_{k \geq 1} \in \mathbb{R}^{m}$, latent coefficients $(x_k)_{k \geq 1} \in \mathbb{R}^{r}$, and a dictionart matrix $C \in \mathbb{R}^{m \times r}$ the PSMF model can be described with the following state-space equations:
+
+\begin{equation}
+    p(C) = \mathcal{MN}(C; C_0, I_d, V_0)
+\end{equation}
+\begin{equation}
+    p(x_0) = \mathcal{N}(x_0; \mu_0, P_0)
+\end{equation}
+\begin{equation}
+    p(x_k \mid x_{k-1}) = \mathcal{N}(x_k; f_{\theta}(x_{k-1}), Q_k)
+\end{equation}
+\begin{equation}
+    p(y_k \mid x_k, C) = \mathcal{N}(y_k; Cx_k, R_k)
+\end{equation}
+
+\hline
 
 - **Dictionary Prior**:
   \[
@@ -188,13 +223,6 @@ The likelihood function associated with observing all the data \( Y \) given the
 \[
 p(Y \mid X, C, \theta) = \prod_{k=1}^n \mathcal{N}(y_k; Cx_k, R_k)
 \]
-
-\begin{align*}
-p(\mathbf{C}) &= \mathcal{MN}(\mathbf{C}; \mathbf{C}_0, \mathbf{I}_d, \mathbf{V}_0) \\
-p(\mathbf{x}_0) &= \mathcal{N}(\mathbf{x}_0; \boldsymbol{\mu}0, \mathbf{P}0) \\
-p{\theta}(\mathbf{x}k | \mathbf{x}{k-1}) &= \mathcal{N}(\mathbf{x}k; f{\theta}(\mathbf{x}{k-1}), \mathbf{Q}_k) \\
-p(\mathbf{y}_k | \mathbf{x}_k, \mathbf{C}) &= \mathcal{N}(\mathbf{y}_k; \mathbf{C}\mathbf{x}_k, \mathbf{R}_k)
-\end{align*}
 
 \subsection{PSMF Inference}
 
@@ -508,7 +536,7 @@ TMF & $\underset{{\scriptscriptstyle \;\;\;(15.78)}}{169.83}$ & $\underset{{\scr
 \caption{Imputation error and runtime using 20\%, 30\% and 40\% missing values, averaged over 100 random repetitions.}
 \end{table}
 
-TODO: add figures showcasing the original data, missing parts and imputed parts
+TODO: add figures showing the original data, missing parts and imputed parts
 
 \section{R peaks?}
 
