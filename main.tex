@@ -98,32 +98,23 @@ Y \approx CX,
 
 \noindent The paper "Probabilistic matrix factorisation" (PMF) (\cite{NIPS2007_d7322ed7}) introduces an efficient and scalable probabilistic model for collaborative filtering. The algorithm performs well on large, sparse and imbalanced datasets. This is demonstrated by using a Netflix dataset, where PMF models the user preference matrix $R$ as a product of two lower-dimensional matrices: user feature matrix $U$ and movie feature matrix $V$. The conditional distribution over observed ratings is modeled using Gaussian noise, and zero-mean spherical Gaussian priors are placed on the user and movie feature vectors. The paper also presents two extensions to the initial PMF model: incorporating \textit{adaptive priors} to automatically control the model complexity through these priors over the model parameters, and a \textit{constrained PMF} version to handle and improve predictions for users with few ratings by incorporating constraints based on the assumption that users with similar movie ratings have similar preferences. The authors show that PMF significantly outperforms traditional Singular Value Decomposition (SVD) (\cite{4ba978eb-d878-342d-a11e-6d7554474b2d}) models and scales linearly with the number of observations. It's worth noting that PMF treats each rating as an independent event meaning the time varying component is not taken into consideration, making PMF a batch learning model designed to process large datasets in a non-sequential manner. \newline
 
-\noindent Later, in the paper "Dictionary Filtering: A Probabilistic Approach to Online Matrix Factorization" (DF) (\cite{cite-key}), the authors introduce a novel online MF algorithm known as dictionary filtering. It leverages probabilistic models, specifically using recursive linear filters, and efficiently factorises the original data matrix into a dictionary matrix and a coefficients matrix. This is an online and sequential algorithm, meaning it is suitable for high-dimensional and time-varying data, and it also has easy to tune parameters. DF is efficient for high-dimensional data with its computational complexity of $O(mr^2)$ independent of the number of data points. Although the model can learn non-stationary and dynamic data, it is developed for linear and Gaussian state space models (SSM). Particularly for ECG data, ECG has a nonlinear state space model (SSM) which doesn't suit the dictionary filtering. \newline
+\noindent Later, in the paper "Dictionary Filtering: A Probabilistic Approach to Online Matrix Factorization" (DF) (\cite{cite-key}), the authors introduce a novel online MF algorithm known as dictionary filtering. It leverages probabilistic models, specifically using recursive linear filters, and efficiently factorises the original data matrix into a dictionary matrix and a coefficients matrix. This is an online and sequential algorithm, meaning it is suitable for high-dimensional and time-varying data, and it also has easy to tune parameters. DF is efficient for high-dimensional data with its computational complexity of $O(mr^2)$ independent of the number of data points. Although the model can learn non-stationary and dynamic data, it is developed for linear and Gaussian state space models (SSM). Particularly for ECG data, ECG has a nonlinear SSM which doesn't suit the dictionary filtering. \newline
 
-\noindent Two years later, Akyildiz et.al. develop Probabilistic Sequential Matrix Factorization (PSMF) (\cite{akyildiz2021probabilistic}). This method is tailored to time-varying and non-stationary datasets consisting of high-dimensional time-series. Nonlinear Gaussian SSM are considered, decomposing the original matrix into a dictionary matrix and time-variying coefficient matrix. 
-
-PSMF efficiently captures temporal dependencies through Markovian structures on the coefficients, making it possible to encode the dependencies into a lower dimensional latent space.
-
-This time, the matrices are with potentially nonlinear dependencies. The model is demonstrated to work on tasks such as forecasting, changepoint detection, missing data imputation, and is shown to work on real-world data with a periodic subspace. There is also a robust version using Student-t filters to handle model misspecification.
-
-Strengths: Handles non-stationary and time-varying data, robust to model misspecification, efficient sequen- tial inference. Suitable for: modelling data with periodic subpaces, high-dimensional data by reducing it to lower-dimensional latent space, data imputation,
-Weaknesses: Potential problems with very large datasets, having many data points. \newline
+\noindent Two years later, Akyildiz et.al. develop Probabilistic Sequential Matrix Factorization (PSMF) (\cite{akyildiz2021probabilistic}). This method is tailored to time-varying and non-stationary datasets consisting of high-dimensional time-series. Nonlinear Gaussian SSMs are considered, decomposing the original matrix into a dictionary matrix and time-variying coefficient matrix. This time, the matrices are with potentially nonlinear dependencies, with PSMF efficiently capturing temporal dependencies through Markovian structures on the coefficients, making it possible to encode the dependencies into a lower dimensional latent space. The model is demonstrated to work on tasks such as forecasting, changepoint detection, missing data imputation, and is shown to work on real-world data with a periodic subspace. There is also a robust version rPSMF using Student-t filters to handle model misspecification, and a version for imputing missing data. Although the model is suitbale for reducing high-dimensional data with periodic subspaces to lower-dimensional latent space, PSMF might struggle with very large datasets, having many data points. \newline
 
 % \noindent In the unpublished MSc thesis (Imperial College London) of Rina Maletta (\cite{rina}), the author introduces Matrix-Variate Gaussian Matrix Factorization (MVGMF). This is a novel PMF method using matrix-variate Gaussian distributions. The algorithm has fast Gaussian updates which take the form of a preconditioned MF algorithm which is stable. An extension for handling missing data and data imputation is also proposed. The method is tested on the Netflix Prize dataset, London air quality (NO2) data, and Olivetti face image dataset.
 
 \section{Contributions}
 
-We outline the contributions made in this thesis:
+Using probabilistic methods, and specifically probabilistic sequential MF ones, on ECG data is not widely explored. Hence, we aim to introduce a few novel real-world applications of the PSMF method to 12-lead ECG data. The contributions made in this thesis are:
 
 \begin{itemize}
-    \item We show a novel application of PSMF to complex 12-lead ECG data
-    \item We tackle three tasks: missing data imputation, R-peaks detection and forecast
-    \item We show PSMF with Fourier basis with multiple Fourier terms and rank higher than 1
+    \item We show three novel applications of PSMF to complex 12-lead ECG data.
+    \item Application 1: We apply both PSMF and rPSMF for imputing missing data in the ECG signals, and compare the results with other sequential probabilistic MF models.
+    \item Application 2: We show that PSMF can be used for R-peaks detection by introducing a simple approach. We remove the reconstructed signal, which has modelled the R-peaks smoother than the real ones, from the original data, and determine a suitable threshold for selecting the peaks. 
+    \item Application 3: We forecast an ECG component based on previous normal heart beats by incorporating a Fourier basis with multiple Fourier terms and rank higher than 1. 
+    % We experiment with the original high quality data with many points, as well as with a subsample of the data, defining the ECG signals with lower frequency. We also experiment with smoothing the data, standardising it and/or normalising it. We make conclusions based on the done analysis and comparison of performance and results.
 \end{itemize}
-
-\noindent The main focus of the research project would be to explore PMF methods applied to high-dimensional time-series data with nonlinear subspace: both considering the time varying component, and treating the whole time series as a batch without considering the time component. More precisely, the project would focus on applying such methods to 12-lead ECG data which is 12-dimensional time-series data with a nonlinear subspace. Some of the tasks which could be explored include: modelling the data so that the future behaviour can be predicted, anomaly detection, imputing missing data, or performing peak detection. \newline
-
-\noindent Using probabilistic methods (and specifically the PMF ones) on ECG data is not widely explored. Applying methods such as Probabilistic Matrix Factorisation (PMF) [1], Probabilistic Sequential Matrix Factorisation (PSMF) [2], Matrix-Variate Gaussian Matrix Factorization (MVGMF) [3], etc. to 12-lead ECG data would showcase novel real-world PMF applications in the medical field, and potentially improve the accuracy and efficiency of ECG data analysis. \newline
 
 \section{Notation}
 
@@ -131,13 +122,17 @@ We are going to denote the original data matrix as $Y$, and let $Y \in \mathbb{R
 
 \noindent With $I_d \in \mathbb{R}^{d \times d}$ we are going to denote the identity matrix, with $MN(X; M, U, V)$ the matrix normal distribution with $M$ the mean-matrix, $U$ the row-covariance, and $V$ the column covariance. Further, with $N(x; \mu, \Sigma)$  let's denote the Gaussian density with mean $\mu$ and $\Sigma$ the covariance matrix, $IG(s; \alpha, \beta)$ is the inverse gamma distribution with shape $\alpha$ and scale $\beta$.  \newline
 
-add IG 
+\noindent TODO:
 
-\hline
+\begin{itemize}
+    \item the mapping $f_\theta$
+    \item vectorisation
+    \item multivariate normal distribution
+\end{itemize}
 
-\noindent  We denote the vectorised forms of the matrices with their respective lower case letters. We can formally define c = vec(C), where vec(·) is the vectorisation operation. The columns of C are stacked on each other, so if C ∈ Rm×r, then c ∈ Rmr×1. We can also define the inverse vectorisation operator C = vec−1(c). \newline
+% \noindent  We denote the vectorised forms of the matrices with their respective lower case letters. We can formally define c = vec(C), where vec(·) is the vectorisation operation. The columns of C are stacked on each other, so if C ∈ Rm×r, then c ∈ Rmr×1. We can also define the inverse vectorisation operator C = vec−1(c). \newline
 
-\noindent We have that p(x) denotes the probability density function (pdf) of x and p(y|x) is the conditional density of y given x. Where A ∈ Rm×n is a matrix, then MN(A;M,U, V ) denotes the matrix normal pdf for A, where M ∈ Rm×n is the mean, U ∈ Rn×n is the among-row co-variance and V ∈ Rm×m is the among-column co-variance. We also define the multivariate normal distribution in the following way; let a ∈ Rm, then N(a; μ, Σ) denotes the pdf of the multivariate normal distribution for the random variable a, where μ ∈ Rm is the mean and Σ ∈ Rm×m is the covariance matrix. Im ∈ Rm×m is the m×m identity matrix. \newline
+% \noindent We have that p(x) denotes the probability density function (pdf) of x and p(y|x) is the conditional density of y given x. Where A ∈ Rm×n is a matrix, then MN(A;M,U, V ) denotes the matrix normal pdf for A, where M ∈ Rm×n is the mean, U ∈ Rn×n is the among-row co-variance and V ∈ Rm×m is the among-column co-variance. We also define the multivariate normal distribution in the following way; let a ∈ Rm, then N(a; μ, Σ) denotes the pdf of the multivariate normal distribution for the random variable a, where μ ∈ Rm is the mean and Σ ∈ Rm×m is the covariance matrix. Im ∈ Rm×m is the m×m identity matrix. \newline
 
 \chapter{Background}
 
@@ -146,8 +141,6 @@ add IG
 \subsection{Matrix Normal Distribution} 
 
 TODO 
-
-Cite paper
 
 \subsection{Kronecker Product}
 
@@ -232,6 +225,9 @@ TODO: approximate seq. inference
 
 \subsection{PSMF Algorithm}
 
+
+WIP
+
 \begin{algorithm}[H]
 \caption{Iterative PSMF}
 \begin{algorithmic}[1]
@@ -243,11 +239,11 @@ TODO: approximate seq. inference
 \State \hspace{3em} $\bar{\mu}_k = f_{\theta_{i-1}}(\mu_{k-1})$ or $\bar{\mu}_k = f_{\theta_k-1}(\mu_{k-1})$
 \State \hspace{2em} Compute predictive covariance of $x_k$:
 \State \hspace{3em} $\bar{P}_k = F_k P_{k-1} F_k^\top + Q_k$, with $F_k = \left. \frac{\partial f(x)}{\partial x} \right|_{x=\bar{\mu}_{k-1}}$
-\State \hspace{2em} Update dictionary mean $C_k$ using (20)
-\State \hspace{2em} Update dictionary covariance $V_k$ with (19)
-\State \hspace{2em} Update coefficient mean $\mu_k$ using (23)
-\State \hspace{2em} Update coefficient covariance $P_k$ with (24)
-\State \hspace{1em} Update parameters with (26) \hspace{1em}
+\State \hspace{2em} Update dictionary mean $C_k$ using %(20)
+\State \hspace{2em} Update dictionary covariance $V_k$ with %(19)
+\State \hspace{2em} Update coefficient mean $\mu_k$ using %(23)
+\State \hspace{2em} Update coefficient covariance $P_k$ with %(24)
+\State \hspace{1em} Update parameters with \hspace{1em} %(26) 
 \end{algorithmic}
 \end{algorithm}
 
@@ -339,35 +335,20 @@ TODO
 
 \subsection{Inference}
 
+TODO
+
 \subsection{Algorithm}
 
-\begin{algorithm}
-\caption{Missing Data Imputation using PSMF}
-\begin{algorithmic}[1]
-\State Initialize \( C_0, V_0, \mu_0, P_0, s_0 \) (for rPSMF), \( (Q_k)_{k \geq 1}, (R_k)_{k \geq 1} \)
-\State Set model parameters based on whether using PSMF or rPSMF
-\For{\( k = 1 \) to \( n \)}
-    \State \textbf{Predict Next State:}
-    \State \( p(x_k \mid y_{1:k-1}) = \int p(x_k \mid x_{k-1}) p(x_{k-1} \mid y_{1:k-1}) dx_{k-1} \)
-    \State \textbf{Update Estimates:}
-    \State Incorporate observations \( y_k \), handling missing data via the model's structure
-    \State \( p(y_k \mid y_{1:k-1}) = \int \int p(y_k \mid C, x_k) p(x_k \mid y_{1:k-1}) p(C \mid y_{1:k-1}) dx_k dC \)
-    \State \( p(x_k \mid y_{1:k}) = \frac{p(x_k \mid y_{1:k-1}) p(y_k \mid x_k, y_{1:k-1})}{p(y_k \mid y_{1:k-1})} \)
-    \State \( p(C \mid y_{1:k}) = \frac{p(C \mid y_{1:k-1}) p(y_k \mid C, y_{1:k-1})}{p(y_k \mid y_{1:k-1})} \)
-    \State Update \( s \) if using rPSMF
-    \State \textbf{Impute Missing Data:}
-    \State Utilize the updated estimates of \( x_k \) and \( C \) to impute missing entries in \( y_k \)
-\EndFor
-\State \textbf{Output:} Imputed matrix \( Y \) with missing entries filled
-\end{algorithmic}
-\end{algorithm}
+TODO
 
 
 \section{ECG/medical introduction}
 
+WIP
+
 The ECG is a crucial diagnostic tool in clinical practice. It is especially useful in diagnosing rhythm disturbances, changes in electrical conduction, and myocardial ischemia and infarction.
 
-As cardiac cells depolarize and repolarize, electrical currents spread throughout the body because the tissues surrounding the heart are able to conduct electrical currents generated by the heart. When these electrical currents are measured by an array of electrodes placed at specifi c locations on the body surface, the recorded tracing is called an ECG (Fig. 2.13). The repeating waves of the ECG represent the sequence of depolarization and repolarization of the atria and ventricles. The ECG does not measure absolute voltages, but voltage changes from a baseline (isoelectric) voltage. ECGs are generally recorded on paper at a speed of 25 mm/s and with a vertical calibration of 1 mV/cm.
+% As cardiac cells depolarize and repolarize, electrical currents spread throughout the body because the tissues surrounding the heart are able to conduct electrical currents generated by the heart. When these electrical currents are measured by an array of electrodes placed at specific locations on the body surface, the recorded tracing is called an ECG (Fig. 2.13). The repeating waves of the ECG represent the sequence of depolarization and repolarization of the atria and ventricles. The ECG does not measure absolute voltages, but voltage changes from a baseline (isoelectric) voltage. ECGs are generally recorded on paper at a speed of 25 mm/s and with a vertical calibration of 1 mV/cm.
 
 \begin{figure}[h!]
 \centering
@@ -375,8 +356,6 @@ As cardiac cells depolarize and repolarize, electrical currents spread throughou
 \caption{Components of the ECG trace. An enlargement of one of the repeating waveform units in the rhythm strip shows the P wave, QRS complex, and T wave, which represent atrial depolarization, ventricular depolarization, and ventricular repolarization, respectively. The PR interval represents the time required for the depolarization wave to transverse the atria and the AV node; the QT interval represents the period of ventricular depolarization and repolarization; and the ST segment is the isoelectric period when the entire ventricle is depolarized. Each small square is 1 mm. (\cite{alma991000225790601591})}
 \label{fig:r-peaks}
 \end{figure}
-
-\hline
 
 A 12-Lead ECG (Electrocardiogram) is a standard diagnostic tool used to assess the electrical activity of the heart. It provides a comprehensive view of the heart's electrical activity from different angles. The 12 leads consist of:
 
@@ -386,27 +365,27 @@ A 12-Lead ECG (Electrocardiogram) is a standard diagnostic tool used to assess t
   \item 3 augmented limb leads (aVR, aVL, aVF)
 \end{itemize}
 
-Each lead records the heart's electrical activity from a different perspective, providing information on:
+% Each lead records the heart's electrical activity from a different perspective, providing information on:
 
-\begin{itemize}
-  \item Heart rate and rhythm
-  \item Conduction abnormalities
-  \item Chamber enlargement
-  \item Myocardial ischemia or infarction
-  \item Electrolyte imbalances
-\end{itemize}
+% \begin{itemize}
+%   \item Heart rate and rhythm
+%   \item Conduction abnormalities
+%   \item Chamber enlargement
+%   \item Myocardial ischemia or infarction
+%   \item Electrolyte imbalances
+% \end{itemize}
 
 The ECG machine typically records data for about 10 seconds, producing a graph of voltage versus time.
 
-The Electrocardiogram (ECG) is a crucial diagnostic tool in cardiology that records the electrical activity of the heart. A standard 12-lead ECG system provides multiple perspectives of cardiac electrical activity, facilitating comprehensive analysis.
+% The Electrocardiogram (ECG) is a crucial diagnostic tool in cardiology that records the electrical activity of the heart. A standard 12-lead ECG system provides multiple perspectives of cardiac electrical activity, facilitating comprehensive analysis.
 
-Signal Acquisition: ECG data is acquired through electrodes placed on the body surface, measuring potential differences over time.
-Waveform Components: The ECG waveform consists of P, Q, R, S, and T waves, each representing specific cardiac events.
-Lead System: The 12-lead system comprises:
+% Signal Acquisition: ECG data is acquired through electrodes placed on the body surface, measuring potential differences over time.
+% Waveform Components: The ECG waveform consists of P, Q, R, S, and T waves, each representing specific cardiac events.
+% Lead System: The 12-lead system comprises:
 
-6 precordial leads (V1-V6)
-3 limb leads (I, II, III)
-3 augmented limb leads (aVR, aVL, aVF)
+% 6 precordial leads (V1-V6)
+% 3 limb leads (I, II, III)
+% 3 augmented limb leads (aVR, aVL, aVF)
 
 add images sources
 
@@ -425,39 +404,48 @@ add images sources
     \label{fig:combined}
 \end{figure}
 
-PQRST complex, R-peak..., diagram, data 
+TODO:
+
+\begin{itemize}
+    \item introduce PQRST
+    \item mention R-peaks and their importance
+    \item general information about the 12-leads 
+    \item add images for ECG, leads placements, sources
+\end{itemize}
 
 % forcing a page break
 \clearpage
 
 \chapter{Experiemnts and Results}
 
-Add citations 
-
-The research aims to use the already available A Large Scale 12-lead Electrocardiogram Database for Arrhythmia Study [5], [6], [7]. This is a comprehensive database of high-quality 12-lead ECG signals collected from 45,152 patients. Each signal is with length of 10 seconds corresponding to 5000 data points. The dataset is designed to support arrhythmia research, containing labeled data for various cardiac conditions such as atrial fibrillation, premature ventricular contractions, and bundle branch blocks. This large dataset has high-quality labels from professional experts, diverse arrhythmia types, and additional cardiovascular conditions, making it suitable for performing different research tasks on it without spending time on gathering, cleaning and processing data. \newline
+The research aims to use the already available A Large Scale 12-lead Electrocardiogram Database for Arrhythmia Study (\cite{cite1}, \cite{cite2}, \cite{cite3}). This is a comprehensive database of high-quality 12-lead ECG signals collected from 45,152 patients. Each signal is with length of 10 seconds corresponding to 5000 data points. The dataset is designed to support arrhythmia research, containing labeled data for various cardiac conditions such as atrial fibrillation, premature ventricular contractions, and bundle branch blocks. This large dataset has high-quality labels from professional experts, diverse arrhythmia types, and additional cardiovascular conditions, making it suitable for performing different research tasks on it without spending time on gathering, cleaning and processing data. \newline
 
 
-• Presents a comprehensive database of 12-lead ECG signals collected from 45,152 patients. Each signal is with length of 10 seconds corresponding to 5000 data points.
-• The dataset is designed to support arrhythmia research, containing labeled data for various cardiac conditions such as atrial fibrillation, premature ventricular contractions, and bundle branch blocks.
-• ECG data is non-invasive and critical for diagnosing cardiovascular conditions, but analyzing such large
-datasets requires efficient automated methods.
-• Large dataset, high-quality labels from professional experts, diverse arrhythmia types, and additional cardiovascular conditions. \newline
+% • Presents a comprehensive database of 12-lead ECG signals collected from 45,152 patients. Each signal is with length of 10 seconds corresponding to 5000 data points.
+% • The dataset is designed to support arrhythmia research, containing labeled data for various cardiac conditions such as atrial fibrillation, premature ventricular contractions, and bundle branch blocks.
+% • ECG data is non-invasive and critical for diagnosing cardiovascular conditions, but analyzing such large
+% datasets requires efficient automated methods.
+% • Large dataset, high-quality labels from professional experts, diverse arrhythmia types, and additional cardiovascular conditions. \newline
 
 
-Pre,post, processing
+% Pre,post, processing
 
-What exactly is tested - 5k points, sample from the points, results, smoothing, no smoothing, differеnt ranks, fourier terms
+% What exactly is tested - 5k points, sample from the points, results, smoothing, no smoothing, differеnt ranks, fourier terms
 
-\section{Missing data}
+\section{Missing Data Imputation}
 
-Both algorithms -> psmf, rpsmf, mle-smf, mvgmf?
-
-results and images \newline
+TODO:
+\begin{itemize}
+    \item data used - processing
+    \item algorithms tested: psmf, rpsmf, mle-smf, tmf
+    \item coverage, results
+    \item add figures showing the original data, missing parts and imputed parts
+\end{itemize}
 
 %% DO NOT EDIT - AUTOMATICALLY GENERATED FROM RESULTS!
 %% This table requires booktabs and multirow!
 %% Table for missing percentage 20
-\begin{table}[h!]
+\begin{table}[H]
     \centering
     \begin{threeparttable}
         \begin{tabular}{lccc}
@@ -473,7 +461,7 @@ results and images \newline
     \end{threeparttable}
 \end{table}
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \label{tab:my_label}
 \begin{tabular}{@{}lccc|ccccc@{}}
@@ -490,29 +478,35 @@ TMF & $\underset{{\scriptscriptstyle \;\;\;(15.78)}}{169.83}$ & $\underset{{\scr
 \caption{Imputation error and runtime using 20\%, 30\% and 40\% missing values, averaged over 100 random repetitions.}
 \end{table}
 
-TODO: add figures showing the original data, missing parts and imputed parts
+\section{R-peaks Detection}
 
-\section{R peaks?}
+TODO:
+\begin{itemize}
+    \item intro: why it is an important task, mention current methods?
+    \item introduce the idea: smoother peaks, remove reconstruction from the original data
+    \item threshold
+    \item (potential) issues, improvements 
+\end{itemize}
 
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
 \includegraphics[width=1\linewidth]{images/r_peaks.png}
 \label{fig:r-peaks}
 \end{figure}
 
-When forecasting... its hard to model the sharp peaks... smoother -> remove reconstrution and set threshold and get the r-peaks
-
-Original - Forecast -> for R peaks detection
-
-One paper about NMF
-
-Scipy function
-
-remove the reconstruction from the original signal
-
 \section{Forecasting}
 
-\begin{figure}[h!]
+TODO:
+
+\begin{itemize}
+    \item original data (5000) vs subsample (1500)
+    \item smoothing vs no smoothing
+    \item Fourier basis and number of terms, higher rank
+    \item encountered issues, conclusions
+    \item add figures for the basis, loss curves, forecast (show different experiments results)
+\end{itemize}
+
+\begin{figure}[H]
 \begin{center}
 \includegraphics[scale=1]{images/periodic_fit_1500_6_6_150it.pdf}
 \caption{My caption here}
@@ -520,32 +514,17 @@ remove the reconstruction from the original signal
 \end{center}
 \end{figure}
 
-This fails 
-
-- issues, R-peak
-
-Lower frequency is better -> rank 6, fourier terms 6, iterations 100, 200, 500, leraning rate
-
-
 \chapter{Conclusion}
 
-data imputation 
-
-forecasting challneged or success
-
-R-peaks
+TODO: summarise results
 
 \section{Future work}
 
-More complex model etc...
-
-Faster computation, etc...
-
-Conclusion goes here. 
-
-
-
-
+TODO:
+\begin{itemize}
+    \item More complex model to better suit the complexity of the ECG data
+    \item Better computational efficiency
+\end{itemize}
 
 \clearpage
  %% reset page counter and start appendix pages with A
