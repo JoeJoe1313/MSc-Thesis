@@ -31,7 +31,7 @@
 
 \begin{abstract}
 
-Matrix factorisation (MF) techniques are highly effective and widely used in unsupervised machine learning. By decomposing the original matrix into multiple simpler lower-dimensional matrices, MF aims to uncover latent structures that are not immediately obvious in the original matrix. MF finds applications in areas such as image processing, natural language processing, missing data imputation, and recommendation systems. Despite considerable progression in the probabilistic versions, there is demand for such methods in applications such as uncertainty quantification, managing time-series data, and executing efficient probabilistic components. \newline
+Matrix factorisation (MF) techniques are highly effective and widely used in unsupervised machine learning. By decomposing the original matrix into multiple simpler lower-dimensional matrices, MF aims to uncover latent structures that are not immediately obvious in the original matrix. MF finds applications in areas such as image processing, natural language processing, missing data imputation, and recommendation systems. Despite considerable progression in the probabilistic versions, there is demand for such methods in applications such as uncertainty quantification, managing time-series data, and executing efficient probabilistic computations. \newline
 
 \noindent In this thesis, we show novel applications of the probabilistic sequential MF algorithm Probabilistic Sequential Matrix Factorisation (PSMF) (\cite{akyildiz2021probabilistic}) to 12-lead ECG data. We explore three tasks related to this complex high-dimensional time-series data with nonlinear subspace: missing data imputation with PSMF and the robust version of PSMF (rPSMF) (\cite{akyildiz2021probabilistic}) and compare their performance with other probabilistic sequential MF algorithms, R-peaks detection, and forecasting an ECG component based on previous normal heart beats using a Fourier basis with multiple terms and rank higher than one. We perform our experiments using the high-quality comprehensive dataset "A Large Scale 12-lead Electrocardiogram Database for Arrhythmia Study" (\cite{cite1}, \cite{cite2}, \cite{cite3}). We describe and outline the experimenting process and the challenges we encountered modelling the complex ECG data, and summarise the experiments results. We find that PSMF performs well when used for imputing missing data, but when it comes to forecasting there are certain challenges which open the door for further research on extending the PSMF algorithm to better handle the complex structure of ECG data. \newline
 
@@ -118,16 +118,25 @@ Using probabilistic methods, and specifically probabilistic sequential MF ones, 
 
 \section{Notation}
 
-We are going to denote the original data matrix as $Y$, and let $Y \in \mathbb{R}^{m \times n}$. Let $C \in \mathbb{R}^{m \times r}$ be the dictionary matrix, $X \in \mathbb{R}^{r \times n}$ be the coefficients matrix, and $r$ be the approximation rank. \newline
+We are going to denote the original data matrix as $Y$, and let $Y \in \mathbb{R}^{m \times n}$. Let $C \in \mathbb{R}^{m \times r}$ be the dictionary matrix, $X \in \mathbb{R}^{r \times n}$ be the coefficients matrix, and $r$ be the approximation rank. With $vec(Y) \in \mathbb{R}^{nm}$, where $y_1, ..., y_n$ are the columns of $Y$, and
 
-\noindent With $I_d \in \mathbb{R}^{d \times d}$ we are going to denote the identity matrix, with $MN(X; M, U, V)$ the matrix normal distribution with $M$ the mean-matrix, $U$ the row-covariance, and $V$ the column covariance. Further, with $N(x; \mu, \Sigma)$  let's denote the Gaussian density with mean $\mu$ and $\Sigma$ the covariance matrix, $IG(s; \alpha, \beta)$ is the inverse gamma distribution with shape $\alpha$ and scale $\beta$.  \newline
+\begin{equation}
+    y := vec(Y) = \begin{bmatrix}
+        y_1 \\
+        y_2 \\
+        \vdots \\
+        y_n 
+    \end{bmatrix}
+\end{equation}
+
+\noindent we are going to denote the vectorisation of $Y$. The inverse is denoted as $Y := vec^{-1}(Y, m, n)$, where $m$, and $n$ specify the size of the resulting matrix. \newline
+
+\noindent With $I_d \in \mathbb{R}^{d \times d}$ we are going to denote the identity matrix, with $\mathcal{MN}(X; M, U, V)$ the matrix normal distribution with $M$ the mean-matrix, $U$ the row-covariance, and $V$ the column covariance. Further, with $N(x; \mu, \Sigma)$  let's denote the Gaussian density with mean $\mu$ and $\Sigma$ the covariance matrix, multivariate normal distribution, $\mathcal{IG}(s; \alpha, \beta)$ is the inverse gamma distribution with shape $\alpha$ and scale $\beta$.  \newline
 
 \noindent TODO:
 
 \begin{itemize}
     \item the mapping $f_\theta$
-    \item vectorisation
-    \item multivariate normal distribution
 \end{itemize}
 
 % \noindent  We denote the vectorised forms of the matrices with their respective lower case letters. We can formally define c = vec(C), where vec(·) is the vectorisation operation. The columns of C are stacked on each other, so if C ∈ Rm×r, then c ∈ Rmr×1. We can also define the inverse vectorisation operator C = vec−1(c). \newline
@@ -140,12 +149,12 @@ We are going to denote the original data matrix as $Y$, and let $Y \in \mathbb{R
 
 \subsection{Matrix Normal Distribution} 
 
-TODO 
+$\mathcal{MN(...)}$$
 
 \subsection{Kronecker Product}
 
 \begin{definition}
-Let $A \in \mathbb{R}^{m \times n}$ and $B \in \mathbb{R}^{p \times q}$ be matrices. Then their \textit{Kronecker product} denoted as $A \otimes B \in \mathbb{R}^{mp \times nq}$ is given by (\cite{alma993596394401591})
+Let $A \in \mathbb{R}^{m \times n}$ and $B \in \mathbb{R}^{p \times q}$ be matrices. Then their \textit{Kronecker product} denoted as $A \otimes B \in \mathbb{R}^{mp \times nq}$ is given by (\cite{alma993596394401591}):
 
 \begin{equation}
     A \otimes B = \begin{bmatrix}
