@@ -118,26 +118,23 @@ Using probabilistic methods, and specifically probabilistic sequential MF ones, 
 
 \section{Notation}
 
-We are going to denote the original data matrix as $Y$, and let $Y \in \mathbb{R}^{m \times n}$. Let $C \in \mathbb{R}^{m \times r}$ be the dictionary matrix, $X \in \mathbb{R}^{r \times n}$ be the coefficients matrix, and $r$ be the approximation rank. With $vec(Y) \in \mathbb{R}^{nm}$, where $y_1, ..., y_n$ are the columns of $Y$, and
+We are going to denote the original data matrix as $Y \in \mathbb{R}^{m \times n}$, with $y_k$ the $k$-th column of the matrix, and let $y_k$ denote the $k$-th column of the matrix. Also, let $y = \text{vec}(Y) \in \mathbb{R}^{nm}$ be the vectorization of the matrix $Y$:
 
 \begin{equation}
     y := vec(Y) = \begin{bmatrix}
         y_1 \\
         y_2 \\
         \vdots \\
-        y_n 
+        y_n, 
     \end{bmatrix}
 \end{equation}
 
-\noindent we are going to denote the vectorisation of $Y$. The inverse is denoted as $Y := vec^{-1}(Y, m, n)$, where $m$, and $n$ specify the size of the resulting matrix. \newline
+\noindent where $y_1, ..., y_n$ are the columns of $Y$. The inverse is denoted as $Y := \text{vec}^{-1}(Y, m, n)$, where $m$, and $n$ specify the size of the resulting matrix. \newline
+
+\noindent Further, let $C \in \mathbb{R}^{m \times r}$ be the dictionary matrix, $X \in \mathbb{R}^{r \times n}$ be the coefficients matrix, and $r$ be the approximation rank. \newline
 
 \noindent With $I_d \in \mathbb{R}^{d \times d}$ we are going to denote the identity matrix, with $\mathcal{MN}(X; M, U, V)$ the matrix normal distribution with $M$ the mean-matrix, $U$ the row-covariance, and $V$ the column covariance. Further, with $N(x; \mu, \Sigma)$  let's denote the Gaussian density with mean $\mu$ and $\Sigma$ the covariance matrix, multivariate normal distribution, $\mathcal{IG}(s; \alpha, \beta)$ is the inverse gamma distribution with shape $\alpha$ and scale $\beta$.  \newline
 
-\noindent TODO:
-
-\begin{itemize}
-    \item the mapping $f_\theta$
-\end{itemize}
 
 % \noindent  We denote the vectorised forms of the matrices with their respective lower case letters. We can formally define c = vec(C), where vec(·) is the vectorisation operation. The columns of C are stacked on each other, so if C ∈ Rm×r, then c ∈ Rmr×1. We can also define the inverse vectorisation operator C = vec−1(c). \newline
 
