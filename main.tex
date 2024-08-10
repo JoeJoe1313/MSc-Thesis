@@ -188,7 +188,7 @@ Intro
 
 \subsection{Model}
 
-For observations $y_k \in \mathbb{R}^{m}$, $k \geq 1$, latent coefficients $x_k \in \mathbb{R}^{r}$, $k \geq 1$, and a dictionary matrix $C \in \mathbb{R}^{m \times r}$ the PSMF model can be described with the following state-space equations:
+For observations $y_k \in \mathbb{R}^{m}$, $k \geq 1$, latent coefficients $x_k \in \mathbb{R}^{r}$, $k \geq 1$, and a dictionary matrix $C \in \mathbb{R}^{m \times r}$ the PSMF model can be described with the following state-space equations (\cite{akyildiz2021probabilistic}):
 
 \begin{equation} \label{eq:1}
     p(C) = \mathcal{MN}(C; C_0, I_d, V_0)
@@ -209,7 +209,7 @@ For observations $y_k \in \mathbb{R}^{m}$, $k \geq 1$, latent coefficients $x_k 
 
 \subsection{Inference}
 
-In this section, we outline the algorithm for conducting sequential inference within the model defined by equations (\ref{eq:1})–(\ref{eq:4}). We begin by stating the optimal inference recursions which are intractable and thus need to be made tractable. This is achieved by introducing approximate sequential inference.
+In this section, we outline the algorithm for conducting sequential inference (\cite{akyildiz2021probabilistic}) within the model defined by equations (\ref{eq:1})–(\ref{eq:4}). We begin by stating the optimal inference recursions which are intractable and thus need to be made tractable. This is achieved by introducing approximate sequential inference.
 
 \subsubsection{Inference}
 
@@ -217,37 +217,47 @@ For the optimal inference recursions we have $\theta$ fixed, and we assume we kn
 
 \noindent The predictive distribution, which is in the base of the update steps, is given by:
 
-\begin{equation}
-    p(x_k \mid y_{1:k-1}) = \int p(x_{k-1} \mid y_{1:k-1}) p(x_k \mid x_{k-1}) dx_{k-1}
+\begin{equation} \label{eq:5}
+    p(x_k \mid y_{1:k-1}) = \int p(x_{k-1} \mid y_{1:k-1}) p(x_k \mid x_{k-1}) dx_{k-1}.
 \end{equation}
-  
-\noindent First, we state the incremental marginal likelihood:
+
+\noindent Given that past marginal is known (\ref{eq:5}) is independent of the dictionary. \newline
+
+\noindent In order to be able to compute updates, we state the incremental marginal likelihood:
 
 \begin{equation}
     p(y_k \mid y_{1:k-1}) = \int \int p(y_k \mid c, x_k) p(x_k \mid y_{1:k-1}) p(c \mid y_{1:k-1}) dx_k dc.
 \end{equation}
 
-\noindent Now, knowing $p(y_k \mid y_{1:k-1})$, 
-
-Dictionary update:
+\noindent Now, knowing $p(y_k \mid y_{1:k-1})$, for the dictionary update of $C$ we have
 
 \begin{equation}
-    p(C \mid y_{1:k}) = p(C \mid y_{1:k-1}) \frac{p(y_k \mid C, y_{1:k-1})}{p(y_k \mid y_{1:k-1})},
+    p(c \mid y_{1:k}) = p(c \mid y_{1:k-1}) \frac{p(y_k \mid c, y_{1:k-1})}{p(y_k \mid y_{1:k-1})},
 \end{equation}
 
-where ...
+\noindent where
+
+\begin{equation}
+    p(y_k | c, y_{1:k-1}) = \int p(y_k | c, x_k) p(x_k | y_{1:k-1}) \text{d}x_k.
+\end{equation}
   
-Coefficient update:
+\noindent For the coefficients $x_k$ the update is
 
 \begin{equation}
     p(x_k \mid y_{1:k}) = p(x_k \mid y_{1:k-1})  \frac{p(y_k \mid x_k, y_{1:k-1})}{p(y_k \mid y_{1:k-1})},
 \end{equation}
 
-where ...
+\noindent where
+
+\begin{equation}
+    p(y_k | x_k, y_{1:k-1}) = \int p(y_k | x_k, c) p(c | y_{1:k-1})\text{d}c.
+\end{equation}
+
+As mentioned earlier, 
 
 \subsubsection{Approximate Sequential Inference}
 
-Sth
+Equation \ref{eq:1} can be rewritten as $p(c) = \mathcal{N}(c; c_0, V_0 \otimes I_d)$.
 
 \subsection{PSMF Algorithm}
 
