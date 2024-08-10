@@ -129,7 +129,7 @@ We are going to denote the original data matrix as $Y \in \mathbb{R}^{m \times n
     \end{bmatrix}
 \end{equation}
 
-\noindent where $y_1, ..., y_n$ are the columns of $Y$. The inverse is denoted as $Y := \text{vec}^{-1}(Y, m, n)$, where $m$, and $n$ specify the size of the resulting matrix. Further, let $C \in \mathbb{R}^{m \times r}$ be the dictionary matrix, $X \in \mathbb{R}^{r \times n}$ be the coefficients matrix, and $r$ be the approximation rank. \newline
+\noindent where $y_1, ..., y_n$ are the columns of $Y$. The inverse is denoted as $Y := \text{vec}^{-1}(Y, m, n)$, where $m$, and $n$ specify the size of the resulting matrix. With $y_{1:k} = \{y_1, ..., y_k\}$ we are going to denote sequences. Further, let $C \in \mathbb{R}^{m \times r}$ be the dictionary matrix, $X \in \mathbb{R}^{r \times n}$ be the coefficients matrix, and $r$ be the approximation rank. \newline
 
 \noindent With $I_d \in \mathbb{R}^{d \times d}$ we are going to denote the identity matrix, with $\mathcal{N}(x; \mu, \Sigma)$ the multivariate normal distribution with mean $\mu$ and $\Sigma$ the covariance matrix, with $\mathcal{MN}(X; M, U, V)$ the matrix normal distribution with $M$ the mean-matrix, $U$ the row-covariance, and $V$ the column covariance, and with  $\mathcal{IG}(s; \alpha, \beta)$ the inverse gamma distribution with shape $\alpha$ and scale $\beta$, and finally with $\mathcal{T}(x; \mu, \Sigma, \lambda)$ the multivariate $t$ distribution, where $\mu$ is the mean, $\Sigma$ the scale matrix, and $\lambda$ is the degrees of freedom. \newline
 
@@ -209,21 +209,25 @@ For observations $y_k \in \mathbb{R}^{m}$, $k \geq 1$, latent coefficients $x_k 
 
 \subsection{Inference}
 
-We are going to show 
+In this section, we outline the algorithm for conducting sequential inference within the model defined by equations (\ref{eq:1})–(\ref{eq:4}). We begin by stating the optimal inference recursions which are intractable and thus need to be made tractable. This is achieved by introducing approximate sequential inference.
 
-Prediction ...
+\subsubsection{Inference}
+
+For the optimal inference recursions we have $\theta$ fixed, and we assume we know the filters at time $k - 1$: $p(x_{k-1}|y_{1:k-1})$ and $p(c|y_{1:k-1})$. \newline
+
+\noindent The predictive distribution, which is in the base of the update steps, is given by:
 
 \begin{equation}
     p(x_k \mid y_{1:k-1}) = \int p(x_{k-1} \mid y_{1:k-1}) p(x_k \mid x_{k-1}) dx_{k-1}
 \end{equation}
   
-Update: After computing the predictive distribution of \(x_k\), the update steps for \(x_k\) and \(C\) are given by:
-
-(Incremental) marginal likelihood:
+\noindent First, we state the incremental marginal likelihood:
 
 \begin{equation}
-    p(y_k \mid y_{1:k-1}) = \int \int p(y_k \mid C, x_k) p(x_k \mid y_{1:k-1}) p(C \mid y_{1:k-1}) dx_k dC
+    p(y_k \mid y_{1:k-1}) = \int \int p(y_k \mid c, x_k) p(x_k \mid y_{1:k-1}) p(c \mid y_{1:k-1}) dx_k dc.
 \end{equation}
+
+\noindent Now, knowing $p(y_k \mid y_{1:k-1})$, 
 
 Dictionary update:
 
@@ -241,7 +245,9 @@ Coefficient update:
 
 where ...
 
-TODO: approximate seq. inference
+\subsubsection{Approximate Sequential Inference}
+
+Sth
 
 \subsection{PSMF Algorithm}
 
