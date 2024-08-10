@@ -129,11 +129,9 @@ We are going to denote the original data matrix as $Y \in \mathbb{R}^{m \times n
     \end{bmatrix}
 \end{equation}
 
-\noindent where $y_1, ..., y_n$ are the columns of $Y$. The inverse is denoted as $Y := \text{vec}^{-1}(Y, m, n)$, where $m$, and $n$ specify the size of the resulting matrix. \newline
+\noindent where $y_1, ..., y_n$ are the columns of $Y$. The inverse is denoted as $Y := \text{vec}^{-1}(Y, m, n)$, where $m$, and $n$ specify the size of the resulting matrix. Further, let $C \in \mathbb{R}^{m \times r}$ be the dictionary matrix, $X \in \mathbb{R}^{r \times n}$ be the coefficients matrix, and $r$ be the approximation rank. \newline
 
-\noindent Further, let $C \in \mathbb{R}^{m \times r}$ be the dictionary matrix, $X \in \mathbb{R}^{r \times n}$ be the coefficients matrix, and $r$ be the approximation rank. \newline
-
-\noindent With $I_d \in \mathbb{R}^{d \times d}$ we are going to denote the identity matrix, with $\mathcal{MN}(X; M, U, V)$ the matrix normal distribution with $M$ the mean-matrix, $U$ the row-covariance, and $V$ the column covariance. Further, with $N(x; \mu, \Sigma)$  let's denote the Gaussian density with mean $\mu$ and $\Sigma$ the covariance matrix, multivariate normal distribution, $\mathcal{IG}(s; \alpha, \beta)$ is the inverse gamma distribution with shape $\alpha$ and scale $\beta$.  \newline
+\noindent With $I_d \in \mathbb{R}^{d \times d}$ we are going to denote the identity matrix, with $\mathcal{N}(x; \mu, \Sigma)$ the multivariate normal distribution with mean $\mu$ and $\Sigma$ the covariance matrix, with $\mathcal{MN}(X; M, U, V)$ the matrix normal distribution with $M$ the mean-matrix, $U$ the row-covariance, and $V$ the column covariance, and with  $\mathcal{IG}(s; \alpha, \beta)$ the inverse gamma distribution with shape $\alpha$ and scale $\beta$, and finally with $\mathcal{T}(x; \mu, \Sigma, \lambda)$ the multivariate $t$ distribution, where $\mu$ is the mean, $\Sigma$ the scale matrix, and $\lambda$ is the degrees of freedom. \newline
 
 
 % \noindent  We denote the vectorised forms of the matrices with their respective lower case letters. We can formally define c = vec(C), where vec(·) is the vectorisation operation. The columns of C are stacked on each other, so if C ∈ Rm×r, then c ∈ Rmr×1. We can also define the inverse vectorisation operator C = vec−1(c). \newline
@@ -144,9 +142,23 @@ We are going to denote the original data matrix as $Y \in \mathbb{R}^{m \times n
 
 \section{Preliminaries}
 
+Intro
+
 \subsection{Matrix Normal Distribution} 
 
-$\mathcal{MN(...)}$$
+\begin{definition}
+    Let $X \in \mathbb{R}^{p \times n}$ be a random matrix. Then $X$ has a $\textit{matrix normal distribution}$ $\mathcal{MN}(X; M, U, V)$ with mean-matrix $M \in \mathbb{R}^{p \times n}$, row-covariance $U \in \mathbb{R}^{p \times p}$, and column-covariance $V \in \mathbb{R}^{n \times n}$, if $\text{vec}(X) \sim \mathcal{N}(\text{vec}(M), U \otimes V)$.
+\end{definition}
+
+\noindent Also, if $X \sim \mathcal{MN}(X; M, U, V)$, then $x \sim \mathcal{N}(x; \text{vec}(M), U \otimes V)$, where $x = \text{vec}(X)$ and $\otimes$ is the Kronecker product (\cite{gupta}). \newline
+
+\noindent Further, for the random matrix $X \in \mathbb{R}^{p \times n}$ the probability density function (p.d.f.) of the matrix normal distribution is defined as (\cite{gupta})
+
+\begin{equation}
+    (2\pi)^{-\frac{1}{2}np} |U|^{-\frac{1}{2}n} |V|^{-\frac{1}{2}p} \exp{\{-\frac{1}{2}\text{tr}(U^{-1}(X - M)V^{-1}(X - M)^{T})\}},
+\end{equation}
+
+\noindent where $|U|$ and $|V|$ are the determinants of $U$ and $V$ respectively, $\text{tr}(.)$ denotes the $\textit{trace}$ of a matrix, $X \in \mathbb{R}^{p \times n}$, $M \in \mathbb{R}^{p \times n}$.
 
 \subsection{Kronecker Product}
 
@@ -164,7 +176,9 @@ Let $A \in \mathbb{R}^{m \times n}$ and $B \in \mathbb{R}^{p \times q}$ be matri
 where $\{a_{ij}\}$, $i \in \{1,...,m\}$, $j \in \{1, ..., n\}$ are the elements of $A$.
 \end{definition}
 
-\subsection{Fourier Series}
+Some identities?
+
+\subsection{Fourier Series/Basis}
 
 TODO
 
@@ -174,7 +188,7 @@ Intro
 
 \subsection{Model}
 
-For observations $(y_k)_{k \geq 1} \in \mathbb{R}^{m}$, latent coefficients $(x_k)_{k \geq 1} \in \mathbb{R}^{r}$, and a dictionary matrix $C \in \mathbb{R}^{m \times r}$ the PSMF model can be described with the following state-space equations:
+For observations $y_k \in \mathbb{R}^{m}$, $k \geq 1$, latent coefficients $x_k \in \mathbb{R}^{r}$, $k \geq 1$, and a dictionary matrix $C \in \mathbb{R}^{m \times r}$ the PSMF model can be described with the following state-space equations:
 
 \begin{equation} \label{eq:1}
     p(C) = \mathcal{MN}(C; C_0, I_d, V_0)
@@ -189,13 +203,13 @@ For observations $(y_k)_{k \geq 1} \in \mathbb{R}^{m}$, latent coefficients $(x_
     p(y_k \mid x_k, C) = \mathcal{N}(y_k; Cx_k, R_k)
 \end{equation}
 
-\noindent where ... \newline
+\noindent where the nonlinear mapping $f_{\theta} : \mathbb{R}^{r} \times \Theta \rightarrow \mathbb{R}^{r}$ governs the dynamics of the coefficients, with $\Theta \subset \mathbb{R}^{m_{\theta}}$ representing the parameter subspace. The noise covariances of the coefficient dynamics in (\ref{eq:3}) and the observation model in (\ref{eq:4}) are denoted by $Q_k$ and $R_k$ for $k \geq 1$. $P_0$ and $V_0$ are respectively the initial covariances of the coefficients and the dictionary. \newline
 
 \noindent We are going to refer to Equation (\ref{eq:1}) as the dictionary prior, Equation (\ref{eq:2}) as the initial state of the coefficients, Equation (\ref{eq:3}) as the transition density, and Equation (\ref{eq:4}) as the observation model.
 
-\subsection{Parameter Estimation?}
-
 \subsection{Inference}
+
+We are going to show 
 
 Prediction ...
 
