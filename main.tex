@@ -257,7 +257,7 @@ For the optimal inference recursions we have $\theta$ fixed, and we assume we kn
 
 \subsubsection{Approximate Sequential Inference}
 
-In this section we make the recursions tractable by through using approximations, and outline the approximate sequential inference. Equation (\ref{eq:1}) can be rewritten as $p(c) = \mathcal{N}(c; c_0, V_0 \otimes I_d)$.
+In this section we make the recursions tractable by through using approximations, and outline the approximate sequential inference. Equation (\ref{eq:1}) can be rewritten as $p(c) = \mathcal{N}(c; c_0, V_0 \otimes I_d)$. Let the given filters at time $k-1$ be $p(x_{k-1} | y_{1:k-1}) = \mathcal{N}(x_{k-1};\mu_{k-1}, P_{k-1})$ and $p(c | y_{1:k-1}) = \mathcal{N}(c; c_{k-1}, V_{k-1} \otimes I_d)$.
 
 \subsection{PSMF Algorithm}
 
