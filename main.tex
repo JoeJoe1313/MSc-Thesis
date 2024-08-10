@@ -253,11 +253,11 @@ For the optimal inference recursions we have $\theta$ fixed, and we assume we kn
     p(y_k | x_k, y_{1:k-1}) = \int p(y_k | x_k, c) p(c | y_{1:k-1})\text{d}c.
 \end{equation}
 
-As mentioned earlier, 
+\noindent As mentioned earlier, the integrals can be computed but the resulting distributions are not suitable for precise implementations of the update rules.
 
 \subsubsection{Approximate Sequential Inference}
 
-Equation \ref{eq:1} can be rewritten as $p(c) = \mathcal{N}(c; c_0, V_0 \otimes I_d)$.
+In this section we make the recursions tractable by through using approximations, and outline the approximate sequential inference. Equation (\ref{eq:1}) can be rewritten as $p(c) = \mathcal{N}(c; c_0, V_0 \otimes I_d)$.
 
 \subsection{PSMF Algorithm}
 
