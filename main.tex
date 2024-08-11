@@ -1,7 +1,7 @@
 \documentclass{mldsmsc}
 % \setlength{\parindent}{20pt}
 
-\title{Probabilistic Sequential Matrix Factorisation for 12-lead \\ ECG Data}
+\title{Probabilistic Sequential Matrix Factorisation for 12-Lead \\ ECG Data}
 \author{Joana Levtcheva}
 \CID{01252821}
 \supervisor{Dr Deniz Akyildiz}
@@ -257,7 +257,15 @@ For the optimal inference recursions we have $\theta$ fixed, and we assume we kn
 
 \subsubsection{Approximate Sequential Inference}
 
-In this section we make the recursions tractable by through using approximations, and outline the approximate sequential inference. Equation (\ref{eq:1}) can be rewritten as $p(c) = \mathcal{N}(c; c_0, V_0 \otimes I_d)$. Let the given filters at time $k-1$ be $p(x_{k-1} | y_{1:k-1}) = \mathcal{N}(x_{k-1};\mu_{k-1}, P_{k-1})$ and $p(c | y_{1:k-1}) = \mathcal{N}(c; c_{k-1}, V_{k-1} \otimes I_d)$.
+In this section we make the recursions tractable by through using approximations, and outline the approximate sequential inference. Equation (\ref{eq:1}) can be rewritten as $p(c) = \mathcal{N}(c; c_0, V_0 \otimes I_d)$. Let the given filters at time $k-1$ be $p(x_{k-1} | y_{1:k-1}) = \mathcal{N}(x_{k-1};\mu_{k-1}, P_{k-1})$ and $p(c | y_{1:k-1}) = \mathcal{N}(c; c_{k-1}, V_{k-1} \otimes I_d)$. Once again, using these distributions cannot give us exact updates for $p(c | y_{1:k})$ and $p(x_k | y_{1:k})$. Hence, let's introduce the notation $\Tilde{p}(.)$ for the approximate densities when the distribution is not exact. \newline
+
+\noindent For the prediction we have to compute (\ref{eq:5}) which is not analytically tractable when $f_{\theta}(x)$ is a nonlinear mapping. By using the extended Kalman update (EKF) (\cite{mclean1962optimal}, \cite{anderson1979optimal}) it is obtained (\cite{akyildiz2021probabilistic})
+
+\begin{equation}
+    \Tilde{p}(x_k | y_{1:k-1}) = \mathcal{N}(x_k; \bar{\mu}_k, \bar{P}_k), 
+\end{equation}
+
+\noindent where $\bar{\mu}_k = f_{\theta}(\mu_{k-1})$, $\bar{P}_k = F_k P_{k-1} F^{T}_{k} + Q_k$, and $F_K = \frac{\partial f_{\theta}(x)}{\partial x} \vert_{x = \bar{\mu}_{k-1}}$ is the Jacobian of $f_{\theta}$ calculated for $\bar{\mu}_{k-1}$.
 
 \subsection{PSMF Algorithm}
 
