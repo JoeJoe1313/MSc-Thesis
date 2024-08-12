@@ -221,7 +221,7 @@ For the optimal inference recursions we have $\theta$ fixed, and we assume we kn
     p(x_k \mid y_{1:k-1}) = \int p(x_{k-1} \mid y_{1:k-1}) p(x_k \mid x_{k-1}) dx_{k-1}.
 \end{equation}
 
-\noindent Given that past marginal is known (\ref{eq:5}) is independent of the dictionary. \newline
+\noindent Given that past marginal is known, (\ref{eq:5}) is independent of the dictionary. \newline
 
 \noindent In order to be able to compute updates, we state the \textbf{incremental marginal likelihood}:
 
@@ -267,7 +267,7 @@ In this section we make the recursions tractable by through using approximations
 
 \noindent where $\bar{\mu}_k = f_{\theta}(\mu_{k-1})$, $\bar{P}_k = F_k P_{k-1} F^{T}_{k} + Q_k$, and $F_K = \frac{\partial f_{\theta}(x)}{\partial x} \vert_{x = \bar{\mu}_{k-1}}$ is the Jacobian of $f_{\theta}$ calculated at $\bar{\mu}_{k-1}$. \newline
 
-REVISIT THIS
+\noindent For the updates ... full derivation can be found ... here we are going to state the results ... \newline
 
 \noindent \textbf{Dictionary Update:}
 
@@ -289,6 +289,10 @@ REVISIT THIS
 \noindent where $\bar{R}_k = R_k + \bar{\mu}_k^T V_{k-1} \bar{\mu}_k \otimes I_d$.
 
 \subsection{Parameter Estimation}
+
+\begin{equation}
+    \theta_i = \theta_{i-1} + \gamma \nabla \log \Tilde{p}_{\theta}(y_{1:n}) \vert_{\theta = \theta_{i-1}}
+\end{equation}
 
 \subsection{PSMF Algorithm}
 
@@ -325,7 +329,7 @@ Intro
 
 \subsection{Model}
 
-The robust variant, rPSMF, incorporates robustness to outliers and model misspecifications by integrating a heavy-tailed t-distribution into the framework.
+The robust variant of PSMF (rPSMF) incorporates robustness to outliers and model misspecifications by integrating a multivariate t-distribution into the framework. The inference and parameter estimation follows the one for PSMF. The rPSMF model is defined as
 
 \begin{equation}
     p(s) = \mathcal{IG}(s; \lambda_0 / 2, \lambda_0 / 2)
@@ -345,11 +349,27 @@ The robust variant, rPSMF, incorporates robustness to outliers and model misspec
 
 \noindent where ...
 
+\begin{definition}
+    The \textit{inverse-gamma distribution} is defined as
+    \begin{equation}
+        \mathcal{IG}(s; \alpha, \beta) = \frac{\beta ^ \alpha}{\Gamma(\alpha)} \left(\frac{1}{s}\right)^{\alpha + 1} \exp \left(-\frac{\beta}{s}\right),
+    \end{equation}
+    for $\alpha > 0$, $\beta > 0$, and $\Gamma(.)$ denoting the \textit{Gamma function}.
+\end{definition}
+
+\begin{definition}
+    The \textit{multivariate t distribution} over $y \in \mathbb{R}^{d}$ with $\lambda$ degrees of freedom is defined as
+    \begin{equation}
+        \mathcal{T}(y; \mu, \Sigma, \lambda) = \frac{1}{(\pi \lambda)^{d/2} |\Sigma|^{1/2}} \frac{\Gamma((\lambda + d)/2)}{\Gamma(\lambda / 2)} \left(1 + \frac{\Delta^2}{\lambda}\right)^{-(\lambda + d) / 2},
+    \end{equation}
+    where $\Delta^2 = (y - \mu)^T \Sigma^{-1} (y-\mu)$.
+\end{definition}
+
 \subsection{Inference}
 
 Inference in rPSMF incorporates the handling of the robust parameters and scale mixing variable \( s \) introduced to manage outliers and model misspecifications.
 
-TODO: with or wotihout derivation?
+
 
 \subsection{rPSMF Algorithm}
 
