@@ -277,6 +277,8 @@ In this section we make the recursions tractable by through using approximations
 
 \noindent where $\eta_k = \text{tr}(R_k + C_{k-1} \bar{P}_{k} C_{k-1}^{T}) / d$. \newline
 
+Text \textbf{Maybe add the missed proposition for etc here} text. \newline 
+
 \noindent \textbf{Coefficcient Update:}
 
 \begin{equation}
@@ -289,7 +291,7 @@ with
     \mu_k = \bar{\mu}_k +  \bar{P}_k C_{k-1}^T \left(C_{k-1} \bar{P}_k C_{k-1}^T + \bar{R}_k\right)^{-1} (y_k - C_{k-1} \bar{\mu}_k),
 \end{equation}
 
-\begin{equation}
+\begin{equation} \label{eq:6}
     P_k = \bar{P}_k - \bar{P}_k C_{k-1}^T \left(C_{k-1} \bar{P}_k C_{k-1}^T + \bar{R}_k\right)^{-1} C_{k-1} \bar{P}_k,
 \end{equation}
 
@@ -403,11 +405,47 @@ Inference in rPSMF incorporates the handling of the robust parameters and scale 
     \lambda_k = \lambda_{k-1} + d.
 \end{equation}
 
-\noindent If we let $\Delta^2_{1,k} = (y_k - C_{k-1}\bar{\mu}_k)^T (C_{k-1} \bar{P}_k C_{k-1}^T + \bar{R}_k)^{-1} (y_k - C_{k-1}\bar{\mu}_k)$ and $\omega_k = (\lambda_{k-1} + \Delta^2_{1,k}) / (\lambda_{k-1} + d)$, then (\cite{akyildiz2021probabilistic}) $s_0 = s$, $s_k = \omega_k^{-1} s_{k-1}$, and for the noise covariances update we have $Q_k = \omega_k Q_{k-1}$, and $R_k = \omega_k R_{k-1}$. The updates for the mean for the coefficients and the dictionary are the same, but the updates for the coefficient covariance $P_k$ and the dictionary column-covariance $V_k$ undergo changes.
+\noindent If we let 
+
+\begin{equation}
+    \Delta^2_{1,k} = (y_k - C_{k-1}\bar{\mu}_k)^T (C_{k-1} \bar{P}_k C_{k-1}^T + \bar{R}_k)^{-1} (y_k - C_{k-1}\bar{\mu}_k)
+\end{equation}
+
+\noindent and 
+
+\begin{equation}
+    \omega_k = (\lambda_{k-1} + \Delta^2_{1,k}) / (\lambda_{k-1} + d),
+\end{equation}
+
+\noindent then (\cite{akyildiz2021probabilistic}) $s_0 = s$, $s_k = \omega_k^{-1} s_{k-1}$, and for the noise covariances update we have $Q_k = \omega_k Q_{k-1}$, and $R_k = \omega_k R_{k-1}$. The updates for the mean for the coefficients and the dictionary are the same, but the updates for the coefficient covariance $P_k$ and the dictionary column-covariance $V_k$ undergo changes. For $P_k$ the Student's $t$ update contributes to multiplying the right-hand side of Equation \ref{eq:6} by $\omega_k$:
+
+\begin{equation}
+    P_k = \omega_k \left(\bar{P}_k - \bar{P}_k C_{k-1}^T \left(C_{k-1} \bar{P}_k C_{k-1}^T + \bar{R}_k\right)^{-1} C_{k-1} \bar{P}_k\right).
+\end{equation}
+
+\noindent If we let 
+
+\begin{equation}
+    \bar{\rho}_k = \bar{\mu}_k^T V_{k-1} \bar{\mu}_k + \eta_k
+\end{equation}
+
+\noindent and
+
+\begin{equation}
+    \Delta^2_{2,k} = \Vert y_k - C_{k-1}\bar{\mu}_k \Vert^2 / \bar{\rho}_k,
+\end{equation}
+
+\noindent then the update of $V_k$ becomes (\textbf{revisit this in PSMF - it was missed, the explicit equation})
+
+\begin{equation}
+    V_k = \varphi_k \left(V_{k-1} - \frac{V_{k-1} \bar{\mu}_k \bar{\mu}_k^T V_{k-1}}{\bar{\mu}_k^T V_{k-1} \bar{\mu}_k + \eta_k}\right),
+\end{equation}
+
+\noindent where $\varphi_k = \left( \lambda_{k-1} + \Delta^2_{2,k} \right) / \left( \lambda_{k-1} + d \right)$.
 
 \subsection{rPSMF Algorithm}
 
-WIP
+The iterative version of the rPSMF algorithm is given in Algorithm \ref{algo:2}. The online, recursive version of rPSMF is not given here but can be found in the original PSMF paper (\cite{akyildiz2021probabilistic}).
 
 \begin{algorithm}[H]
 \caption{Iterative rPSMF}
@@ -416,26 +454,28 @@ WIP
 \State \textbf{for} $i \geq 1$ \textbf{do}
 \State \hspace{1em} $C_0 = C_T$, $\mu_0 = \mu_T$, $P_0 = P_T$, $V_0 = V_T$
 \State \hspace{1em} \textbf{for} $1 \leq k \leq T$ \textbf{do}
-\State \hspace{2em} Predictive mean of $x_k$: $\bar{\mu}_k = f_{\theta_{i-1}}(\mu_{k-1})$ or $\bar{\mu}_k = f_{\theta_{k-1}}(\mu_{k-1})$
+\State \hspace{2em} Predictive mean of $x_k$:
+\State \hspace{3em} $\bar{\mu}_k = f_{\theta_{i-1}}(\mu_{k-1})$ or $\bar{\mu}_k = f_{\theta_{k-1}}(\mu_{k-1})$
 \State \hspace{2em} Predictive covariance of $x_k$:
-\State \hspace{2em} $\bar{P}_k = F_k P_{k-1} F_k^\top + Q_k$, \hspace{1em} where \hspace{1em} $F_k = \left. \frac{\partial f(x)}{\partial x} \right|_{x=\bar{\mu}_{k-1}}$
-\State \hspace{1em} Compute scaling factor for the dictionary update
-\State \hspace{1em} $\varphi_k = \frac{\lambda_{k-1}}{\lambda_{k-1} + d} + \frac{(y_k - C_{k-1} \bar{\mu}_k)^\top (y_k - C_{k-1} \bar{\mu}_k)}{\bar{\mu}_k^\top V_{k-1} \bar{\mu}_k + \eta_k}$
-
+\State \hspace{3em} $\bar{P}_k = F_k P_{k-1} F_k^\top + Q_k$, \hspace{1em} where \hspace{1em} $F_k = \left. \frac{\partial f(x)}{\partial x} \right|_{x=\bar{\mu}_{k-1}}$
+\State \hspace{2em} Compute scaling factor for the dictionary update
+\State \hspace{3em} $\varphi_k = \frac{\lambda_{k-1}}{\lambda_{k-1} + d} + \frac{(y_k - C_{k-1} \bar{\mu}_k)^\top (y_k - C_{k-1} \bar{\mu}_k)}{\bar{\mu}_k^\top V_{k-1} \bar{\mu}_k + \eta_k}$
 \State \hspace{2em} where $\eta_k = \text{Tr}(C_{k-1} \bar{P}_k C_{k-1}^\top + R_{k-1}) / d$.
-\State \hspace{1em} Mean and covariance updates of the dictionary
-\State \hspace{1em} $C_k = C_{k-1} + \frac{(y_k - C_{k-1} \bar{\mu}_k) \bar{\mu}_k^\top V_{k-1}}{\bar{\mu}_k^\top V_{k-1} \bar{\mu}_k + \eta_k}$ and \hspace{1em} $V_k = \varphi_k \left( V_{k-1} - \frac{V_{k-1} \bar{\mu}_k \bar{\mu}_k^\top V_{k-1}}{\bar{\mu}_k^\top V_{k-1} \bar{\mu}_k + \eta_k} \right)$
-\State \hspace{1em} Compute scaling factor for the coefficient update
-\State \hspace{1em} $\omega_k = \lambda_{k-1} + (y_k - C_{k-1} \bar{\mu}_k)^\top S_k^{-1} (y_k - C_{k-1} \bar{\mu}_k)$
+\State \hspace{2em} Mean and covariance updates of the dictionary
+\State \hspace{3em} $C_k = C_{k-1} + \frac{(y_k - C_{k-1} \bar{\mu}_k) \bar{\mu}_k^\top V_{k-1}}{\bar{\mu}_k^\top V_{k-1} \bar{\mu}_k + \eta_k}$ and \hspace{1em} $V_k = \varphi_k \left( V_{k-1} - \frac{V_{k-1} \bar{\mu}_k \bar{\mu}_k^\top V_{k-1}}{\bar{\mu}_k^\top V_{k-1} \bar{\mu}_k + \eta_k} \right)$
+\State \hspace{2em} Compute scaling factor for the coefficient update
+\State \hspace{3em} $\omega_k = \lambda_{k-1} + (y_k - C_{k-1} \bar{\mu}_k)^\top S_k^{-1} (y_k - C_{k-1} \bar{\mu}_k)$
 
 \State \hspace{2em} where $S_k = C_{k-1} \bar{P}_k C_{k-1}^\top + \bar{R}_k$ and \hspace{1em} $\bar{R}_k = R_{k-1} + \bar{\mu}_k^\top V_{k-1} \bar{\mu}_k \otimes I_d$.
-\State \hspace{1em} Mean and covariance updates of coefficients
-\State \hspace{1em} $\mu_k = \bar{\mu}_k + \bar{P}_k C_{k-1}^\top S_k^{-1} (y_k - C_{k-1} \bar{\mu}_k)$ and \hspace{1em} $P_k = \omega_k (\bar{P}_k - \bar{P}_k C_{k-1}^\top S_k^{-1} C_{k-1} \bar{P}_k)$
-\State \hspace{1em} Update noise covariances: $Q_k = \omega_k Q_{k-1}$ and $R_k = \omega_k R_{k-1}$
-\State \hspace{1em} Update degrees of freedom: $\lambda_k = \lambda_{k-1} + d$
-\State \hspace{1em} Parameter update: $\theta_k = \theta_{k-1} + \gamma \nabla_\theta \log p_\theta (y_k | y_{1:k-1}) |_{\theta = \theta_{i-1}}$
-\State \hspace{1em} Parameter update: $\theta_i = \theta_{i-1} + \gamma \sum_{k=1}^T \nabla_\theta \log p_\theta (y_k | y_{1:k-1}) |_{\theta = \theta_{i-1}}$
-\end{algorithmic}
+\State \hspace{2em} Mean and covariance updates of coefficients
+\State \hspace{3em} $\mu_k = \bar{\mu}_k + \bar{P}_k C_{k-1}^\top S_k^{-1} (y_k - C_{k-1} \bar{\mu}_k)$ and \hspace{1em} $P_k = \omega_k (\bar{P}_k - \bar{P}_k C_{k-1}^\top S_k^{-1} C_{k-1} \bar{P}_k)$
+\State \hspace{2em} Update noise covariances:
+\State \hspace{3em} $Q_k = \omega_k Q_{k-1}$ and $R_k = \omega_k R_{k-1}$
+\State \hspace{2em} Update degrees of freedom: 
+\State \hspace{3em} $\lambda_k = \lambda_{k-1} + d$
+\State \hspace{1em} Parameter update: 
+\State \hspace{2em} $\theta_i = \theta_{i-1} + \gamma \sum_{k=1}^T \nabla_\theta \log p_\theta (y_k | y_{1:k-1}) |_{\theta = \theta_{i-1}}$
+\end{algorithmic}\label{algo:2}
 \end{algorithm}
 
 \section{PSMF for Handling Missing Data}
