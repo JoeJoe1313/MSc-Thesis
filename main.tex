@@ -480,6 +480,8 @@ The iterative version of the rPSMF algorithm is given in Algorithm \ref{algo:2}.
 
 \section{PSMF for Handling Missing Data}
 
+Intro
+
 \subsection{Model}
 
 \begin{equation}
@@ -495,13 +497,21 @@ The iterative version of the rPSMF algorithm is given in Algorithm \ref{algo:2}.
     p(z_k | x_k, C) = \mathcal{N}(z_k; M_k Cx_k, M_k R_k M_{k}^{T}),
 \end{equation}
 
-\noindent where ... \newline
-
-TODO
+\noindent where $z_k = m_k \odot y_k$, $m_k \in \{0, 1\}^d$ is a mask vector. Zero corresponds to missing entries, and ones otherwise. Also, $z_k = M_k y_k$, $M_k = \text{diag}(m_k)$. Reverse this... then state the model definition \newline
 
 \subsection{Inference}
 
-TODO
+Let $\Tilde{p}(c | z_{1:k-1}) = \mathcal{N}(c; c_{k-1}, V_{k-1} \otimes I_d)$ and 
+
+\begin{equation}
+    \Tilde{p}(z_k | c, z_{1:k-1}) = \mathcal{N}(z_k; M_k C \bar{\mu}_k, \eta_k \otimes I_d), 
+\end{equation}
+
+\noindent where 
+
+\begin{equation}
+    \eta_k = \frac{\text{tr}(M_k R_k M_k^T + M_k C_{k-1} \bar{P}_k C_{k-1}^T M_k^T)}{m}.
+\end{equation}
 
 \subsection{Algorithm}
 
