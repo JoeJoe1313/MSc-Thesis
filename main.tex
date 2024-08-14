@@ -339,7 +339,7 @@ The iterative version of the PSMF algorithm is given in Algorithm \ref{algo:1}. 
 \State \hspace{1em} $C_0 = C_n$, $\mu_0 = \mu_n$, $P_0 = P_n$, $V_0 = V_n$
 \State \hspace{1em} \textbf{for} $1 \leq k \leq n$ \textbf{do}
 \State \hspace{2em} Compute predictive mean of $x_k$:
-\State \hspace{3em} $\bar{\mu}_k = f_{\theta_{i-1}}(\mu_{k-1})$ or $\bar{\mu}_k = f_{\theta_k-1}(\mu_{k-1})$
+\State \hspace{3em} $\bar{\mu}_k = f_{\theta_{i-1}}(\mu_{k-1})$
 \State \hspace{2em} Compute predictive covariance of $x_k$:
 \State \hspace{3em} $\bar{P}_k = F_k P_{k-1} F_k^\top + Q_k$, with $F_k = \left. \frac{\partial f(x)}{\partial x} \right|_{x=\bar{\mu}_{k-1}}$
 \State \hspace{2em} Update dictionary mean $C_k$:
@@ -455,7 +455,7 @@ The iterative version of the rPSMF algorithm is given in Algorithm \ref{algo:2}.
 \State \hspace{1em} $C_0 = C_T$, $\mu_0 = \mu_T$, $P_0 = P_T$, $V_0 = V_T$
 \State \hspace{1em} \textbf{for} $1 \leq k \leq T$ \textbf{do}
 \State \hspace{2em} Predictive mean of $x_k$:
-\State \hspace{3em} $\bar{\mu}_k = f_{\theta_{i-1}}(\mu_{k-1})$ or $\bar{\mu}_k = f_{\theta_{k-1}}(\mu_{k-1})$
+\State \hspace{3em} $\bar{\mu}_k = f_{\theta_{i-1}}(\mu_{k-1})$
 \State \hspace{2em} Predictive covariance of $x_k$:
 \State \hspace{3em} $\bar{P}_k = F_k P_{k-1} F_k^\top + Q_k$, \hspace{1em} where \hspace{1em} $F_k = \left. \frac{\partial f(x)}{\partial x} \right|_{x=\bar{\mu}_{k-1}}$
 \State \hspace{2em} Compute scaling factor for the dictionary update
@@ -555,30 +555,42 @@ TODO
 \begin{algorithm}[H]
 \caption{PSMF with Missing Data Imputation}
 \begin{algorithmic}[1]
-\State Initialize $\gamma$, $\theta_0$, $C_0$, $V_0$, $\mu_0$, $P_0$, $(Q)_k \geq 1$, $(R)_k \geq 1$, and missing data mask $M$.
+\State Initialize $\gamma$, $\theta_0$, $C_0$, $V_0$, $\mu_0$, $P_0$, $(Q)_{k \geq 1}$, $(R)_{k \geq 1}$, and missing data mask $M$.
 \State \textbf{for} $i \geq 1$ \textbf{do}
 \State \hspace{1em} $C_0 = C_n$, $\mu_0 = \mu_n$, $P_0 = P_n$, $V_0 = V_n$
 \State \hspace{1em} \textbf{for} $1 \leq k \leq n$ \textbf{do}
 \State \hspace{2em} Compute predictive mean of $x_k$:
-\State \hspace{3em} $\bar{\mu}_k = f_{\theta_{i-1}}(\mu_{k-1})$ or $\bar{\mu}_k = f_{\theta_k-1}(\mu_{k-1})$
+\State \hspace{3em} $\bar{\mu}_k = f_{\theta_{i-1}}(\mu_{k-1})$
 \State \hspace{2em} Compute predictive covariance of $x_k$:
 \State \hspace{3em} $\bar{P}_k = F_k P_{k-1} F_k^\top + Q_k$, with $F_k = \left. \frac{\partial f(x)}{\partial x} \right|_{x=\bar{\mu}_{k-1}}$
 \State \hspace{2em} Update dictionary mean $C_k$:
-\State \hspace{3em} $C_k = C_{k-1} + \frac{M_k \odot (y_k - C_{k-1} \bar{\mu}_k) \bar{\mu}_k^\top V_{k-1}^\top}{\bar{\mu}_k^\top V_{k-1} \bar{\mu}_k + \eta_k}$
+\State \hspace{3em} $C_k = C_{k-1} + \frac{(z_k - M_k C_{k-1} \bar{\mu}_k)\bar{\mu}_k^\top V_{k-1}^\top}{\bar{\mu}_k^\top V_{k-1} \bar{\mu}_k + \eta_k}$
 \State \hspace{2em} Update dictionary covariance $V_k$:
+\State \hspace{3em} $V_k \approx V_k \otimes I_d$, where
 \State \hspace{3em} $V_k = V_{k-1} - \frac{V_{k-1} \bar{\mu}_k \bar{\mu}_k^\top V_{k-1}}{\bar{\mu}_k^\top V_{k-1} \bar{\mu}_k + \eta_k}$
 \State \hspace{2em} Update coefficient mean $\mu_k$:
-\State \hspace{3em} $\mu_k = \bar{\mu}_k + \bar{P}_k C_{k-1}^\top (M_k \odot (C_{k-1} \bar{P}_k C_{k-1}^\top + \bar{R}_k))^{-1} M_k \odot (y_k - C_{k-1} \bar{\mu}_k)$
+\State \hspace{3em} $\mu_k = \bar{\mu}_k + \bar{P}_k C_{k-1}^\top M_k^\top S_k^{-1} (z_k - M_k C_{k-1} \bar{\mu}_k)$
+\State \hspace{3em} where $S_k = M_k C_{k-1} \bar{P}_k C_{k-1}^\top M_k^\top + M_k R_k M_k^\top$
 \State \hspace{2em} Update coefficient covariance $P_k$:
-\State \hspace{3em} $P_k = \bar{P}_k - \bar{P}_k C_{k-1}^\top (M_k \odot (C_{k-1} \bar{P}_k C_{k-1}^\top + \bar{R}_k))^{-1} M_k \odot C_{k-1} \bar{P}_k$
+\State \hspace{3em} $P_k = \bar{P}_k - \bar{P}_k C_{k-1}^\top M_k^\top S_k^{-1} M_k C_{k-1} \bar{P}_k$
 \State \hspace{1em} Update parameters:
-\State \hspace{2em} $\theta_i = \theta_{i-1} + \gamma \nabla \log \tilde{p}_{\theta}(y_{1:n}) \vert_{\theta = \theta_{i-1}}$
+\State \hspace{2em} Iterative: $\theta_i = \theta_{i-1} + \gamma \sum_{k=1}^n \nabla \log \tilde{p}_\theta(z_k | z_{1:k-1}) |_{\theta=\theta_{i-1}}$
+\State \hspace{2em} Recursive: $\theta_k = \theta_{k-1} + \gamma \nabla \log \tilde{p}_\theta(z_k | z_{1:k-1}) |_{\theta=\theta_{k-1}}$
 \end{algorithmic}\label{algo:psmf_missing_data}
 \end{algorithm}
 
-
+The main changes are:
+\begin{itemize}
+    \item Using $z_k$ instead of $y_k$ to represent the masked observations
+    \item Updating the dictionary mean update to use $z_k$ and $M_k$
+    \item Approximating the dictionary covariance update as $V_k \approx V_k \otimes I_d$
+    \item Modifying the coefficient updates to use $M_k$ and $z_k$
+    \item Clarifying the iterative and recursive parameter update steps
+\end{itemize}
 
 \section{ECG/medical introduction}
+
+An electrocardiogram (ECG) is a medical test that records the electrical activity of the heart over a period of time using electrodes placed on the skin. These electrodes detect the tiny electrical changes on the skin that arise from the heart muscle's electrophysiologic pattern of depolarizing and repolarizing during each heartbeat. It is a very common, non-invasive procedure used to detect heart abnormalities, monitor cardiac health, and guide treatment decisions.
 
 WIP
 
@@ -762,6 +774,12 @@ TODO:
     \item More complex model to better suit the complexity of the ECG data
     \item Better computational efficiency
 \end{itemize}
+
+\chapter{QS}
+
+Why modelling ecg is usefu? SPecifically normal sinus rhythm.
+
+Why detecting ECG is useful?
 
 \clearpage
  %% reset page counter and start appendix pages with A
