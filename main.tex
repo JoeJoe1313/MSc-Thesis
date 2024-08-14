@@ -483,16 +483,16 @@ The iterative version of the rPSMF algorithm is given in Algorithm \ref{algo:2}.
 \subsection{Model}
 
 \begin{equation}
-    p(C) = \mathcal{MN}(C; C_0, I_d, V_0) \quad \text{(Matrix-variate Gaussian prior on dictionary)}
+    p(C) = \mathcal{MN}(C; C_0, I_d, V_0)
 \end{equation}
 \begin{equation}
-    p(x_0) = \mathcal{N}(x_0; \mu_0, P_0) \quad \text{(Gaussian prior on initial coefficients)}
+    p(x_0) = \mathcal{N}(x_0; \mu_0, P_0)
 \end{equation}
 \begin{equation}
-    p_{\theta}(x_k | x_{k-1}) = \mathcal{N}(x_k; f_{\theta}(x_{k-1}), Q_k) \quad \text{(State transition model)}
+    p_{\theta}(x_k | x_{k-1}) = \mathcal{N}(x_k; f_{\theta}(x_{k-1}), Q_k)
 \end{equation}
 \begin{equation}
-    p(z_k | x_k, C) = \mathcal{N}(z_k; M_k Cx_k, M_k R_k M_{k}^{T}), \quad \text{(Observation model)}
+    p(z_k | x_k, C) = \mathcal{N}(z_k; M_k Cx_k, M_k R_k M_{k}^{T}),
 \end{equation}
 
 \noindent where ... \newline
