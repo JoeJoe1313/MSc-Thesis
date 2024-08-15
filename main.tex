@@ -579,25 +579,34 @@ TODO
 \end{algorithmic}\label{algo:psmf_missing_data}
 \end{algorithm}
 
-\section{ECG/medical introduction}
+\clearpage
 
-An electrocardiogram (ECG) is a medical diagnostic tool that records the electrical activity of the heart over a period of time using electrodes placed on the skin. These electrodes detect the tiny electrical changes on the skin that arise from the heart muscle's electrophysiologic pattern of depolarizing and repolarizing during each heartbeat. It is a very common, non-invasive procedure used to diagnose rhythm abnormalities, electrical conduction changes, myocardial ischemia and infarction, and generally to monitor cardiac health, and be of help to treatment decisions. \newline
+\section{Introduction to ECG}
 
-\noindent The electrical signals generated during the cardiac cycle, consisting of depolarization and repolarization of the heart muscle cells, propagate through the conductive tissues surrounding the heart. By placing electrodes at specific locations on the body, these electrical signals can be detected and recorded as an electrocardiogram (ECG). The repeating patterns observed in an ECG reflect the sequence of electrical activity in the atria and ventricles. Instead of measuring the absolute voltage, an ECG records the voltage changes relative to a baseline. Standard ECG recordings are made on paper at a rate of 25 mm per second, with a vertical calibration of 1 millivolt per centimeter. (\cite{alma991000225790601591}) \newline
+An electrocardiogram (ECG) is a medical graphical representation of the changes in the strength and direction of the heart's electrical activity over a period of time using electrodes placed on the skin. These electrodes detect the tiny electrical changes on the skin that arise from the heart muscle's electrophysiologic pattern of depolarizing and repolarizing during each heartbeat. It is a very common, non-invasive procedure used to diagnose rhythm abnormalities, electrical conduction changes, myocardial ischemia and infarction, and generally to monitor cardiac health, and be of help to treatment decisions. \newline
 
-\noindent In Figure \ref{fig:ecg} we can see the components of the ECG trace. A closer look at one of the repeating waveforms in an ECG rhythm strip (ECG PQRST complex) reveals several distinct components, each representing a specific phase of the cardiac cycle. The P wave corresponds to atrial depolarization, while the QRS complex represents ventricular depolarization. The T wave, which follows the QRS complex, indicates ventricular repolarization. The PR interval is the time taken for the depolarization wave to travel through the atria and the atrioventricular (AV) node. The QT interval encompasses the entire period of ventricular depolarization and repolarization. Between the QRS complex and the T wave lies the ST segment, an isoelectric period during which the entire ventricle is in a depolarized state. \newline
+\noindent The electrical signals generated during the cardiac cycle, consisting of depolarization and repolarization of the heart muscle cells, propagate through the conductive tissues surrounding the heart. By placing electrodes at specific locations on the body, these electrical signals can be detected and recorded as an ECG. The repeating patterns observed in an ECG reflect the sequence of electrical activity in the atria and ventricles. Instead of measuring the absolute voltage, an ECG records the voltage changes relative to a baseline. Standard ECG recordings are made on paper at a rate of 25 mm per second, with a vertical calibration of 1 millivolt per centimeter. (\cite{alma991000225790601591}) \newline
 
-\noindent A 12-lead ECG provides a comprehensive view of the heart's electrical activity from different angles. It consists of 12 different leads, each representing a specific view of the heart. The leads are divided into two main groups: \newline
+\noindent In Figure \ref{fig:ecg-huszar} we can see the components of the ECG trace. A closer look at one of the repeating waveforms in an ECG rhythm strip (PQRST complex) reveals several distinct components, each representing a specific phase of the cardiac cycle. The P wave corresponds to atrial depolarization, while the QRS complex represents ventricular depolarization. The T wave, which follows the QRS complex, indicates ventricular repolarization. The PR interval is the time taken for the depolarization wave to travel through the atria and the atrioventricular (AV) node. The QT interval encompasses the entire period of ventricular depolarization and repolarization. Between the QRS complex and the T wave lies the ST segment, an isoelectric period during which the entire ventricle is in a depolarized state. \newline
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=1\linewidth]{images/ecg-huszar.jpg}
+\caption{Components of the ECG trace. (\cite{huszar})}
+\label{fig:ecg-huszar}
+\end{figure}
+
+\noindent Simply said, a 12-lead ECG provides a comprehensive view of the heart's electrical activity from different angles. It consists of 12 different leads, each representing a specific view of the heart. The leads are divided into two main groups: \newline
 
 \noindent \textbf{Limb Leads:}
 \begin{itemize}
-    \item \textbf{Bipolar Limb Leads:} (I, II, III)
+    \item \textbf{Bipolar Limb Leads:} (Figure \ref{fig:limp})
     \begin{itemize}
         \item \textbf{Lead I:} Measures the voltage difference between the right arm and left arm.
         \item \textbf{Lead II:} Measures the voltage difference between the right arm and left leg.
         \item \textbf{Lead III:} Measures the voltage difference between the left arm and left leg.
     \end{itemize}
-    \item \textbf{Augmented Unipolar Limb Leads:} (aVR, aVL, aVF)
+    \item \textbf{Augmented Unipolar Limb Leads:} (Figure \ref{fig:augmented})
     \begin{itemize}
         \item \textbf{aVR:} Measures the electrical difference from the right arm to a central point between the left arm and left leg.
         \item \textbf{aVL:} Measures from the left arm to a central point.
@@ -605,63 +614,42 @@ An electrocardiogram (ECG) is a medical diagnostic tool that records the electri
     \end{itemize}
 \end{itemize}
 
-\noindent \textbf{Precordial Leads:} Placed across the chest, around the heart.
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.4\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{images/limp-leads-tr.jpg}
+    \caption{Bipolar limb leads. (\cite{huszar})}
+    \label{fig:limp}
+\end{minipage}%
+\hspace{0.05\linewidth}
+\begin{minipage}{0.4\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{images/augmented.jpg}
+    \caption{Augmented unipolar limb leads. (\cite{huszar})}
+    \label{fig:augmented}
+\end{minipage}
+\end{figure}
+
+\noindent \textbf{Precordial Unipolar Leads:} (Figure \ref{fig:vs})
 \begin{itemize}
     \item \textbf{V1 to V6:} These leads provide views of the horizontal plane of the heart, from right to left.
 \end{itemize}
 
-#### Equations and Lead Formations
-
-- **Einthoven's Triangle**: This is a theoretical formation of the limb leads (I, II, III), forming an equilateral triangle with the heart at the center. The voltages in these leads relate to each other:
-  - **Lead I + Lead III = Lead II**
-
-This relationship helps in understanding the orientation and magnitude of the heart's electrical activity.
-
-- **Augmented Limb Leads**: The voltages in these leads are calculated by amplifying the electrical difference between one limb electrode and a central point formed by the other limb electrodes:
-  - **aVR = -(Lead I + Lead II)/2**
-  - **aVL = Lead I - Lead II/2**
-  - **aVF = Lead II - Lead I/2**
-
-These relationships are based on the principle that the sum of the voltages from all three limb leads should be zero when the heart's electrical axis is normal.
-
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
-\includegraphics[width=1\linewidth]{images/ecg.png}
-\caption{Components of the ECG trace. (\cite{alma991000225790601591})}
-\label{fig:ecg}
+\includegraphics[width=0.5\linewidth]{images/vs.jpg}
+\caption{Precordial unipolar leads. (\cite{huszar})}
+\label{fig:vs}
 \end{figure}
 
-A 12-Lead ECG (Electrocardiogram) is a standard diagnostic tool used to assess the electrical activity of the heart. It provides a comprehensive view of the heart's electrical activity from different angles. The 12 leads consist of:
+\noindent The so called  \textbf{Einthoven's Triangle} (can be seen in Figure \ref{fig:limp}) is a theoretical formation of the limb leads (I, II, III), forming an equilateral triangle with the heart at the center. This relationship helps in understanding the orientation and magnitude of the heart's electrical activity. The voltages in these leads relate to each other in the following way:
 
-\begin{itemize}
-  \item 6 precordial leads (V1-V6) placed on the chest
-  \item 3 limb leads (I, II, III)
-  \item 3 augmented limb leads (aVR, aVL, aVF)
-\end{itemize}
+\begin{equation}
+    \text{Lead I} + \text{Lead III} = \text{Lead II}.
+\end{equation}
 
-\begin{figure}[h!]
-    \centering
-    \subfigure{
-        \includegraphics[width=0.48\linewidth]{images/ECG_Electrode_Placement.png}
-        \label{fig:ecg-electrode}
-    }
-    \hfill
-    \subfigure{
-        \includegraphics[width=0.48\linewidth]{images/SinusRhythmLabels.png}
-        \label{fig:sinus-rhythm}
-    }
-    \caption{Left: . Right: }
-    \label{fig:combined}
-\end{figure}
-
-TODO:
-
-\begin{itemize}
-    \item introduce PQRST
-    \item mention R-peaks and their importance
-    \item general information about the 12-leads 
-    \item add images for ECG, leads placements, sources
-\end{itemize}
+\noindent The voltages in augmented limb leads are calculated by amplifying the electrical difference between one limb electrode and a central point formed by the other limb electrodes. These relationships are based on the principle that the sum of the voltages from all three limb leads should be zero when the heart's electrical axis is normal.
 
 % forcing a page break
 \clearpage
