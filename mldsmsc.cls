@@ -19,6 +19,7 @@
 \RequirePackage{algpseudocode}
 \RequirePackage{algorithm}
 
+
 % Remove blank page between chapters
 \KOMAoptions{twoside=false}
 
@@ -41,6 +42,8 @@
 \RequirePackage[round,authoryear,sort]{natbib}
 %\usepackage[authoryear]{natbib}
 %\usepackage[numbers]{natbib}
+\RequirePackage[colorlinks=true, citecolor=red, linkcolor=blue, urlcolor=blue]{hyperref}
+
 
 %% Theorem environment and numbering
 \theoremstyle{definition}

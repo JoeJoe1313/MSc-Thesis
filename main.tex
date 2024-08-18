@@ -545,12 +545,14 @@ To update \(x_k\), once we fix \(C_{k-1}\), everything straightforwardly follows
 -\log \tilde{p}_\theta (z_k | z_{1:k-1}) \overset{c}{=} \frac{1}{2} \sum_{j=1}^{d} \log u_{jk} + \frac{1}{2} (z_k - M_k C_{k-1} f_\theta(\mu_{k-1}))^\top U_k^{-1} (z_k - M_k C_{k-1} f_\theta(\mu_{k-1})),
 \end{equation}
 
-where \(\overset{c}{=}\) denotes equality up to constants that do not depend on \(\theta\) and \(U_k = \|f_\theta(\mu_{k-1})\|_{V_{k-1}^2} \otimes M_k + \eta_k \otimes I_d\) is a \(d\)-dimensional diagonal matrix with elements \(u_{jk}\) for \(j = 1, \ldots, d\).
+where \(\overset{c}{=}\) denotes equality up to constants that do not depend on \(\theta\) and \(U_k = \|f_\theta(\mu_{k-1})\|_{V_{k-1}^2} \otimes M_k + \eta_k \otimes I_d\) is a \(d\)-dimensional diagonal matrix with elements \(u_{jk}\) for \(j = 1, \ldots, d\). \newline
+
+TODO: updates related to x_k?
 
 
 \subsection{Algorithm}
 
-TODO
+WIP and TODO: add $\eta_k$, correct iterative update parameter
 
 \begin{algorithm}[H]
 \caption{PSMF with Missing Data Imputation}
@@ -656,7 +658,7 @@ An electrocardiogram (ECG) is a medical graphical representation of the changes 
 
 \chapter{Experiments and Results}
 
-The research aims to use the already available A Large Scale 12-lead Electrocardiogram Database for Arrhythmia Study (\cite{cite1}, \cite{cite2}, \cite{cite3}). This is a comprehensive database of high-quality 12-lead ECG signals collected from 45,152 patients. Each signal is with length of 10 seconds corresponding to 5000 data points. The dataset is designed to support arrhythmia research, containing labeled data for various cardiac conditions such as atrial fibrillation, premature ventricular contractions, and bundle branch blocks. This large dataset has high-quality labels from professional experts, diverse arrhythmia types, and additional cardiovascular conditions, making it suitable for performing different research tasks on it without spending time on gathering, cleaning and processing data. \newline
+For the experiments we are going to use the already available dataser "A Large Scale 12-lead Electrocardiogram Database for Arrhythmia Study" (\cite{cite1}, \cite{cite2}, \cite{cite3}). This is a comprehensive database of high-quality 12-lead ECG signals collected from $45 152$ patients. Each signal is with length of $10$ seconds corresponding to $5 000$ data points. The dataset is designed to support arrhythmia research, containing labeled data for various cardiac conditions such as atrial fibrillation, premature ventricular contractions, and bundle branch blocks. This large dataset has high-quality labels from professional experts, diverse arrhythmia types, and additional cardiovascular conditions, making it suitable for performing our tests on it. \newline
 
 
 % • Presents a comprehensive database of 12-lead ECG signals collected from 45,152 patients. Each signal is with length of 10 seconds corresponding to 5000 data points.
@@ -672,13 +674,74 @@ The research aims to use the already available A Large Scale 12-lead Electrocard
 
 \section{Missing Data Imputation}
 
+We test PSMF and rPSMF on imputing missing data in 12-lead ECG time-series. The 12-lead ECG signal is chosen to be one representing a normal heart rhythm (sinus rhythm). As already mentioned each of the $m = 12$ leads contains $n = 5000$ data points. One heart beat (PQRST complex) is of apprixamte lebgth of $300$ data points. That's why, to examine the accuracy of the imputations, we choose to randomly remove segments of length $300$, and construct datasets with $20\%$, $30\%$, and $40\%$ missing data. We compare the results for each dataset against two other baseline sequential methods used in the PSMF paper (\cite{akyildiz2021probabilistic}). The first, which we call MLE-SMF, is a maximum likelihood estimation (MLE) method for online probabilistic matrix factorization where the state transition matrix $C$ remains constant over time. This builds on prior work by \cite{YILDIRIM2012494}, \cite{6288274}, and \cite{6638240}. The second approach adapts the temporal matrix factorization (TMF) optimization technique proposed by \cite{NIPS2016_85422afb}. \newline
+
+
+
 TODO:
 \begin{itemize}
-    \item data used - processing
+    \item redo testing with correct dataset: done for 100 and 300 missing data points and ranks 3 and 10
+    \item update tables results: done for 300 missing data points and rank 3
+    \item mention rank 10 is worse, maybe show results?
+    \item data used - no processing, aVR?
     \item algorithms tested: psmf, rpsmf, mle-smf, tmf
-    \item coverage, results
-    \item add figures showing the original data, missing parts and imputed parts
+    \item coverage, results: done
+    \item add figures showing the original data, missing parts and imputed parts: done
 \end{itemize}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\linewidth]{images/missing/psmf_input_300.pdf}
+\caption{Input with 300 missing data points per wave. Missing parts are in yellow.}
+\label{fig:vs}
+\end{figure}
+
+% \begin{figure}[H]
+% \centering
+% \includegraphics[width=0.75\linewidth]{images/missing/psmf_output_300_20_3.pdf}
+% \caption{Input with 300 missing data points per wave.}
+% \label{fig:vs}
+% \end{figure}
+
+% \begin{figure}[H]
+% \centering
+% \includegraphics[width=0.75\linewidth]{images/missing/rpsmf_output_300_20_3.pdf}
+% \caption{Input with 300 missing data points per wave.}
+% \label{fig:vs}
+% \end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.4\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{images/missing/psmf_output_300_20_3.pdf}
+    \label{fig:limp}
+\end{minipage}%
+\hspace{0.05\linewidth}
+\begin{minipage}{0.4\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{images/missing/rpsmf_output_300_20_3.pdf}
+    \label{fig:augmented}
+\end{minipage}
+\caption{Reconstruction with rank 3, 20\% missing data. Left: original; Right: augmented.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.4\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{images/missing/mlesmf_output_300_20_3.pdf}
+    \label{fig:limp}
+\end{minipage}%
+\hspace{0.05\linewidth}
+\begin{minipage}{0.4\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{images/missing/tmf_output_300_20_3.pdf}
+    \label{fig:augmented}
+\end{minipage}
+\caption{Reconstruction with rank 3, 20\% coverage. Left: original; Right: augmented.}
+\end{figure}
+
 
 %% DO NOT EDIT - AUTOMATICALLY GENERATED FROM RESULTS!
 %% This table requires booktabs and multirow!
@@ -688,11 +751,11 @@ TODO:
     \begin{threeparttable}
         \begin{tabular}{lccc}
             \hline
-             & 20\% & 30\% & 40\% \\
+            Missing \%: & 20\% & 30\% & 40\% \\
             \hline
-            PSMF & 0.39 & 0.32 & 0.24 \\
-            rPSMF & \textbf{0.85} & \textbf{0.78} & \textbf{0.71} \\
-            MLE-SMF & 0.18 & 0.16 & 0.15 \\
+            PSMF & 0.15 & 0.14 & 0.12 \\
+            rPSMF & \textbf{0.86} & \textbf{0.82} & \textbf{0.77} \\
+            MLE-SMF & 0.17 & 0.16 & 0.14 \\
             \hline
         \end{tabular}
         \caption{Average coverage proportion of the missing data by the $2\sigma$ uncertainty bars of the posterior predictive estimates, averaged over 100 repetitions.}
@@ -707,14 +770,50 @@ TODO:
  & \multicolumn{3}{c}{Imputation RMSE} & \multicolumn{3}{c}{Runtime (s)} \\
  & 20\% & 30\% & 40\% & 20\% & 30\% & 40\% \\
 \midrule
-PSMF & $\underset{{\scriptscriptstyle \;\;(20.80)}}{63.93}$ & $\underset{{\scriptscriptstyle \;\;(22.15)}}{80.90}$ & $\underset{{\scriptscriptstyle \;\;\;(21.30)}}{104.68}$ & 1.05 & 1.25 & 1.19 \\
-rPSMF & $\underset{{\scriptscriptstyle \;\;(17.29)}}{\textbf{60.58}}$ & $\underset{{\scriptscriptstyle \;\;(18.50)}}{\textbf{74.56}}$ & $\underset{{\scriptscriptstyle \;\;(20.12)}}{\textbf{93.22}}$ & 1.22 & 1.31 & 1.17 \\
-MLE-SMF & $\underset{{\scriptscriptstyle \;\;\;(22.15)}}{255.87}$ & $\underset{{\scriptscriptstyle \;\;\;(67.00)}}{263.76}$ & $\underset{{\scriptscriptstyle \;\;\;(81.31)}}{271.45}$ & 6.17 & 1.00 & 1.12 \\
-TMF & $\underset{{\scriptscriptstyle \;\;\;(15.78)}}{169.83}$ & $\underset{{\scriptscriptstyle \;\;\;(16.33)}}{167.91}$ & $\underset{{\scriptscriptstyle \;\;\;(17.91)}}{155.58}$ & 2.11 & 0.50 & 0.58 \\
+PSMF & $\underset{{\scriptscriptstyle \;\;(16.70)}}{78.47}$ & $\underset{{\scriptscriptstyle \;\;(17.12)}}{83.25}$ & $\underset{{\scriptscriptstyle \;\;\;(23.85)}}{101.85}$ & 0.49 & 0.49 & 0.49 \\
+rPSMF & $\underset{{\scriptscriptstyle \;\;(13.43)}}{\textbf{71.98}}$ & $\underset{{\scriptscriptstyle \;\;(12.51)}}{\textbf{73.97}}$ & $\underset{{\scriptscriptstyle \;\;(13.84)}}{\textbf{83.17}}$ & 0.56 & 0.55 & 0.56 \\
+MLE-SMF & $\underset{{\scriptscriptstyle \;\;\;(45.29)}}{270.73}$ & $\underset{{\scriptscriptstyle \;\;\;(36.57)}}{246.62}$ & $\underset{{\scriptscriptstyle \;\;\;(40.50)}}{235.41}$ & 0.41 & 0.41 & 0.41 \\
+TMF & $\underset{{\scriptscriptstyle \;\;\;(20.68)}}{202.45}$ & $\underset{{\scriptscriptstyle \;\;\;(16.31)}}{203.68}$ & $\underset{{\scriptscriptstyle \;\;\;(18.89)}}{208.68}$ & 0.17 & 0.17 & 0.17 \\
 \bottomrule
 \end{tabular}
-\caption{Imputation error and runtime using 20\%, 30\% and 40\% missing values, averaged over 100 random repetitions.}
+\caption{Imputation error and runtime using 20\%, 30\% and 40\% missing values, averaged over 100 random repetitions. 300 missing data points per wave, rank 3.}
 \end{table}
+
+\begin{table}[H]
+\centering
+\begin{minipage}{0.45\textwidth}
+    \centering
+    \begin{threeparttable}
+        \begin{tabular}{lccc}
+            \hline
+            Missing \%: & 20\% & 30\% & 40\% \\
+            \hline
+            PSMF & 0.15 & 0.14 & 0.12 \\
+            rPSMF & \textbf{0.86} & \textbf{0.82} & \textbf{0.77} \\
+            MLE-SMF & 0.17 & 0.16 & 0.14 \\
+            \hline
+        \end{tabular}
+        \caption{Average coverage proportion of the missing data by the $2\sigma$ uncertainty bars of the posterior predictive estimates, averaged over 100 repetitions.}
+    \end{threeparttable}
+\end{minipage}%
+\hfill
+\begin{minipage}{0.52\textwidth}
+\centering
+\begin{tabular}{@{}lccc|ccccc@{}}
+\toprule
+ & \multicolumn{3}{c}{Imputation RMSE} & \multicolumn{3}{c}{Runtime (s)} \\
+ & 20\% & 30\% & 40\% & 20\% & 30\% & 40\% \\
+\midrule
+PSMF & $\underset{{\scriptscriptstyle \;\;(16.70)}}{78.47}$ & $\underset{{\scriptscriptstyle \;\;(17.12)}}{83.25}$ & $\underset{{\scriptscriptstyle \;\;\;(23.85)}}{101.85}$ & 0.49 & 0.49 & 0.49 \\
+rPSMF & $\underset{{\scriptscriptstyle \;\;(13.43)}}{\textbf{71.98}}$ & $\underset{{\scriptscriptstyle \;\;(12.51)}}{\textbf{73.97}}$ & $\underset{{\scriptscriptstyle \;\;(13.84)}}{\textbf{83.17}}$ & 0.56 & 0.55 & 0.56 \\
+MLE-SMF & $\underset{{\scriptscriptstyle \;\;\;(45.29)}}{270.73}$ & $\underset{{\scriptscriptstyle \;\;\;(36.57)}}{246.62}$ & $\underset{{\scriptscriptstyle \;\;\;(40.50)}}{235.41}$ & 0.41 & 0.41 & 0.41 \\
+TMF & $\underset{{\scriptscriptstyle \;\;\;(20.68)}}{202.45}$ & $\underset{{\scriptscriptstyle \;\;\;(16.31)}}{203.68}$ & $\underset{{\scriptscriptstyle \;\;\;(18.89)}}{208.68}$ & 0.17 & 0.17 & 0.17 \\
+\bottomrule
+\end{tabular}
+\caption{Imputation error and runtime using 20\%, 30\% and 40\% missing values, averaged over 100 random repetitions. 300 missing data points per wave, rank 3.}
+\end{minipage}
+\end{table}
+
 
 \section{R-peaks Detection}
 
