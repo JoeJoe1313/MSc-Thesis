@@ -716,7 +716,7 @@ TMF & $\underset{{\scriptscriptstyle \;\;\;(20.47)}}{200.74}$ & $\underset{{\scr
 \caption{Imputation error and runtime using 20\%, 30\% and 40\% missing values, rank 10, averaged over 100 random repetitions.}
 \end{table}
 
-\noindent We can also measure the proportion of missing values that lie within a $2\sigma$ coverage interval of the approximate posterior distribution. Table 3 shows how our method improves over the uncertainty quantification of MLE-SMF (the other methods do not provide a posterior distribution). This illustrates the added value of the matrix-variate prior on C, as well as our inference scheme. Note that rPSMF obtains a higher coverage percentage than PSMF on three of the datasets, which is due to the sequential updating of the noise covariances. Additional results with 20\% and 40\% missing data are available in Supp. G.3. \newline
+\noindent We can also measure the proportion of missing values that lie within a $2\sigma$ coverage interval of the approximate posterior distribution. Table 3 shows how our method improves over the uncertainty quantification of MLE-SMF (the other methods do not provide a posterior distribution). This illustrates the added value of the matrix-variate prior on C, as well as our inference scheme. Note that rPSMF obtains a higher coverage percentage than PSMF on three of the datasets, which is due to the sequential updating of the noise covariances. \newline
 
 \begin{table}[H]
     \centering
@@ -754,13 +754,6 @@ TMF & $\underset{{\scriptscriptstyle \;\;\;(20.47)}}{200.74}$ & $\underset{{\scr
     \caption{Average coverage proportion of the missing data by the $2\sigma$ uncertainty bars of the posterior predictive estimates, averaged over 100 repetitions. Left: results for rank 3, right: results for rank 10.}
 \end{table}
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.75\linewidth]{images/missing/psmf_input_300.pdf}
-\caption{Input with 300 missing data points per wave. Missing parts are in yellow.}
-\label{fig:vs}
-\end{figure}
-
 % \begin{figure}[H]
 % \centering
 % \includegraphics[width=0.75\linewidth]{images/missing/psmf_output_300_20_3.pdf}
@@ -779,16 +772,14 @@ TMF & $\underset{{\scriptscriptstyle \;\;\;(20.47)}}{200.74}$ & $\underset{{\scr
 \centering
 \begin{minipage}{0.4\linewidth}
     \centering
-    \includegraphics[width=\linewidth]{images/missing/psmf_output_300_20_3.pdf}
-    \label{fig:limp}
+    \includegraphics[width=\linewidth]{images/missing/psmf_output_20_3.pdf}
 \end{minipage}%
 \hspace{0.05\linewidth}
 \begin{minipage}{0.4\linewidth}
     \centering
-    \includegraphics[width=\linewidth]{images/missing/rpsmf_output_300_20_3.pdf}
-    \label{fig:augmented}
+    \includegraphics[width=\linewidth]{images/missing/rpsmf_output_20_3.pdf}
 \end{minipage}
-\caption{Reconstruction with rank 3, 20\% missing data. Left: original; Right: augmented.}
+\caption{Reconstruction with rank 3 of 20\% missing data. Left: PSMF; Right: rPSMF.}
 \end{figure}
 
 \begin{figure}[H]
