@@ -674,9 +674,85 @@ For the experiments we are going to use the already available dataser "A Large S
 
 \section{Missing Data Imputation}
 
-We test PSMF and rPSMF on imputing missing data in 12-lead ECG time-series. The 12-lead ECG signal is chosen to be one representing a normal heart rhythm (sinus rhythm). As already mentioned each of the $m = 12$ leads contains $n = 5000$ data points. One heart beat (PQRST complex) is of apprixamte lebgth of $300$ data points. That's why, to examine the accuracy of the imputations, we choose to randomly remove segments of length $300$, and construct datasets with $20\%$, $30\%$, and $40\%$ missing data. We compare the results for each dataset against two other baseline sequential methods used in the PSMF paper (\cite{akyildiz2021probabilistic}). The first, which we call MLE-SMF, is a maximum likelihood estimation (MLE) method for online probabilistic matrix factorization where the state transition matrix $C$ remains constant over time. This builds on prior work by \cite{YILDIRIM2012494}, \cite{6288274}, and \cite{6638240}. The second approach adapts the temporal matrix factorization (TMF) optimization technique proposed by \cite{NIPS2016_85422afb}. \newline
+In this section, we evaluate PSMF and rPSMF on the task of imputing missing values in 12-lead ECG time-series data. The 12-lead ECG signal is chosen to be one representing a normal heart rhythm (sinus rhythm). As already mentioned each of the $m = 12$ leads contains $n = 5000$ data points. One heart beat (PQRST complex) is of apprixamte lebgth of $300$ data points. That's why, to assess the imputation accuracy, we choose to randomly remove segments of length $300$ from the signal, and construct datasets with $20\%$, $30\%$, and $40\%$ missing data. We compare the results for each dataset against two other baseline sequential methods used in the PSMF paper (\cite{akyildiz2021probabilistic}). The first, which we call MLE-SMF, is a maximum likelihood estimation (MLE) method for online probabilistic matrix factorization where the state transition matrix $C$ remains constant over time. This builds on prior work by \cite{YILDIRIM2012494}, \cite{6288274}, and \cite{6638240}. The second approach adapts the temporal matrix factorization (TMF) optimization technique proposed by \cite{NIPS2016_85422afb}. \newline
 
+\noindent For PSMF and rPSMF we choose a random walk subspace model $f_{\theta}(x) = x$, and for the imputation we use the final estimates of $C$ and $X$. We test the four sequential models by setting the rank first to $r = 3$, and then to $r = 10$. As in \cite{akyildiz2021probabilistic}, for TMF we set the weight matrix to identity, for PSMF and MLE- SMF we set $R_k := R = \rho \otimes I_r$, where $\rho = 10$, $P_0 = I_r$, $Q_k := Q = q \otimes I_r$, and $q = 0.1$. For rPSMF we use $R_0 = R$ and $Q_0 = Q$ and choose $\lambda_0 = 1.8$, and for both PSMF and rPSMF we set $V_0 = v_0 \otimes I_r$ with $v_0 = 2$. We evaluate the performance of the four methods - PSMF, rPSMF, MLE-SMF, and TMF - by running each of them for two epochs. To ensure the robustness and reliability of our findings, we conduct the experiments $100$ times, each time using different initializations and randomly generated patterns of missing data. \newline
 
+\noindent In Table 2 we see that PSMF and rPSMF attain lower RMSEs compared to all other methods and that they are competitive in terms of running time. The advantage of our method is especially noticeable on the NO2, SP500, and Gas datasets. \newline
+
+\begin{table}[H]
+\centering
+\label{tab:my_label}
+\text{$r = 3$} \\[0.5ex]
+\begin{tabular}{@{}lccc|ccccc@{}}
+\toprule
+ & \multicolumn{3}{c}{Imputation RMSE} & \multicolumn{3}{c}{Runtime (s)} \\
+ & 20\% & 30\% & 40\% & 20\% & 30\% & 40\% \\
+\midrule
+PSMF & $\underset{{\scriptscriptstyle \;\;(16.70)}}{78.47}$ & $\underset{{\scriptscriptstyle \;\;(17.12)}}{83.25}$ & $\underset{{\scriptscriptstyle \;\;\;(23.85)}}{101.85}$ & 0.49 & 0.49 & 0.49 \\
+rPSMF & $\underset{{\scriptscriptstyle \;\;(13.43)}}{\textbf{71.98}}$ & $\underset{{\scriptscriptstyle \;\;(12.51)}}{\textbf{73.97}}$ & $\underset{{\scriptscriptstyle \;\;(13.84)}}{\textbf{83.17}}$ & 0.56 & 0.55 & 0.56 \\
+MLE-SMF & $\underset{{\scriptscriptstyle \;\;\;(45.29)}}{270.73}$ & $\underset{{\scriptscriptstyle \;\;\;(36.57)}}{246.62}$ & $\underset{{\scriptscriptstyle \;\;\;(40.50)}}{235.41}$ & 0.41 & 0.41 & 0.41 \\
+TMF & $\underset{{\scriptscriptstyle \;\;\;(20.68)}}{202.45}$ & $\underset{{\scriptscriptstyle \;\;\;(16.31)}}{203.68}$ & $\underset{{\scriptscriptstyle \;\;\;(18.89)}}{208.68}$ & 0.17 & 0.17 & 0.17 \\
+\bottomrule
+\end{tabular}
+\caption{Imputation error and runtime using 20\%, 30\% and 40\% missing values, averaged over 100 random repetitions. 300 missing data points per wave, rank 3.}
+\end{table}
+
+\begin{table}[H]
+\centering
+\label{tab:my_label}
+\text{$r = 10$} \\[0.5ex]
+\begin{tabular}{@{}lccc|ccccc@{}}
+\toprule
+ & \multicolumn{3}{c}{Imputation RMSE} & \multicolumn{3}{c}{Runtime (s)} \\
+ & 20\% & 30\% & 40\% & 20\% & 30\% & 40\% \\
+\midrule
+PSMF & $\underset{{\scriptscriptstyle \;\;(16.70)}}{78.47}$ & $\underset{{\scriptscriptstyle \;\;(17.12)}}{83.25}$ & $\underset{{\scriptscriptstyle \;\;\;(23.85)}}{101.85}$ & 0.49 & 0.49 & 0.49 \\
+rPSMF & $\underset{{\scriptscriptstyle \;\;(13.43)}}{\textbf{71.98}}$ & $\underset{{\scriptscriptstyle \;\;(12.51)}}{\textbf{73.97}}$ & $\underset{{\scriptscriptstyle \;\;(13.84)}}{\textbf{83.17}}$ & 0.56 & 0.55 & 0.56 \\
+MLE-SMF & $\underset{{\scriptscriptstyle \;\;\;(45.29)}}{270.73}$ & $\underset{{\scriptscriptstyle \;\;\;(36.57)}}{246.62}$ & $\underset{{\scriptscriptstyle \;\;\;(40.50)}}{235.41}$ & 0.41 & 0.41 & 0.41 \\
+TMF & $\underset{{\scriptscriptstyle \;\;\;(20.68)}}{202.45}$ & $\underset{{\scriptscriptstyle \;\;\;(16.31)}}{203.68}$ & $\underset{{\scriptscriptstyle \;\;\;(18.89)}}{208.68}$ & 0.17 & 0.17 & 0.17 \\
+\bottomrule
+\end{tabular}
+\caption{Imputation error and runtime using 20\%, 30\% and 40\% missing values, averaged over 100 random repetitions. 300 missing data points per wave, rank 3.}
+\end{table}
+
+\noindent We can also measure the proportion of missing values that lie within a $2\sigma$ coverage interval of the approximate posterior distribution. Table 3 shows how our method improves over the uncertainty quantification of MLE-SMF (the other methods do not provide a posterior distribution). This illustrates the added value of the matrix-variate prior on C, as well as our inference scheme. Note that rPSMF obtains a higher coverage percentage than PSMF on three of the datasets, which is due to the sequential updating of the noise covariances. Additional results with 20\% and 40\% missing data are available in Supp. G.3. \newline
+
+\begin{table}[H]
+    \centering
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \text{$r = 3$} \\[0.5ex]
+        \begin{threeparttable}
+            \begin{tabular}{lccc}
+                \hline
+                Missing \%: & 20\% & 30\% & 40\% \\
+                \hline
+                PSMF & 0.15 & 0.14 & 0.12 \\
+                rPSMF & \textbf{0.86} & \textbf{0.82} & \textbf{0.77} \\
+                MLE-SMF & 0.17 & 0.16 & 0.14 \\
+                \hline
+            \end{tabular}
+        \end{threeparttable}
+    \end{minipage}%
+    \hspace{0.1\textwidth}%
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \text{$r = 10$} \\[0.5ex]
+        \begin{threeparttable}
+            \begin{tabular}{lccc}
+                \hline
+                Missing \%: & 20\% & 30\% & 40\% \\
+                \hline
+                PSMF & 0.15 & 0.14 & 0.12 \\
+                rPSMF & \textbf{0.86} & \textbf{0.82} & \textbf{0.77} \\
+                MLE-SMF & 0.17 & 0.16 & 0.14 \\
+                \hline
+            \end{tabular}
+        \end{threeparttable}
+    \end{minipage}
+    \caption{Average coverage proportion of the missing data by the $2\sigma$ uncertainty bars of the posterior predictive estimates, averaged over 100 repetitions for both tables.}
+\end{table}
 
 TODO:
 \begin{itemize}
@@ -741,79 +817,6 @@ TODO:
 \end{minipage}
 \caption{Reconstruction with rank 3, 20\% coverage. Left: original; Right: augmented.}
 \end{figure}
-
-
-%% DO NOT EDIT - AUTOMATICALLY GENERATED FROM RESULTS!
-%% This table requires booktabs and multirow!
-%% Table for missing percentage 20
-\begin{table}[H]
-    \centering
-    \begin{threeparttable}
-        \begin{tabular}{lccc}
-            \hline
-            Missing \%: & 20\% & 30\% & 40\% \\
-            \hline
-            PSMF & 0.15 & 0.14 & 0.12 \\
-            rPSMF & \textbf{0.86} & \textbf{0.82} & \textbf{0.77} \\
-            MLE-SMF & 0.17 & 0.16 & 0.14 \\
-            \hline
-        \end{tabular}
-        \caption{Average coverage proportion of the missing data by the $2\sigma$ uncertainty bars of the posterior predictive estimates, averaged over 100 repetitions.}
-    \end{threeparttable}
-\end{table}
-
-\begin{table}[H]
-\centering
-\label{tab:my_label}
-\begin{tabular}{@{}lccc|ccccc@{}}
-\toprule
- & \multicolumn{3}{c}{Imputation RMSE} & \multicolumn{3}{c}{Runtime (s)} \\
- & 20\% & 30\% & 40\% & 20\% & 30\% & 40\% \\
-\midrule
-PSMF & $\underset{{\scriptscriptstyle \;\;(16.70)}}{78.47}$ & $\underset{{\scriptscriptstyle \;\;(17.12)}}{83.25}$ & $\underset{{\scriptscriptstyle \;\;\;(23.85)}}{101.85}$ & 0.49 & 0.49 & 0.49 \\
-rPSMF & $\underset{{\scriptscriptstyle \;\;(13.43)}}{\textbf{71.98}}$ & $\underset{{\scriptscriptstyle \;\;(12.51)}}{\textbf{73.97}}$ & $\underset{{\scriptscriptstyle \;\;(13.84)}}{\textbf{83.17}}$ & 0.56 & 0.55 & 0.56 \\
-MLE-SMF & $\underset{{\scriptscriptstyle \;\;\;(45.29)}}{270.73}$ & $\underset{{\scriptscriptstyle \;\;\;(36.57)}}{246.62}$ & $\underset{{\scriptscriptstyle \;\;\;(40.50)}}{235.41}$ & 0.41 & 0.41 & 0.41 \\
-TMF & $\underset{{\scriptscriptstyle \;\;\;(20.68)}}{202.45}$ & $\underset{{\scriptscriptstyle \;\;\;(16.31)}}{203.68}$ & $\underset{{\scriptscriptstyle \;\;\;(18.89)}}{208.68}$ & 0.17 & 0.17 & 0.17 \\
-\bottomrule
-\end{tabular}
-\caption{Imputation error and runtime using 20\%, 30\% and 40\% missing values, averaged over 100 random repetitions. 300 missing data points per wave, rank 3.}
-\end{table}
-
-\begin{table}[H]
-\centering
-\begin{minipage}{0.45\textwidth}
-    \centering
-    \begin{threeparttable}
-        \begin{tabular}{lccc}
-            \hline
-            Missing \%: & 20\% & 30\% & 40\% \\
-            \hline
-            PSMF & 0.15 & 0.14 & 0.12 \\
-            rPSMF & \textbf{0.86} & \textbf{0.82} & \textbf{0.77} \\
-            MLE-SMF & 0.17 & 0.16 & 0.14 \\
-            \hline
-        \end{tabular}
-        \caption{Average coverage proportion of the missing data by the $2\sigma$ uncertainty bars of the posterior predictive estimates, averaged over 100 repetitions.}
-    \end{threeparttable}
-\end{minipage}%
-\hfill
-\begin{minipage}{0.52\textwidth}
-\centering
-\begin{tabular}{@{}lccc|ccccc@{}}
-\toprule
- & \multicolumn{3}{c}{Imputation RMSE} & \multicolumn{3}{c}{Runtime (s)} \\
- & 20\% & 30\% & 40\% & 20\% & 30\% & 40\% \\
-\midrule
-PSMF & $\underset{{\scriptscriptstyle \;\;(16.70)}}{78.47}$ & $\underset{{\scriptscriptstyle \;\;(17.12)}}{83.25}$ & $\underset{{\scriptscriptstyle \;\;\;(23.85)}}{101.85}$ & 0.49 & 0.49 & 0.49 \\
-rPSMF & $\underset{{\scriptscriptstyle \;\;(13.43)}}{\textbf{71.98}}$ & $\underset{{\scriptscriptstyle \;\;(12.51)}}{\textbf{73.97}}$ & $\underset{{\scriptscriptstyle \;\;(13.84)}}{\textbf{83.17}}$ & 0.56 & 0.55 & 0.56 \\
-MLE-SMF & $\underset{{\scriptscriptstyle \;\;\;(45.29)}}{270.73}$ & $\underset{{\scriptscriptstyle \;\;\;(36.57)}}{246.62}$ & $\underset{{\scriptscriptstyle \;\;\;(40.50)}}{235.41}$ & 0.41 & 0.41 & 0.41 \\
-TMF & $\underset{{\scriptscriptstyle \;\;\;(20.68)}}{202.45}$ & $\underset{{\scriptscriptstyle \;\;\;(16.31)}}{203.68}$ & $\underset{{\scriptscriptstyle \;\;\;(18.89)}}{208.68}$ & 0.17 & 0.17 & 0.17 \\
-\bottomrule
-\end{tabular}
-\caption{Imputation error and runtime using 20\%, 30\% and 40\% missing values, averaged over 100 random repetitions. 300 missing data points per wave, rank 3.}
-\end{minipage}
-\end{table}
-
 
 \section{R-peaks Detection}
 
