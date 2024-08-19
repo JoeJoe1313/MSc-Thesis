@@ -689,10 +689,10 @@ In this section, we evaluate PSMF and rPSMF on the task of imputing missing valu
  & \multicolumn{3}{c}{Imputation RMSE} & \multicolumn{3}{c}{Runtime (s)} \\
  & 20\% & 30\% & 40\% & 20\% & 30\% & 40\% \\
 \midrule
-PSMF & $\underset{{\scriptscriptstyle \;\;(33.98)}}{100.28}$ & $\underset{{\scriptscriptstyle \;\;(31.01)}}{110.13}$ & $\underset{{\scriptscriptstyle \;\;\;(31.73)}}{137.22}$ & 0.49 & 0.48 & 0.48 \\
-rPSMF & $\underset{{\scriptscriptstyle \;\;(30.70)}}{\textbf{93.98}}$ & $\underset{{\scriptscriptstyle \;\;(31.29)}}{\textbf{107.60}}$ & $\underset{{\scriptscriptstyle \;\;(32.05)}}{\textbf{124.78}}$ & 0.56 & 0.56 & 0.55 \\
-MLE-SMF & $\underset{{\scriptscriptstyle \;\;\;(36.35)}}{278.48}$ & $\underset{{\scriptscriptstyle \;\;\;(35.11)}}{266.20}$ & $\underset{{\scriptscriptstyle \;\;\;(32.79)}}{254.47}$ & 0.42 & 0.41 & 0.41 \\
-TMF & $\underset{{\scriptscriptstyle \;\;\;(16.84)}}{201.20}$ & $\underset{{\scriptscriptstyle \;\;\;(16.83)}}{203.94}$ & $\underset{{\scriptscriptstyle \;\;\;(16.66)}}{208.4}$ & 0.18 & 0.18 & 0.17 \\
+PSMF & $\underset{{\scriptscriptstyle \;\;(32.19)}}{104.46}$ & $\underset{{\scriptscriptstyle \;\;(31.61)}}{115.99}$ & $\underset{{\scriptscriptstyle \;\;\;(31.77)}}{138.18}$ & 0.58 & 0.59 & 0.58 \\
+rPSMF & $\underset{{\scriptscriptstyle \;\;(26.56)}}{\textbf{98.51}}$ & $\underset{{\scriptscriptstyle \;\;(29.08)}}{\textbf{109.04}}$ & $\underset{{\scriptscriptstyle \;\;(29.58)}}{\textbf{124.91}}$ & 0.65 & 0.64 & 0.64 \\
+MLE-SMF & $\underset{{\scriptscriptstyle \;\;\;(34.07)}}{271.04}$ & $\underset{{\scriptscriptstyle \;\;\;(33.46)}}{263.65}$ & $\underset{{\scriptscriptstyle \;\;\;(28.69)}}{244.21}$ & 0.50 & 0.51 & 0.50 \\
+TMF & $\underset{{\scriptscriptstyle \;\;\;(16.18)}}{202.76}$ & $\underset{{\scriptscriptstyle \;\;\;(15.97)}}{202.90}$ & $\underset{{\scriptscriptstyle \;\;\;(19.24)}}{208.98}$ & 0.28 & 0.28 & 0.27 \\
 \bottomrule
 \end{tabular}
 \caption{Imputation error and runtime using 20\%, 30\% and 40\% missing values, rank 3, averaged over 100 random repetitions.}
@@ -707,10 +707,10 @@ TMF & $\underset{{\scriptscriptstyle \;\;\;(16.84)}}{201.20}$ & $\underset{{\scr
  & \multicolumn{3}{c}{Imputation RMSE} & \multicolumn{3}{c}{Runtime (s)} \\
  & 20\% & 30\% & 40\% & 20\% & 30\% & 40\% \\
 \midrule
-PSMF & $\underset{{\scriptscriptstyle \;\;(38.30)}}{\textbf{128.08}}$ & $\underset{{\scriptscriptstyle \;\;(40.36)}}{\textbf{157.09}}$ & $\underset{{\scriptscriptstyle \;\;\;(69.43)}}{199.34}$ & 1.03 & 1.07 & 1.04 \\
-rPSMF & $\underset{{\scriptscriptstyle \;\;(76.79)}}{196.08}$ & $\underset{{\scriptscriptstyle \;\;(98.35)}}{259.31}$ & $\underset{{\scriptscriptstyle \;\;(164.05)}}{380.95}$ & 1.13 & 1.15 & 1.13\\
-MLE-SMF & $\underset{{\scriptscriptstyle \;\;\;(20.90)}}{272.50}$ & $\underset{{\scriptscriptstyle \;\;\;(32.74)}}{268.33}$ & $\underset{{\scriptscriptstyle \;\;\;(35.61)}}{275.36}$ & 1.00 & 0.93 & 0.98 \\
-TMF & $\underset{{\scriptscriptstyle \;\;\;(20.47)}}{200.74}$ & $\underset{{\scriptscriptstyle \;\;\;(16.77)}}{203.22}$ & $\underset{{\scriptscriptstyle \;\;\;(19.62)}}{\textbf{189.59}}$ & 0.43 & 0.42 & 0.47 \\
+PSMF & $\underset{{\scriptscriptstyle \;\;(38.89)}}{\textbf{122.79}}$ & $\underset{{\scriptscriptstyle \;\;(45.69)}}{\textbf{154.79}}$ & $\underset{{\scriptscriptstyle \;\;\;(52.85)}}{\textbf{186.31}}$ & 0.92 & 1.07 & 1.07 \\
+rPSMF & $\underset{{\scriptscriptstyle \;\;(71.96)}}{192.19}$ & $\underset{{\scriptscriptstyle \;\;(92.27)}}{253.77}$ & $\underset{{\scriptscriptstyle \;\;(132.56)}}{377.75}$ & 1.10 & 1.08 & 1.07\\
+MLE-SMF & $\underset{{\scriptscriptstyle \;\;\;(21.63)}}{268.57}$ & $\underset{{\scriptscriptstyle \;\;\;(30.37)}}{267.81}$ & $\underset{{\scriptscriptstyle \;\;\;(33.82)}}{270.77}$ & 0.82 & 0.90 & 0.90 \\
+TMF & $\underset{{\scriptscriptstyle \;\;\;(20.04)}}{205.67}$ & $\underset{{\scriptscriptstyle \;\;\;(17.31)}}{199.81}$ & $\underset{{\scriptscriptstyle \;\;\;(20.25)}}{193.28}$ & 0.42 & 0.47 & 0.44 \\
 \bottomrule
 \end{tabular}
 \caption{Imputation error and runtime using 20\%, 30\% and 40\% missing values, rank 10, averaged over 100 random repetitions.}
@@ -795,8 +795,10 @@ TMF & $\underset{{\scriptscriptstyle \;\;\;(20.47)}}{200.74}$ & $\underset{{\scr
     \includegraphics[width=\linewidth]{images/missing/rpsmf_output_20_10.pdf}
     \label{fig:augmented}
 \end{minipage}
-\caption{Reconstruction with rank 10, 20\% coverage. Left: original; Right: augmented.}
+\caption{Reconstruction with rank 10, 20\% coverage. Left: PSMF; Right: rPSMF.}
 \end{figure}
+
+\noindent TODO: add more results. here or in the appendix/supplement?
 
 \section{R-peaks Detection}
 
