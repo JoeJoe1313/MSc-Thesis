@@ -813,8 +813,53 @@ TODO:
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=1\linewidth]{images/r_peaks.png}
-\label{fig:r-peaks}
+\includegraphics[width=1\linewidth]{images/r_peaks/original_ecg_m.pdf}
+\caption{Original Lead II signal, 5000 points.}
+\label{fig:orig-ecg}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\linewidth]{images/r_peaks/resampled_ecg_m.pdf}
+\caption{Resampled Lead II signal, 1500 points.}
+\label{fig:resampled-ecg}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\linewidth]{images/r_peaks/resampled_standardised_denoised_ecg_m.pdf}
+\caption{Resampled Lead II signal (blue), and the denoised version (orange) of the same signal after applying wavelet transform.}
+\label{fig:res-st-den-ecg}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\linewidth]{images/r_peaks/resampled_standardised_denoised_ecg_reconstruction_m.pdf}
+\caption{Resampled Lead II signal (blue), and the reconstruction (orange) of the same signal after applying PSMF to the 12 leads with rank $r = 3$, Fourier basis with $n = 3$ terms, and $100$ iterations.}
+\label{fig:reconstr-ecg}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\linewidth]{images/r_peaks/resampled_standardised_denoised_ecg_rpeaks_algo_m.pdf}
+\caption{Removed reconstruction from the modelled ECG signal (blue), and threshold (red) of for isolating the R-peaks.}
+\label{fig:diff-ecg}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\linewidth]{images/r_peaks/resampled_standardised_denoised_ecg_rpeaks_m.pdf}
+\caption{Detected R-peaks (red) in the resampled, standardised, denoised Lead II signal (blue).}
+\label{fig:rpeaks-ecg}
+\end{figure}
+
+Full results, appendix - more?
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\linewidth]{images/r_peaks/rpeaks_full_m.pdf}
+\caption{Detected R-peaks (red) in the resampled, standardised, denoised 12-Lead ECG signal (blue).}
+\label{fig:rpeaks-ecg}
 \end{figure}
 
 \section{Forecasting}
@@ -857,11 +902,6 @@ Why detecting ECG is useful?
  %% reset page counter and start appendix pages with A
 \pagenumbering{arabic}
 \renewcommand*{\thepage}{A\arabic{page}}
-
-%%References part of appendices
-% References: modify the file refs.bib
-\bibliographystyle{plainnat}
-\bibliography{refs}
 
 %% Appendix goes here
 \appendix
@@ -1093,5 +1133,10 @@ Full results of testing on the $20\%$, $30\%$, and $40\%$ missing data with both
     \caption{$40\%$ missing data.}
 \end{minipage}
 \end{figure}
+
+%%References part of appendices
+% References: modify the file refs.bib
+\bibliographystyle{plainnat}
+\bibliography{refs}
 
 \end{document}
