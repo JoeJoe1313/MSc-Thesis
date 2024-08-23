@@ -118,7 +118,7 @@ Using probabilistic methods, and specifically probabilistic sequential MF ones, 
 
 \section{Notation}
 
-We are going to denote the original data matrix as $Y \in \mathbb{R}^{m \times n}$, with $y_k$ the $k$-th column of the matrix, and let $y_k$ denote the $k$-th column of the matrix. Also, let $y = \text{vec}(Y) \in \mathbb{R}^{nm}$ be the vectorization of the matrix $Y$:
+We are going to denote the original data matrix as $Y \in \mathbb{R}^{m \times n}$, and let $y_k$ denote the $k$-th column of the matrix. Also, let $y = \text{vec}(Y) \in \mathbb{R}^{nm}$ be the vectorization of the matrix $Y$:
 
 \begin{equation}
     y := vec(Y) = \begin{bmatrix}
@@ -131,7 +131,7 @@ We are going to denote the original data matrix as $Y \in \mathbb{R}^{m \times n
 
 \noindent where $y_1, ..., y_n$ are the columns of $Y$. The inverse is denoted as $Y := \text{vec}^{-1}(Y, m, n)$, where $m$, and $n$ specify the size of the resulting matrix. With $y_{1:k} = \{y_1, ..., y_k\}$ we are going to denote sequences. Further, let $C \in \mathbb{R}^{m \times r}$ be the dictionary matrix, $X \in \mathbb{R}^{r \times n}$ be the coefficients matrix, and $r$ be the approximation rank. \newline
 
-\noindent With $I_d \in \mathbb{R}^{d \times d}$ we are going to denote the identity matrix, with $\mathcal{N}(x; \mu, \Sigma)$ the multivariate normal distribution with mean $\mu$ and $\Sigma$ the covariance matrix, with $\mathcal{MN}(X; M, U, V)$ the matrix normal distribution with $M$ the mean-matrix, $U$ the row-covariance, and $V$ the column covariance, and with  $\mathcal{IG}(s; \alpha, \beta)$ the inverse gamma distribution with shape $\alpha$ and scale $\beta$, and finally with $\mathcal{T}(x; \mu, \Sigma, \lambda)$ the multivariate $t$ distribution, where $\mu$ is the mean, $\Sigma$ the scale matrix, and $\lambda$ is the degrees of freedom. \newline
+\noindent With $I_d \in \mathbb{R}^{d \times d}$ we are going to denote the identity matrix, with $\mathcal{N}(x; \mu, \Sigma)$ the multivariate normal distribution with mean $\mu$ and $\Sigma$ the covariance matrix, with $\mathcal{MN}(X; M, U, V)$ the matrix normal distribution with $M$ the mean-matrix, $U$ the row-covariance, and $V$ the column covariance, with  $\mathcal{IG}(s; \alpha, \beta)$ the inverse gamma distribution with shape $\alpha$ and scale $\beta$, and finally with $\mathcal{T}(x; \mu, \Sigma, \lambda)$ the multivariate $t$ distribution, where $\mu$ is the mean, $\Sigma$ the scale matrix, and $\lambda$ is the degrees of freedom. \newline
 
 
 % \noindent  We denote the vectorised forms of the matrices with their respective lower case letters. We can formally define c = vec(C), where vec(·) is the vectorisation operation. The columns of C are stacked on each other, so if C ∈ Rm×r, then c ∈ Rmr×1. We can also define the inverse vectorisation operator C = vec−1(c). \newline
@@ -142,15 +142,22 @@ We are going to denote the original data matrix as $Y \in \mathbb{R}^{m \times n
 
 \section{Preliminaries}
 
-Intro
+Here, we are going to introduce the matrix normal distribution, Kronecker product, and outline certain linear algebra properties in relation to Kronecker products. These properties are later used in some of the proofs.
 
-\subsection{Matrix Normal Distribution} 
+\subsection{Matrix Normal Distribution}
 
-\begin{definition}
+We start with introducing the matrix normal distribution, which we are going to mainly use in its vectorised version.
+
+\begin{definition} \label{def:mvn}
     Let $X \in \mathbb{R}^{p \times n}$ be a random matrix. Then $X$ has a $\textit{matrix normal distribution}$ $\mathcal{MN}(X; M, U, V)$ with mean-matrix $M \in \mathbb{R}^{p \times n}$, row-covariance $U \in \mathbb{R}^{p \times p}$, and column-covariance $V \in \mathbb{R}^{n \times n}$, if $\text{vec}(X) \sim \mathcal{N}(\text{vec}(M), U \otimes V)$.
 \end{definition}
 
-\noindent Also, if $X \sim \mathcal{MN}(X; M, U, V)$, then $x \sim \mathcal{N}(x; \text{vec}(M), U \otimes V)$, where $x = \text{vec}(X)$ and $\otimes$ is the Kronecker product (\cite{gupta}). \newline
+\noindent We can formally write that if $X \sim \mathcal{MN}(X; M, U, V)$, then 
+\begin{equation} \label{eq:mndvec}
+    x \sim \mathcal{N}(x; \text{vec}(M), U \otimes V),
+\end{equation}
+
+\noindent where $x = \text{vec}(X) \in \mathbb{R}^{pn}$, $\text{vec}(M) \in \mathbb{R}^{pn}$ is the mean, $U \times V \in \mathbb{R}^{pn \times pn}$ is the covariance matrix, and $\otimes$ is the Kronecker product (\cite{gupta}). \newline
 
 \noindent Further, for the random matrix $X \in \mathbb{R}^{p \times n}$ the probability density function (p.d.f.) of the matrix normal distribution is defined as (\cite{gupta})
 
@@ -161,6 +168,8 @@ Intro
 \noindent where $|U|$ and $|V|$ are the determinants of $U$ and $V$ respectively, $\text{tr}(.)$ denotes the $\textit{trace}$ of a matrix, $X \in \mathbb{R}^{p \times n}$, $M \in \mathbb{R}^{p \times n}$.
 
 \subsection{Kronecker Product}
+
+Now, let's introduce the Kronecker product we already mentioned in relation to Definition \ref{def:mvn}.
 
 \begin{definition}
 Let $A \in \mathbb{R}^{m \times n}$ and $B \in \mathbb{R}^{p \times q}$ be matrices. Then their \textit{Kronecker product} denoted as $A \otimes B \in \mathbb{R}^{mp \times nq}$ is given by (\cite{alma993596394401591}):
@@ -176,20 +185,39 @@ Let $A \in \mathbb{R}^{m \times n}$ and $B \in \mathbb{R}^{p \times q}$ be matri
 where $\{a_{ij}\}$, $i \in \{1,...,m\}$, $j \in \{1, ..., n\}$ are the elements of $A$.
 \end{definition}
 
-Some identities?
+\noindent We are also going to need certain Kronecker product related properties. If we let $A \in \mathbb{R}^{m \times n}$, $X \in \mathbb{R}^{n \times p}$, and $B \in \mathbb{R}^{p \times q}$, then (\cite{alma993596394401591})
+\begin{equation} \label{eq:vecms}
+    \text{vec}(AXB) = (B^T \otimes A) \text{vec}(X). 
+\end{equation}
 
-\subsection{Fourier Series/Basis}
+\noindent Now, if we let $x \in \mathbb{R}^n$, from Equation \ref{eq:vecms} we can obtain
+\begin{equation}
+    Ax = \text{vec}(Ax) = (x^T \otimes I_n)\text{vec}(A),
+\end{equation}
 
-TODO
+\noindent where $I_n \in \mathbb{R}^{n \times n}$ is the identity matrix. \cite{alma993596394401591} also introduces a mixed product property. For matrices $A \in \mathbb{R}^{m \times n}$, $B \in \mathbb{R}^{p \times q}$, $C \in \mathbb{R}^{n \times u}$, and $D \in \mathbb{R}^{q \times v}$ it holds 
+\begin{equation}
+    (A \otimes B)(C \otimes D) = (AC) \otimes (BD).
+\end{equation}
+
+\noindent Finally, for nonsingular matrices $A \in \mathbb{R}^{m \times m}$ and $B \in \mathbb{R}^{n \times n}$ we have that their product is invertible, and (\cite{alma993596394401591})
+\begin{equation}
+    (A \otimes B)^{-1} = A^{-1} \otimes B^{-1}.
+\end{equation}
+
+\subsection{Fourier Series}
+
+TODO \newline
+
+\noindent In the next sections we are outlining the PSMF models we are going to use in our experiments with 12-lead ECG data in Chapter \ref{ch:3}. We are going to follow \cite{akyildiz2021probabilistic}. First, we are going to introduce PSMF - model definition, inference, parameter estimation, and marginal-likelihood approximation, algorithm. Then, similarly, we are going to introduce the robust version of PSMF (rPSMF), and finally the version of PSMF for imputing missing data.
 
 \section{PSMF}
 
-Intro
+We begin by introducing the PSMF model which can be thought of as being a probabilistic dimensionality reduction model. The dynamics of the subspace are modeled by a transition density (introduced in Equation \ref{eq:3}), and the underlying dynamical structure present in the data will be reflected in the dynamics of the coefficients $x_k$, $k \geq 1$. Simply said, the sequential patterns in the data will be captured and represented by the behaviour of the coefficients over time.
 
 \subsection{Model}
 
 For observations $y_k \in \mathbb{R}^{m}$, $k \geq 1$, latent coefficients $x_k \in \mathbb{R}^{r}$, $k \geq 1$, and a dictionary matrix $C \in \mathbb{R}^{m \times r}$ the PSMF model can be described with the following state-space equations (\cite{akyildiz2021probabilistic}):
-
 \begin{equation} \label{eq:1}
     p(C) = \mathcal{MN}(C; C_0, I_d, V_0)
 \end{equation}
@@ -202,18 +230,17 @@ For observations $y_k \in \mathbb{R}^{m}$, $k \geq 1$, latent coefficients $x_k 
 \begin{equation} \label{eq:4}
     p(y_k \mid x_k, C) = \mathcal{N}(y_k; Cx_k, R_k)
 \end{equation}
+where the nonlinear mapping $f_{\theta} : \mathbb{R}^{r} \times \Theta \rightarrow \mathbb{R}^{r}$ governs the dynamics of the coefficients, with $\Theta \subset \mathbb{R}^{m_{\theta}}$ representing the parameter subspace. The noise covariances of the coefficient dynamics in (\ref{eq:3}) and the observation model in (\ref{eq:4}) are denoted by $Q_k$ and $R_k$ for $k \geq 1$. $P_0$ and $V_0$ are respectively the initial covariances of the coefficients and the dictionary. \newline
 
-\noindent where the nonlinear mapping $f_{\theta} : \mathbb{R}^{r} \times \Theta \rightarrow \mathbb{R}^{r}$ governs the dynamics of the coefficients, with $\Theta \subset \mathbb{R}^{m_{\theta}}$ representing the parameter subspace. The noise covariances of the coefficient dynamics in (\ref{eq:3}) and the observation model in (\ref{eq:4}) are denoted by $Q_k$ and $R_k$ for $k \geq 1$. $P_0$ and $V_0$ are respectively the initial covariances of the coefficients and the dictionary. \newline
-
-\noindent We are going to refer to Equation (\ref{eq:1}) as the dictionary prior, Equation (\ref{eq:2}) as the initial state of the coefficients, Equation (\ref{eq:3}) as the transition density, and Equation (\ref{eq:4}) as the observation model.
+\noindent We can refer to Equation (\ref{eq:1}) as the dictionary prior, Equation (\ref{eq:2}) as the initial state of the coefficients, Equation (\ref{eq:3}) as the transition density, and Equation (\ref{eq:4}) as the observation model.
 
 \subsection{Inference}
 
 In this section, we outline the algorithm for conducting sequential inference (\cite{akyildiz2021probabilistic}) within the model defined by equations (\ref{eq:1})–(\ref{eq:4}). We begin by stating the optimal inference recursions which are intractable and thus need to be made tractable. This is achieved by introducing approximate sequential inference.
 
-\subsubsection{Inference}
+\subsubsection{Optimal Inference}
 
-For the optimal inference recursions we have $\theta$ fixed, and we assume we know the filters at time $k - 1$: $p(x_{k-1}|y_{1:k-1})$ and $p(c|y_{1:k-1})$. \newline
+For the optimal inference recursions we have $\theta$ fixed, and we assume we know the following filters at time $k - 1$: $p(x_{k-1}|y_{1:k-1})$ and $p(c|y_{1:k-1})$. \newline
 
 \noindent The \textbf{predictive distribution}, which is in the base of the update steps, is given by:
 
@@ -257,15 +284,25 @@ For the optimal inference recursions we have $\theta$ fixed, and we assume we kn
 
 \subsubsection{Approximate Sequential Inference}
 
-In this section we make the recursions tractable by through using approximations, and outline the approximate sequential inference. Equation (\ref{eq:1}) can be rewritten as $p(c) = \mathcal{N}(c; c_0, V_0 \otimes I_d)$. Let the given filters at time $k-1$ be $p(x_{k-1} | y_{1:k-1}) = \mathcal{N}(x_{k-1};\mu_{k-1}, P_{k-1})$ and $p(c | y_{1:k-1}) = \mathcal{N}(c; c_{k-1}, V_{k-1} \otimes I_d)$. Once again, using these distributions cannot give us exact updates for $p(c | y_{1:k})$ and $p(x_k | y_{1:k})$. Hence, let's introduce the notation $\Tilde{p}(.)$ for the approximate densities when the distribution is not exact. \newline
+In this section we make the recursions tractable through using approximations, and outline the approximate sequential inference. Equation (\ref{eq:1}) can be rewritten as 
+\begin{equation}
+    p(c) = \mathcal{N}(c; c_0, V_0 \otimes I_d).
+\end{equation}
+Let the given filters at time $k-1$ be 
+\begin{equation}
+    p(x_{k-1} | y_{1:k-1}) = \mathcal{N}(x_{k-1};\mu_{k-1}, P_{k-1})
+\end{equation}
+and
+\begin{equation}
+    p(c | y_{1:k-1}) = \mathcal{N}(c; c_{k-1}, V_{k-1} \otimes I_d)
+\end{equation}
+Once again, using these distributions cannot give us exact updates for $p(c | y_{1:k})$ and $p(x_k | y_{1:k})$. Hence, let's introduce the notation $\Tilde{p}(.)$ for the approximate densities when the distribution is not exact. \newline
 
 \noindent For the prediction we have to compute (\ref{eq:5}) which is not analytically tractable when $f_{\theta}(x)$ is a nonlinear mapping. By using the extended Kalman update (EKF) (\cite{mclean1962optimal}, \cite{anderson1979optimal}) it is obtained (\cite{akyildiz2021probabilistic})
-
 \begin{equation}
     \Tilde{p}(x_k | y_{1:k-1}) = \mathcal{N}(x_k; \bar{\mu}_k, \bar{P}_k), 
 \end{equation}
-
-\noindent where $\bar{\mu}_k = f_{\theta}(\mu_{k-1})$, $\bar{P}_k = F_k P_{k-1} F^{T}_{k} + Q_k$, and $F_K = \frac{\partial f_{\theta}(x)}{\partial x} \vert_{x = \bar{\mu}_{k-1}}$ is the Jacobian of $f_{\theta}$ calculated at $\bar{\mu}_{k-1}$. \newline
+where $\bar{\mu}_k = f_{\theta}(\mu_{k-1})$, $\bar{P}_k = F_k P_{k-1} F^{T}_{k} + Q_k$, and $F_K = \frac{\partial f_{\theta}(x)}{\partial x} \vert_{x = \bar{\mu}_{k-1}}$ is the Jacobian of $f_{\theta}$ calculated at $\bar{\mu}_{k-1}$. \newline
 
 \noindent For the update step we are once again interested in the dictionary update and the coefficient update. Full derivation of the updates can be found in the PSMF paper (\cite{akyildiz2021probabilistic}). Here, we are just going to state the update rules. \newline
 
@@ -656,7 +693,7 @@ An electrocardiogram (ECG) is a medical graphical representation of the changes 
 % forcing a page break
 \clearpage
 
-\chapter{Experiments and Results}
+\chapter{Experiments and Results} \label{ch:3}
 
 For the experiments we are going to use the already available dataser "A Large Scale 12-lead Electrocardiogram Database for Arrhythmia Study" (\cite{cite1}, \cite{cite2}, \cite{cite3}). This is a comprehensive database of high-quality 12-lead ECG signals collected from $45 152$ patients. Each signal is with length of $10$ seconds corresponding to $5 000$ data points. The dataset is designed to support arrhythmia research, containing labeled data for various cardiac conditions such as atrial fibrillation, premature ventricular contractions, and bundle branch blocks. This large dataset has high-quality labels from professional experts, diverse arrhythmia types, and additional cardiovascular conditions, making it suitable for performing our tests on it. \newline
 
@@ -809,6 +846,7 @@ TODO:
     \item threshold
     \item (potential) issues, improvements, results
     \item figure caption, more result figures
+    \item add the real r peaks in circles on the plots
 \end{itemize}
 
 \begin{figure}[H]
@@ -842,7 +880,7 @@ TODO:
 \begin{figure}[H]
 \centering
 \includegraphics[width=1\linewidth]{images/r_peaks/resampled_standardised_denoised_ecg_rpeaks_algo_m.pdf}
-\caption{Removed reconstruction from the modelled ECG signal (blue), and threshold (red) of for isolating the R-peaks.}
+\caption{Removed reconstruction from the modelled ECG signal (blue), and threshold (red) for isolating the R-peaks.}
 \label{fig:diff-ecg}
 \end{figure}
 
@@ -879,6 +917,30 @@ TODO:
 \includegraphics[scale=1]{images/periodic_fit_1500_6_6_150it.pdf}
 \caption{My caption here}
 \label{somelabelforreference}
+\end{center}
+\end{figure}
+
+\begin{figure}[H]
+\begin{center}
+\includegraphics[scale=1]{images/forecast/periodic_fit.pdf}
+\caption{rank 6, terms 3, 400 iterations, wavelet, standardised, 400 points out of 1500 resampled, 20\% test}
+\label{forecast}
+\end{center}
+\end{figure}
+
+\begin{figure}[H]
+\begin{center}
+\includegraphics[scale=1]{images/forecast/periodic_cost.pdf}
+\caption{rank 6, terms 3, 400 iterations, wavelet, standardised, 400 points out of 1500 resampled, 20\% test}
+\label{loss}
+\end{center}
+\end{figure}
+
+\begin{figure}[H]
+\begin{center}
+\includegraphics[scale=1]{images/forecast/periodic_bases.pdf}
+\caption{rank 6, terms 3, 400 iterations, wavelet, standardised, 400 points out of 1500 resampled, 20\% test}
+\label{bases}
 \end{center}
 \end{figure}
 
