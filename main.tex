@@ -374,12 +374,10 @@ at the $i$-th iteration. We have that $\nabla \log p_{\theta}(y_{1:n})$ is intra
 \subsection{Approximating the marginal-likelihood}\label{subsec:aml}
 
 We are left with the task of approximating the the log-marginal likelihood $\log \Tilde{p}_{\theta}(y_k | y_{1:k-1})$. Given $\Tilde{p}_{\theta}(y_k | y_{1:k-1}, c) = \mathcal{N}(y_k; C f_{\theta}(\mu_{k-1}), \eta_k \otimes I_d)$ (from (\ref{eq:18})), and $\Tilde{p}(c | y_{1:k-1}) = \mathcal{N}(c; c_{k-1}, V_{k-1} \otimes I_d)$, for the negative log-likelihood we have (\cite{akyildiz2021probabilistic})
-
 \begin{equation}
     -\log \Tilde{p}_{\theta}(y_k | y_{1:k-1}) \overset{c}{=} \frac{d}{2} \log \left(\Vert f_{\theta}(\mu_{k-1}) \Vert_{V_{k-1}}^2 + \eta_k\right) + \frac{1}{2} \frac{\Vert y_k - C_{k-1} f_{\theta}(\mu_{k-1}) \Vert^2}{\eta_k + \Vert f_{\theta}(\mu_{k-1}) \Vert^2_{V_{k-1}}},
 \end{equation}
-
-\noindent where $\overset{c}{=}$ signifies equality up to additive constants that do not depend on $\theta$. The gradients of the negative log-likelihood can be obtained through automatic differentiation for any general coefficient dynamics $f_{\theta}$.
+where $\overset{c}{=}$ signifies equality up to additive constants that do not depend on $\theta$. The gradients of the negative log-likelihood can be obtained through automatic differentiation for any general coefficient dynamics $f_{\theta}$.
 
 \subsection{PSMF Algorithm}
 
@@ -504,7 +502,10 @@ The parameter estimation in rPSMF is analogous to the one in PSMF outlined in Se
 
 \subsection{Approximating the marginal-likelihood}
 
-Following the approach in Section \ref{subsec:aml}, we can 
+Following the approach in Section \ref{subsec:aml}, for the negative log-likelihood we can obtain (\cite{akyildiz2021probabilistic})
+\begin{equation}
+    -\log \Tilde{p}_{\theta}(y_k | y_{1:k-1}) = 
+\end{equation}
 
 \subsection{rPSMF Algorithm}
 
