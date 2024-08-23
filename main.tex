@@ -302,15 +302,34 @@ and apply it to (\ref{eq:17}), making this update tractable with likelihood $\ma
 \begin{equation}
     \Tilde{p}(y_k | c, y_{1:k-1}) = \mathcal{N}(y_k; C \bar{\mu}_k, \eta_k \otimes I_d),
 \end{equation}
-where $\eta_k = \text{tr}(R_k + C_{k-1} \bar{P}_{k} C_{k-1}^{T}) / d $, which allows the analytical computation of the dictionary update $\Tilde{p}(c | y_{1:k})$. In order to obtain the \textbf{dictionary update} we make use of Propostion 1 in \cite{akyildiz2021probabilistic}:
-
+where $\eta_k = \text{tr}(R_k + C_{k-1} \bar{P}_{k} C_{k-1}^{T}) / d $, which allows the analytical computation of the dictionary update $\Tilde{p}(c | y_{1:k})$. In order to obtain the approximate \textbf{dictionary update} $\Tilde{p}(c | y_{1:k})$ we have to make use of Propostion 1 in \cite{akyildiz2021probabilistic}:
 \begin{proposition}
-    Given $\Tilde{p}(c | y_{1:k-1}) = \mathcal{N}(c; c_{k-1}, V_{k-1} \otimes I_m)$ and the likelihood $\Tilde{p}(y_k | )$
+    Given $\Tilde{p}(c | y_{1:k-1}) = \mathcal{N}(c; c_{k-1}, V_{k-1} \otimes I_m)$ and the likelihood $\Tilde{p}(y_k | c, y_{1:k-1}) = \mathcal{N}(y_k; C \bar{\mu}_k, \eta_k \otimes I_m)$ the approximate posterior distribution is
+    \begin{equation}
+        \Tilde{p}(c | y_{1:k}) = \mathcal{N}(c; c_k, V_k \otimes I_m),
+    \end{equation}
+    where $c_k = \text{vec}(C_k)$ and the posterior column-covariance matrix $V_k$ is given by
+    \begin{equation}
+        V_k = V_{k-1} - \frac{V_{k-1} \bar{\mu}_k \bar{\mu}^T_k V_{k-1}}{\bar{\mu}_k^T V_{k-1} \bar{\mu}_k + \eta_k}, \quad k \geq 1,
+    \end{equation}
+    and the posterior mean $C_k$ of the dictionary $C$ can be obtained in matrix-from as
+    \begin{equation}
+        C_k = C_{k-1} + \frac{(y_k - C_{k-1}\bar{\mu}_k)\bar{\mu}_k^T V_{k-1}^T}{\bar{\mu}_k^T V_{k-1} \bar{\mu}_k + \eta_k}, \quad k \geq 1.
+    \end{equation}
 \end{proposition}
 
 \begin{proof}
     See \cite{akyildiz2021probabilistic}.
-\end{proof}
+\end{proof}\newline
+
+\noindent To be able to derive the coefficient update, we need to use Proposition 2 from \cite{akyildiz2021probabilistic}:
+\begin{proposition}
+    Given
+\end{proposition}
+
+\begin{proof}
+    See \cite{akyildiz2021probabilistic}.
+\end{proof}\newline
 
 \noindent \textbf{Coefficcient Update:}
 \begin{equation}
