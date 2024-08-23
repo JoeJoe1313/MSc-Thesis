@@ -209,11 +209,11 @@ where $\{a_{ij}\}$, $i \in \{1,...,m\}$, $j \in \{1, ..., n\}$ are the elements 
 
 TODO \newline
 
-\noindent In the next sections we are outlining the PSMF models we are going to use in our experiments with 12-lead ECG data in Chapter \ref{ch:3}. We are going to follow \cite{akyildiz2021probabilistic}. First, we are going to introduce PSMF - model definition, inference, parameter estimation, and marginal-likelihood approximation, algorithm. Then, similarly, we are going to introduce the robust version of PSMF (rPSMF), and finally the version of PSMF for imputing missing data.
+\noindent In the next sections we are outlining the PSMF models we are going to use in our experiments with 12-lead ECG data in Chapter \ref{ch:3}. We are going to follow \cite{akyildiz2021probabilistic}. First, we are going to introduce PSMF: model definition, inference, parameter estimation, marginal-likelihood approximation, and algorithm. Then, similarly, we are going to introduce the robust version of PSMF (rPSMF), and finally the version of PSMF for imputing missing data.
 
 \section{PSMF}
 
-We begin by introducing the PSMF model which can be thought of as being a probabilistic dimensionality reduction model. The dynamics of the subspace are modeled by a transition density (introduced in Equation \ref{eq:3}), and the underlying dynamical structure present in the data will be reflected in the dynamics of the coefficients $x_k$, $k \geq 1$. Simply said, the sequential patterns in the data will be captured and represented by the behaviour of the coefficients over time.
+We begin by introducing the PSMF model which can be thought of as being a probabilistic dimensionality reduction scheme. The dynamics of the subspace are modeled by a transition density (introduced in Equation \ref{eq:3}), meaning the underlying dynamical structure present in the data will be reflected in the dynamics of the coefficients $x_k$, $k \geq 1$. Simply said, the sequential patterns in the data will be captured and represented by the behaviour of the coefficients over time.
 
 \subsection{Model}
 
@@ -230,9 +230,7 @@ For observations $y_k \in \mathbb{R}^{m}$, $k \geq 1$, latent coefficients $x_k 
 \begin{equation} \label{eq:4}
     p(y_k \mid x_k, C) = \mathcal{N}(y_k; Cx_k, R_k)
 \end{equation}
-where the nonlinear mapping $f_{\theta} : \mathbb{R}^{r} \times \Theta \rightarrow \mathbb{R}^{r}$ governs the dynamics of the coefficients, with $\Theta \subset \mathbb{R}^{m_{\theta}}$ representing the parameter subspace. The noise covariances of the coefficient dynamics in (\ref{eq:3}) and the observation model in (\ref{eq:4}) are denoted by $Q_k$ and $R_k$ for $k \geq 1$. $P_0$ and $V_0$ are respectively the initial covariances of the coefficients and the dictionary. \newline
-
-\noindent We can refer to Equation (\ref{eq:1}) as the dictionary prior, Equation (\ref{eq:2}) as the initial state of the coefficients, Equation (\ref{eq:3}) as the transition density, and Equation (\ref{eq:4}) as the observation model.
+where the nonlinear mapping $f_{\theta} : \mathbb{R}^{r} \times \Theta \rightarrow \mathbb{R}^{r}$ governs the dynamics of the coefficients, with $\Theta \subset \mathbb{R}^{m_{\theta}}$ representing the parameter subspace. The noise covariances of the coefficient dynamics in (\ref{eq:3}) and the observation model in (\ref{eq:4}) are denoted by $Q_k$ and $R_k$ for $k \geq 1$. $P_0$ and $V_0$ are respectively the initial covariances of the coefficients and the dictionary. Informally, we can refer to Equation (\ref{eq:1}) as the dictionary prior, Equation (\ref{eq:2}) as the initial state of the coefficients, Equation (\ref{eq:3}) as the transition density, and Equation (\ref{eq:4}) as the observation model.
 
 \subsection{Inference}
 
@@ -243,44 +241,32 @@ In this section, we outline the algorithm for conducting sequential inference (\
 For the optimal inference recursions we have $\theta$ fixed, and we assume we know the following filters at time $k - 1$: $p(x_{k-1}|y_{1:k-1})$ and $p(c|y_{1:k-1})$. \newline
 
 \noindent The \textbf{predictive distribution}, which is in the base of the update steps, is given by:
-
 \begin{equation} \label{eq:5}
     p(x_k \mid y_{1:k-1}) = \int p(x_{k-1} \mid y_{1:k-1}) p(x_k \mid x_{k-1}) dx_{k-1}.
 \end{equation}
-
-\noindent Given that past marginal is known, (\ref{eq:5}) is independent of the dictionary. \newline
+Given that past marginal is known, Equation (\ref{eq:5}) is independent of the dictionary. \newline
 
 \noindent In order to be able to compute updates, we state the \textbf{incremental marginal likelihood}:
-
 \begin{equation}
     p(y_k \mid y_{1:k-1}) = \int \int p(y_k \mid c, x_k) p(x_k \mid y_{1:k-1}) p(c \mid y_{1:k-1}) dx_k dc.
 \end{equation}
-
-\noindent Now, knowing $p(y_k \mid y_{1:k-1})$, for the \textbf{dictionary update} of $C$ we have
-
+Now, knowing $p(y_k \mid y_{1:k-1})$, for the \textbf{dictionary update} of $C$ we have
 \begin{equation}
     p(c \mid y_{1:k}) = p(c \mid y_{1:k-1}) \frac{p(y_k \mid c, y_{1:k-1})}{p(y_k \mid y_{1:k-1})},
 \end{equation}
-
-\noindent where
-
-\begin{equation}
+where
+\begin{equation} \label{eq:14}
     p(y_k | c, y_{1:k-1}) = \int p(y_k | c, x_k) p(x_k | y_{1:k-1}) \text{d}x_k.
 \end{equation}
-  
-\noindent For the \textbf{coefficients update} of $x_k$ we have
-
+For the \textbf{coefficients update} of $x_k$ we have
 \begin{equation}
     p(x_k \mid y_{1:k}) = p(x_k \mid y_{1:k-1})  \frac{p(y_k \mid x_k, y_{1:k-1})}{p(y_k \mid y_{1:k-1})},
 \end{equation}
-
-\noindent where
-
+where
 \begin{equation}
     p(y_k | x_k, y_{1:k-1}) = \int p(y_k | x_k, c) p(c | y_{1:k-1})\text{d}c.
 \end{equation}
-
-\noindent As mentioned earlier, the integrals can be computed but the resulting distributions are not suitable for precise implementations of the update rules.
+As mentioned earlier, the integrals can be computed but the resulting distributions are not suitable for precise implementations of the update rules.
 
 \subsubsection{Approximate Sequential Inference}
 
@@ -298,41 +284,46 @@ and
 \end{equation}
 Once again, using these distributions cannot give us exact updates for $p(c | y_{1:k})$ and $p(x_k | y_{1:k})$. Hence, let's introduce the notation $\Tilde{p}(.)$ for the approximate densities when the distribution is not exact. \newline
 
-\noindent For the prediction we have to compute (\ref{eq:5}) which is not analytically tractable when $f_{\theta}(x)$ is a nonlinear mapping. By using the extended Kalman update (EKF) (\cite{mclean1962optimal}, \cite{anderson1979optimal}) it is obtained (\cite{akyildiz2021probabilistic})
+\noindent For the \textbf{prediction} we have to compute (\ref{eq:5}) which is not analytically tractable when $f_{\theta}(x)$ is a nonlinear mapping. By using the extended Kalman update (EKF) (\cite{mclean1962optimal}, \cite{anderson1979optimal}) it is obtained (\cite{akyildiz2021probabilistic})
 \begin{equation}
     \Tilde{p}(x_k | y_{1:k-1}) = \mathcal{N}(x_k; \bar{\mu}_k, \bar{P}_k), 
 \end{equation}
 where $\bar{\mu}_k = f_{\theta}(\mu_{k-1})$, $\bar{P}_k = F_k P_{k-1} F^{T}_{k} + Q_k$, and $F_K = \frac{\partial f_{\theta}(x)}{\partial x} \vert_{x = \bar{\mu}_{k-1}}$ is the Jacobian of $f_{\theta}$ calculated at $\bar{\mu}_{k-1}$. \newline
 
-\noindent For the update step we are once again interested in the dictionary update and the coefficient update. Full derivation of the updates can be found in the PSMF paper (\cite{akyildiz2021probabilistic}). Here, we are just going to state the update rules. \newline
-
-\noindent \textbf{Dictionary Update:}
-
+\noindent For the \textbf{update} step we are once again interested in the dictionary update and the coefficient update. All of the derivation details of the updates can be found in (\cite{akyildiz2021probabilistic}). Here, we are just going to outline the main steps of the update rules. First, we can see that (\ref{eq:14}) can be computed as
+\begin{equation} \label{eq:17}
+    p(y_k | c, y_{1:k-1}) = \mathcal{N}(y_k; C \bar{\mu}_k, R_k + C \bar{P}_k C^T),
+\end{equation}
+but to make this update tractable we make use of the approximation
+\begin{equation}
+    C \bar{P}_k C^T \approx C_{k-1} \bar{P}_k C^T_{k-1},
+\end{equation}
+and apply it to (\ref{eq:17}), making this update tractable with likelihood $\mathcal{N}(y_k; C \bar{\mu}_k, R_k + C_{k-1} \bar{P}_k C_{k-1}^T)$. We also choose a Gaussian with a constant diagonal covariance, and we obtain the approximation
 \begin{equation}
     \Tilde{p}(y_k | c, y_{1:k-1}) = \mathcal{N}(y_k; C \bar{\mu}_k, \eta_k \otimes I_d),
 \end{equation}
+where $\eta_k = \text{tr}(R_k + C_{k-1} \bar{P}_{k} C_{k-1}^{T}) / d $, which allows the analytical computation of the dictionary update $\Tilde{p}(c | y_{1:k})$. In order to obtain the \textbf{dictionary update} we make use of Propostion 1 in \cite{akyildiz2021probabilistic}:
 
-\noindent where $\eta_k = \text{tr}(R_k + C_{k-1} \bar{P}_{k} C_{k-1}^{T}) / d$. \newline
+\begin{proposition}
+    Given $\Tilde{p}(c | y_{1:k-1}) = \mathcal{N}(c; c_{k-1}, V_{k-1} \otimes I_m)$ and the likelihood $\Tilde{p}(y_k | )$
+\end{proposition}
 
-Text \textbf{Maybe add the missed proposition for etc here} text. \newline 
+\begin{proof}
+    See \cite{akyildiz2021probabilistic}.
+\end{proof}
 
 \noindent \textbf{Coefficcient Update:}
-
 \begin{equation}
     \Tilde{p}(x_k | y_{1:k}) = \mathcal{N}(x_k; \mu_k, P_k),
 \end{equation}
-
 with 
-
 \begin{equation}
     \mu_k = \bar{\mu}_k +  \bar{P}_k C_{k-1}^T \left(C_{k-1} \bar{P}_k C_{k-1}^T + \bar{R}_k\right)^{-1} (y_k - C_{k-1} \bar{\mu}_k),
 \end{equation}
-
 \begin{equation} \label{eq:6}
     P_k = \bar{P}_k - \bar{P}_k C_{k-1}^T \left(C_{k-1} \bar{P}_k C_{k-1}^T + \bar{R}_k\right)^{-1} C_{k-1} \bar{P}_k,
 \end{equation}
-
-\noindent where $\bar{R}_k = R_k + \bar{\mu}_k^T V_{k-1} \bar{\mu}_k \otimes I_d$.
+where $\bar{R}_k = R_k + \bar{\mu}_k^T V_{k-1} \bar{\mu}_k \otimes I_d$.
 
 \subsection{Parameter Estimation}
 
