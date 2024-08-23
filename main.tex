@@ -299,7 +299,7 @@ but to make this update tractable we make use of the approximation
     C \bar{P}_k C^T \approx C_{k-1} \bar{P}_k C^T_{k-1},
 \end{equation}
 and apply it to (\ref{eq:17}), making this update tractable with likelihood $\mathcal{N}(y_k; C \bar{\mu}_k, R_k + C_{k-1} \bar{P}_k C_{k-1}^T)$. We also choose a Gaussian with a constant diagonal covariance, and we obtain the approximation
-\begin{equation}
+\begin{equation}\label{eq:18}
     \Tilde{p}(y_k | c, y_{1:k-1}) = \mathcal{N}(y_k; C \bar{\mu}_k, \eta_k \otimes I_d),
 \end{equation}
 where $\eta_k = \text{tr}(R_k + C_{k-1} \bar{P}_{k} C_{k-1}^{T}) / d $, which allows the analytical computation of the dictionary update $\Tilde{p}(c | y_{1:k})$. In order to obtain the approximate \textbf{dictionary update} $\Tilde{p}(c | y_{1:k})$ we have to make use of Proposition 1 in \cite{akyildiz2021probabilistic}:
@@ -354,27 +354,26 @@ where
 
 \subsection{Parameter Estimation}
 
-We need to estimate the parameters of $f_{\theta}$ in Equation \ref{eq:3}. In order to do that we need to solve the following optimisation problem
-
+We need to estimate the parameters of $f_{\theta}$ in Equation \ref{eq:3}. In order to do that we have to solve the following optimisation problem
 \begin{equation}
     \theta^{\star} \in \text{argmax} \log p_{\theta}(y_{1:n}).
 \end{equation}
-
-\noindent In this section we are going to outline the offline gradient ascent scheme for a limited number of data points, and call it \textbf{iterative estimation}. There is also an online (recursive) version (refer to \cite{akyildiz2021probabilistic}) that can be used on streaming data but we won't outline here. \newline
+In this section we are going to outline the offline gradient ascent scheme for a limited number of data points, and call it \textbf{iterative estimation}, or \textit{iterative} PSMF. There is also an online (recursive) version (refer to \cite{akyildiz2021probabilistic}) that can be used on streaming data. \newline
 
 \noindent \textbf{Iterative Estimation:} \newline
 
-\noindent Performing multiple passes over data with 
-
+\noindent We can perform multiple passes over data with 
 \begin{equation}
     \theta_i = \theta_{i-1} + \gamma \nabla \log \Tilde{p}_{\theta}(y_{1:n}) \vert_{\theta = \theta_{i-1}}
 \end{equation}
-
-\noindent at the $i$-th iteration. Again, because $\nabla \log p_{\theta}(y_{1:n})$ is intractable we are going to use the approximation $\nabla \log \Tilde{p}_{\theta}(y_{1:n}) = \sum_k^n \Tilde{p}_{\theta}(y_k | y_{1:k-1})$. This is done during forward filtering.
+at the $i$-th iteration. We have that $\nabla \log p_{\theta}(y_{1:n})$ is intractable. Thus, during forward filtering we are going to use the approximation
+\begin{equation}
+    \nabla \log \Tilde{p}_{\theta}(y_{1:n}) = \sum_k^n \Tilde{p}_{\theta}(y_k | y_{1:k-1}).
+\end{equation}
 
 \subsection{Approximating the marginal-likelihood}
 
-Given $\Tilde{p}_{\theta}(y_k | y_{1:k-1}, c) = \mathcal{N}(y_k; C f_{\theta}(\mu_{k-1}), \eta_k \otimes I_d)$, and $\Tilde{p}(c | y_{1:k-1}) = \mathcal{N}(c; c_{k-1}, V_{k-1} \otimes I_d)$, for the negative log-likelihood we have (\cite{akyildiz2021probabilistic})
+We are left with the task of approximating the the log-marginal likelihood $\log \Tilde{p}_{\theta}(y_k | y_{1:k-1})$. Given $\Tilde{p}_{\theta}(y_k | y_{1:k-1}, c) = \mathcal{N}(y_k; C f_{\theta}(\mu_{k-1}), \eta_k \otimes I_d)$ (from (\ref{eq:18})), and $\Tilde{p}(c | y_{1:k-1}) = \mathcal{N}(c; c_{k-1}, V_{k-1} \otimes I_d)$, for the negative log-likelihood we have (\cite{akyildiz2021probabilistic})
 
 \begin{equation}
     -\log \Tilde{p}_{\theta}(y_k | y_{1:k-1}) \overset{c}{=} \frac{d}{2} \log \left(\Vert f_{\theta}(\mu_{k-1}) \Vert_{V_{k-1}}^2 + \eta_k\right) + \frac{1}{2} \frac{\Vert y_k - C_{k-1} f_{\theta}(\mu_{k-1}) \Vert^2}{\eta_k + \Vert f_{\theta}(\mu_{k-1}) \Vert^2_{V_{k-1}}},
