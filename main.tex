@@ -259,7 +259,7 @@ where
     p(y_k | c, y_{1:k-1}) = \int p(y_k | c, x_k) p(x_k | y_{1:k-1}) \text{d}x_k.
 \end{equation}
 For the \textbf{coefficients update} of $x_k$ we have
-\begin{equation}
+\begin{equation}\label{eq:15}
     p(x_k \mid y_{1:k}) = p(x_k \mid y_{1:k-1})  \frac{p(y_k \mid x_k, y_{1:k-1})}{p(y_k \mid y_{1:k-1})},
 \end{equation}
 where
@@ -302,7 +302,7 @@ and apply it to (\ref{eq:17}), making this update tractable with likelihood $\ma
 \begin{equation}
     \Tilde{p}(y_k | c, y_{1:k-1}) = \mathcal{N}(y_k; C \bar{\mu}_k, \eta_k \otimes I_d),
 \end{equation}
-where $\eta_k = \text{tr}(R_k + C_{k-1} \bar{P}_{k} C_{k-1}^{T}) / d $, which allows the analytical computation of the dictionary update $\Tilde{p}(c | y_{1:k})$. In order to obtain the approximate \textbf{dictionary update} $\Tilde{p}(c | y_{1:k})$ we have to make use of Propostion 1 in \cite{akyildiz2021probabilistic}:
+where $\eta_k = \text{tr}(R_k + C_{k-1} \bar{P}_{k} C_{k-1}^{T}) / d $, which allows the analytical computation of the dictionary update $\Tilde{p}(c | y_{1:k})$. In order to obtain the approximate \textbf{dictionary update} $\Tilde{p}(c | y_{1:k})$ we have to make use of Proposition 1 in \cite{akyildiz2021probabilistic}:
 \begin{proposition}
     Given $\Tilde{p}(c | y_{1:k-1}) = \mathcal{N}(c; c_{k-1}, V_{k-1} \otimes I_m)$ and the likelihood $\Tilde{p}(y_k | c, y_{1:k-1}) = \mathcal{N}(y_k; C \bar{\mu}_k, \eta_k \otimes I_m)$ the approximate posterior distribution is
     \begin{equation}
@@ -317,32 +317,40 @@ where $\eta_k = \text{tr}(R_k + C_{k-1} \bar{P}_{k} C_{k-1}^{T}) / d $, which al
         C_k = C_{k-1} + \frac{(y_k - C_{k-1}\bar{\mu}_k)\bar{\mu}_k^T V_{k-1}^T}{\bar{\mu}_k^T V_{k-1} \bar{\mu}_k + \eta_k}, \quad k \geq 1.
     \end{equation}
 \end{proposition}
-
 \begin{proof}
     See \cite{akyildiz2021probabilistic}.
 \end{proof}\newline
 
 \noindent To be able to derive the coefficient update, we need to use Proposition 2 from \cite{akyildiz2021probabilistic}:
 \begin{proposition}
-    Given
+    Given $p(y_k | c, x_k) = \mathcal{N}(y_k; Cx_k, R_k)$ (as in \ref{eq:4}) and $p(c | y_{1:k-1}, x_k) = \mathcal{N}(c; c_{k-1}, V_{k-1} \otimes I_m)$, we obtain
+    \begin{equation}\label{eq:21}
+        p(y_k | y_{1:k-1}, x_k) = \mathcal{N}(y_k; C_{k-1} x_k, R_k + x^T V_{k-1} x_k \otimes I_m).
+    \end{equation}
 \end{proposition}
-
 \begin{proof}
     See \cite{akyildiz2021probabilistic}.
 \end{proof}\newline
 
-\noindent \textbf{Coefficcient Update:}
+\noindent We can approximate Equation \ref{eq:21} as follows:
+\begin{equation}
+    \Tilde{p}(y_k | y_{1:k-1}, x_k) = \mathcal{N}(C_{k-1} x_k, \bar{R}_k),
+\end{equation}
+where
+\begin{equation}
+    \bar{R}_k = R_k + \bar{\mu}_k^T V_{k-1} \bar{\mu}_k \otimes I_m.
+\end{equation}
+This rtesult along with an application of the Kalman update (\cite{anderson1979optimal}) allows us to define the approximate posterior for the \textbf{coefficient update} (\ref{eq:15})
 \begin{equation}
     \Tilde{p}(x_k | y_{1:k}) = \mathcal{N}(x_k; \mu_k, P_k),
 \end{equation}
-with 
+where 
 \begin{equation}
     \mu_k = \bar{\mu}_k +  \bar{P}_k C_{k-1}^T \left(C_{k-1} \bar{P}_k C_{k-1}^T + \bar{R}_k\right)^{-1} (y_k - C_{k-1} \bar{\mu}_k),
 \end{equation}
 \begin{equation} \label{eq:6}
-    P_k = \bar{P}_k - \bar{P}_k C_{k-1}^T \left(C_{k-1} \bar{P}_k C_{k-1}^T + \bar{R}_k\right)^{-1} C_{k-1} \bar{P}_k,
+    P_k = \bar{P}_k - \bar{P}_k C_{k-1}^T \left(C_{k-1} \bar{P}_k C_{k-1}^T + \bar{R}_k\right)^{-1} C_{k-1} \bar{P}_k.
 \end{equation}
-where $\bar{R}_k = R_k + \bar{\mu}_k^T V_{k-1} \bar{\mu}_k \otimes I_d$.
 
 \subsection{Parameter Estimation}
 
