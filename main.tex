@@ -309,7 +309,7 @@ where $\eta_k = \text{tr}(R_k + C_{k-1} \bar{P}_{k} C_{k-1}^{T}) / d $, which al
         \Tilde{p}(c | y_{1:k}) = \mathcal{N}(c; c_k, V_k \otimes I_m),
     \end{equation}
     where $c_k = \text{vec}(C_k)$ and the posterior column-covariance matrix $V_k$ is given by
-    \begin{equation}
+    \begin{equation}\label{eq:19}
         V_k = V_{k-1} - \frac{V_{k-1} \bar{\mu}_k \bar{\mu}^T_k V_{k-1}}{\bar{\mu}_k^T V_{k-1} \bar{\mu}_k + \eta_k}, \quad k \geq 1,
     \end{equation}
     and the posterior mean $C_k$ of the dictionary $C$ can be obtained in matrix-from as
@@ -352,7 +352,7 @@ where
     P_k = \bar{P}_k - \bar{P}_k C_{k-1}^T \left(C_{k-1} \bar{P}_k C_{k-1}^T + \bar{R}_k\right)^{-1} C_{k-1} \bar{P}_k.
 \end{equation}
 
-\subsection{Parameter Estimation}
+\subsection{Parameter Estimation}\label{subsec:param-est-psmf}
 
 We need to estimate the parameters of $f_{\theta}$ in Equation \ref{eq:3}. In order to do that we have to solve the following optimisation problem
 \begin{equation}
@@ -371,7 +371,7 @@ at the $i$-th iteration. We have that $\nabla \log p_{\theta}(y_{1:n})$ is intra
     \nabla \log \Tilde{p}_{\theta}(y_{1:n}) = \sum_k^n \Tilde{p}_{\theta}(y_k | y_{1:k-1}).
 \end{equation}
 
-\subsection{Approximating the marginal-likelihood}
+\subsection{Approximating the marginal-likelihood}\label{subsec:aml}
 
 We are left with the task of approximating the the log-marginal likelihood $\log \Tilde{p}_{\theta}(y_k | y_{1:k-1})$. Given $\Tilde{p}_{\theta}(y_k | y_{1:k-1}, c) = \mathcal{N}(y_k; C f_{\theta}(\mu_{k-1}), \eta_k \otimes I_d)$ (from (\ref{eq:18})), and $\Tilde{p}(c | y_{1:k-1}) = \mathcal{N}(c; c_{k-1}, V_{k-1} \otimes I_d)$, for the negative log-likelihood we have (\cite{akyildiz2021probabilistic})
 
@@ -405,35 +405,35 @@ The iterative version of the PSMF algorithm is given in Algorithm \ref{algo:1}. 
 \State \hspace{2em} Update coefficient covariance $P_k$:
 \State \hspace{3em} $P_k = \bar{P}_k - \bar{P}_k C_{k-1}^T (C_{k-1} \bar{P}_k C_{k-1}^T + \bar{R}_k)^{-1} C_{k-1} \bar{P}_k$
 \State \hspace{1em} Update parameters:
-\State \hspace{2em} $\theta_i = \theta_{i-1} + \gamma \nabla \log \Tilde{p}_{\theta}(y_{1:n}) \vert_{\theta = \theta_{i-1}}$
+\State \hspace{2em} $\theta_i = \theta_{i-1} + \gamma \sum_{k=1}^n \nabla \log \Tilde{p}_{\theta}(y_k | y_{1:k-1}) \vert_{\theta = \theta_{i-1}}$
 \end{algorithmic}\label{algo:1}
 \end{algorithm}
 
 \section{rPSMF}
 
-There are cases when the ... cannot be set/specified...
+There are cases when the model described in equations (\ref{eq:1})-(\ref{eq:4}) may not perform optimally when the practitioner is unsure about how to set the hyperparameters or when they are misspecified. That's when the robust version of the PSMF model (also introduced in \cite{akyildiz2021probabilistic}), rPSMF for short, is of good use: incorporating robustness to outliers and model misspecifications by integrating a multivariate $t$ distribution into the framework. In rPSMF an inverse-gamma-distributed scale variable $s$ is introduced, as shown in equations (\ref{eq:6})-(\ref{eq:10}), and only the initial noise covariances $Q_0$ and $R_0$ need to be specified. The inference and parameter estimation follows the one for PSMF, but with some modifications to accommodate the usage of the multivariate $t$ distribution.
 
 \subsection{Model}
 
-The robust variant of PSMF (rPSMF) incorporates robustness to outliers and model misspecifications by integrating a multivariate t-distribution into the framework. The inference and parameter estimation follows the one for PSMF. The rPSMF model is defined as
-
-\begin{equation}
+The rPSMF model can be described with the following state-space equations (\cite{akyildiz2021probabilistic})
+\begin{equation}\label{eq:6}
     p(s) = \mathcal{IG}(s; \lambda_0 / 2, \lambda_0 / 2)
 \end{equation}
-\begin{equation}
+\begin{equation}\label{eq:7}
     p(C \mid s) = \mathcal{MN}(C; C_0, I_d, sV_0)
 \end{equation}
-\begin{equation}
+\begin{equation}\label{eq:8}
     p(x_0 \mid s) = \mathcal{N}(x_0; \mu_0, sP_0)
 \end{equation}
-\begin{equation}
+\begin{equation}\label{eq:9}
     p_{\theta}(x_k \mid x_{k-1}, s) = \mathcal{N}(x_k; f_{\theta}(x_{k-1}), sQ_0)
 \end{equation}
-\begin{equation}
+\begin{equation}\label{eq:10}
     p(y_k \mid x_k, C, s) = \mathcal{N}(y_k; Cx_k, sR_0),
 \end{equation}
+where $s$ is an inverse-gamma-distributed scale variable, $R_0$ and $Q_0$ are the initial noise covariances. \newline
 
-\noindent where ...
+\noindent For clarity, we are going to define the inverse-gamma-distribution and the multivariate $t$ distribution we are going to use.
 
 \begin{definition}
     The \textit{inverse-gamma distribution} is defined as
@@ -453,49 +453,58 @@ The robust variant of PSMF (rPSMF) incorporates robustness to outliers and model
 
 \subsection{Inference}
 
-Inference in rPSMF incorporates the handling of the robust parameters and scale mixing variable \( s \) introduced to manage outliers and model misspecifications. The introduction of multivariate $t$ distribution leads to an increase of the degrees of freedom in the update equations by $d$ at every iteration:
-
+The inference in rPSMF follows the one for PSMF, but with some modifications to accommodate the usage of the multivariate $t$ distribution. The introduction of multivariate $t$ distribution leads to an increase of the degrees of freedom in the update equations by $d$ at every iteration:
 \begin{equation}
     \lambda_k = \lambda_{k-1} + d.
 \end{equation}
-
-\noindent If we let 
-
+If we let 
 \begin{equation}
     \Delta^2_{1,k} = (y_k - C_{k-1}\bar{\mu}_k)^T (C_{k-1} \bar{P}_k C_{k-1}^T + \bar{R}_k)^{-1} (y_k - C_{k-1}\bar{\mu}_k)
 \end{equation}
-
-\noindent and 
-
+and 
 \begin{equation}
     \omega_k = (\lambda_{k-1} + \Delta^2_{1,k}) / (\lambda_{k-1} + d),
 \end{equation}
-
-\noindent then (\cite{akyildiz2021probabilistic}) $s_0 = s$, $s_k = \omega_k^{-1} s_{k-1}$, and for the noise covariances update we have $Q_k = \omega_k Q_{k-1}$, and $R_k = \omega_k R_{k-1}$. The updates for the mean for the coefficients and the dictionary are the same, but the updates for the coefficient covariance $P_k$ and the dictionary column-covariance $V_k$ undergo changes. For $P_k$ the Student's $t$ update contributes to multiplying the right-hand side of Equation \ref{eq:6} by $\omega_k$:
-
+then (\cite{akyildiz2021probabilistic})
+\begin{equation}
+    s_0 = s, \quad s_k = \omega_k^{-1} s_{k-1}
+\end{equation}
+and for the noise covariances update we have 
+\begin{equation}
+    Q_k = \omega_k Q_{k-1},
+\end{equation}
+\begin{equation}
+    R_k = \omega_k R_{k-1}.
+\end{equation}
+The updates for the mean for the coefficients and the dictionary are the same, but the updates for the coefficient covariance $P_k$ and the dictionary column-covariance $V_k$ undergo changes. For $P_k$ the Student's $t$ update contributes to multiplying the right-hand side of Equation \ref{eq:6} by $\omega_k$, leading to
 \begin{equation}
     P_k = \omega_k \left(\bar{P}_k - \bar{P}_k C_{k-1}^T \left(C_{k-1} \bar{P}_k C_{k-1}^T + \bar{R}_k\right)^{-1} C_{k-1} \bar{P}_k\right).
 \end{equation}
-
-\noindent If we let 
-
+If we let 
 \begin{equation}
     \bar{\rho}_k = \bar{\mu}_k^T V_{k-1} \bar{\mu}_k + \eta_k
 \end{equation}
-
-\noindent and
-
+and
 \begin{equation}
     \Delta^2_{2,k} = \Vert y_k - C_{k-1}\bar{\mu}_k \Vert^2 / \bar{\rho}_k,
 \end{equation}
-
-\noindent then the update of $V_k$ becomes (\textbf{revisit this in PSMF - it was missed, the explicit equation})
-
+then the update of $V_k$ (Equation \ref{eq:19}) becomes
 \begin{equation}
     V_k = \varphi_k \left(V_{k-1} - \frac{V_{k-1} \bar{\mu}_k \bar{\mu}_k^T V_{k-1}}{\bar{\mu}_k^T V_{k-1} \bar{\mu}_k + \eta_k}\right),
 \end{equation}
+where 
+\begin{equation}
+    \varphi_k = \frac{\lambda_{k-1} + \Delta^2_{2,k}}{\lambda_{k-1} + d}
+\end{equation}
+Detailed derivation can be seen in Supp. F in \cite{akyildiz2021probabilistic}.
 
-\noindent where $\varphi_k = \left( \lambda_{k-1} + \Delta^2_{2,k} \right) / \left( \lambda_{k-1} + d \right)$.
+\subsection{Parameter Estimation}
+
+The parameter estimation in rPSMF is analogous to the one in PSMF outlined in Section \ref{subsec:param-est-psmf}.
+
+\subsection{Approximating the marginal-likelihood}
+
+Following the approach in Section \ref{subsec:aml}, we can 
 
 \subsection{rPSMF Algorithm}
 
