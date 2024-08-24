@@ -798,11 +798,10 @@ In this section, we evaluate PSMF and rPSMF on the task of imputing missing valu
 
 \noindent For PSMF and rPSMF we choose a random walk subspace model $f_{\theta}(x) = x$, and for the imputation we use the final estimates of $C$ and $X$. We test the four sequential models by setting the rank first to $r = 3$, and then to $r = 10$. As in \cite{akyildiz2021probabilistic}, for TMF we set the weight matrix to identity, for PSMF and MLE- SMF we set $R_k := R = \rho \otimes I_r$, where $\rho = 10$, $P_0 = I_r$, $Q_k := Q = q \otimes I_r$, and $q = 0.1$. For rPSMF we use $R_0 = R$ and $Q_0 = Q$ and choose $\lambda_0 = 1.8$, and for both PSMF and rPSMF we set $V_0 = v_0 \otimes I_r$ with $v_0 = 2$. We evaluate the performance of the four methods PSMF, rPSMF, MLE-SMF, and TMF by running each of them for two epochs. To ensure the robustness and reliability of our findings, we conduct the experiments $100$ times, each time using different initializations and randomly generated patterns of missing data. \newline
 
-\noindent In Table \ref{tab:rmse3} we can find the results for $r = 3$ for each of the cases with $20\%$, $30\%$ and $40\%$ missing data. We see that PSMF and rPSMF have lower RMSEs compared to MLE-SMF and TMF, and that rPSMF slightly outperforms PSMF.  \newline
+\noindent Table \ref{tab:rmse3} presents the results for rank $r = 3$ across scenarios with $20\%$, $30\%$, and $40\%$ missing data. The findings show that PSMF and rPSMF achieve lower imputation Root Mean Square Errors (RMSEs) than MLE-SMF and TMF, with rPSMF slightly outperforming PSMF. For rank $r = 10$, as shown in Table \ref{tab:rmse10}, PSMF emerges as the top performer across all test cases. While MLE-SMF and TMF results remain relatively consistent with their rank r = 3 performance, rPSMF shows a significant decline in performance, worsening as the percentage of missing data increases. PSMF's performance is also worse than for $r = 3$ but it is not that much affected as rPSMF. This observation contradicts our initial hypothesis that higher rank would lead to lower imputation RMSE. \newline
 
 \begin{table}[H]
 \centering
-\label{tab:rmse3}
 \text{$r = 3$} \\[0.5ex]
 \begin{tabular}{@{}lccc|ccccc@{}}
 \toprule
@@ -816,11 +815,11 @@ TMF & $\underset{{\scriptscriptstyle \;\;\;(16.18)}}{202.76}$ & $\underset{{\scr
 \bottomrule
 \end{tabular}
 \caption{Imputation error and runtime using 20\%, 30\% and 40\% missing values, rank 3, averaged over 100 random repetitions.}
+\label{tab:rmse3}
 \end{table}
 
 \begin{table}[H]
 \centering
-\label{tab:rmse10}
 \text{$r = 10$} \\[0.5ex]
 \begin{tabular}{@{}lccc|ccccc@{}}
 \toprule
@@ -834,9 +833,16 @@ TMF & $\underset{{\scriptscriptstyle \;\;\;(20.04)}}{205.67}$ & $\underset{{\scr
 \bottomrule
 \end{tabular}
 \caption{Imputation error and runtime using 20\%, 30\% and 40\% missing values, rank 10, averaged over 100 random repetitions.}
+\label{tab:rmse10}
 \end{table}
 
 \noindent We can also measure the proportion of missing values that lie within a $2\sigma$ coverage interval of the approximate posterior distribution. Table 3 shows how our method improves over the uncertainty quantification of MLE-SMF (the other methods do not provide a posterior distribution). This illustrates the added value of the matrix-variate prior on C, as well as our inference scheme. Note that rPSMF obtains a higher coverage percentage than PSMF on three of the datasets, which is due to the sequential updating of the noise covariances. \newline
+
+\noindent  We can evaluate the effectiveness of our uncertainty quantification by calculating the percentage of missing values that fall within a two-standard-deviation ($2\sigma$) interval of the approximate posterior distribution. 
+
+The results, presented in Table 3, demonstrate that our approach enhances the uncertainty quantification compared to the MLE-SMF method (TMF does not provide a posterior distribution). It's worth noting that other methods don't provide a posterior distribution for comparison.
+
+Interestingly, rPSMF achieves a higher coverage percentage than PSMF on three datasets, which can be attributed to its sequential updating of noise covariances.
 
 \begin{table}[H]
     \centering
