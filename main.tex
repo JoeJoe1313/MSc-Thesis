@@ -659,38 +659,90 @@ The PSMF algorithm for handling missing data is given in Algorithm \ref{algo:psm
 
 \section{Introduction to ECG}
 
+\subsection{ECG}
+
 An electrocardiogram (ECG) is a medical graphical representation of the changes in the strength and direction of the heart's electrical activity over a period of time using electrodes placed on the skin. These electrodes detect the tiny electrical changes on the skin that arise from the heart muscle's electrophysiologic pattern of depolarizing and repolarizing during each heartbeat. It is a very common, non-invasive procedure used to diagnose rhythm abnormalities, electrical conduction changes, myocardial ischemia and infarction, and generally to monitor cardiac health, and be of help to treatment decisions. \newline
 
 \noindent The electrical signals generated during the cardiac cycle, consisting of depolarization and repolarization of the heart muscle cells, propagate through the conductive tissues surrounding the heart. By placing electrodes at specific locations on the body, these electrical signals can be detected and recorded as an ECG. The repeating patterns observed in an ECG reflect the sequence of electrical activity in the atria and ventricles. Instead of measuring the absolute voltage, an ECG records the voltage changes relative to a baseline. Standard ECG recordings are made on paper at a rate of 25 mm per second, with a vertical calibration of 1 millivolt per centimeter. (\cite{alma991000225790601591}) \newline
 
-\noindent In Figure \ref{fig:ecg-huszar} we can see the components of the ECG trace. A closer look at one of the repeating waveforms in an ECG rhythm strip (PQRST complex) reveals several distinct components, each representing a specific phase of the cardiac cycle. The P wave corresponds to atrial depolarization, while the QRS complex represents ventricular depolarization. The T wave, which follows the QRS complex, indicates ventricular repolarization. The PR interval is the time taken for the depolarization wave to travel through the atria and the atrioventricular (AV) node. The QT interval encompasses the entire period of ventricular depolarization and repolarization. Between the QRS complex and the T wave lies the ST segment, an isoelectric period during which the entire ventricle is in a depolarized state. \newline
+\subsection{PQRST Complex}
+
+\noindent In Figure \ref{fig:ecg-huszar} we can see the components of the ECG trace. A closer look at one of the repeating waveforms in an ECG rhythm strip (PQRST complex) reveals several distinct components, each representing a specific phase of the cardiac cycle. The P wave corresponds to atrial depolarization, while the QRS complex represents ventricular depolarization. The T wave, which follows the QRS complex, indicates ventricular repolarization. The PR interval is the time taken for the depolarization wave to travel through the atria and the atrioventricular (AV) node. The QT interval encompasses the entire period of ventricular depolarization and repolarization. Between the QRS complex and the T wave lies the ST segment, an isoelectric period during which the entire ventricle is in a depolarized state.
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=1\linewidth]{images/ecg-huszar.jpg}
-\caption{Components of the ECG trace. (\cite{huszar})}
+\includegraphics[width=1\linewidth]{images/ecg.png}
+\caption{Components of the ECG trace. (\cite{alma991000225790601591})}
 \label{fig:ecg-huszar}
 \end{figure}
 
-\noindent Simply said, a 12-lead ECG provides a comprehensive view of the heart's electrical activity from different angles. It consists of 12 different leads, each representing a specific view of the heart. The leads are divided into two main groups: \newline
+\subsection{R-peak}
 
-\noindent \textbf{Limb Leads:}
+The R-peak is the tallest and most prominent wave in the PQRST complex of an ECG signal, the peak of the R-wave. It represents the depolarization of the left and right ventricles, which are the main pumping chambers of the heart. The ability to accurately detect R-peaks is crucial for several reasons:
+
 \begin{itemize}
-    \item \textbf{Bipolar Limb Leads:} (Figure \ref{fig:limp})
+    \item Heart Rate Calculation: The time interval between consecutive R-peaks, known as the RR interval, is used to calculate the heart rate. By detecting R-peaks, we can determine the heart rate and monitor any changes or irregularities.
+    \item Cardiac Rhythm Analysis: R-peak detection helps in identifying the regularity and pattern of the heart's rhythm. By analyzing the sequence of R-peaks, we can detect various arrhythmias, such as premature ventricular contractions (PVCs), atrial fibrillation, and heart blocks.
+    \item Signal Quality Assessment: The consistency and clarity of R-peaks can provide insights into the overall quality of the ECG signal. If R-peaks are difficult to detect or have variable amplitudes, it may indicate the presence of noise, artifacts, or poor electrode contact.
+    \item Temporal Alignment: R-peaks serve as reference points for aligning and comparing different ECG leads or signals from multiple subjects. By aligning the signals based on R-peaks, we can analyze the relative timing and morphology of other ECG components.
+    \item Feature Extraction: Various features can be extracted from the ECG signal using R-peaks as anchor points. These features, such as RR intervals, QRS duration, and ST segment changes, provide valuable information for diagnosing and monitoring cardiac conditions.
+\end{itemize}  
+Many methods have been developed for R-peak detection, such as:
+\begin{itemize}
+    \item Pan-Tompkins algorithm
+    \item Wavelet-based methods
+    \item Hilbert transform-based methods
+    \item Machine learning approaches
+\end{itemize}
+These algorithms aim to accurately and efficiently detect R-peaks in the presence of noise, baseline wander, and other artifacts commonly found in ECG signals. Accurate R-peak detection is essential for the reliable interpretation of ECG data and the diagnosis of various cardiac conditions.
+
+\subsection{12-Lead ECG}
+
+\noindent An ECG can contain 12 ECG traces, called 12-lead ECG. Simply said, a 12-lead ECG provides a comprehensive view of the heart's electrical activity from different angles. It consists of 12 different leads, each representing a specific view of the heart. The leads are divided into two main groups: limb leads and precordial leads. \newline
+
+\noindent The so called  \textbf{Einthoven's Triangle} (can be seen in Figure \ref{fig:limp}) is a theoretical formation of the limb leads (I, II, III), forming an equilateral triangle with the heart at the center. This relationship helps in understanding the orientation and magnitude of the heart's electrical activity. The voltages in these leads relate to each other in the following way:
+
+\begin{equation}
+    \text{Lead I} + \text{Lead III} = \text{Lead II}.
+\end{equation}
+
+\noindent The voltages in augmented limb leads are calculated by amplifying the electrical difference between one limb electrode and a central point formed by the other limb electrodes. These relationships are based on the principle that the sum of the voltages from all three limb leads should be zero when the heart's electrical axis is normal. Let's outline the lead regarding the limb leads group: \newline
+
+\noindent \textbf{Limb Leads:} The electrodes for these signals are one on each arm and one on the left leg.
+\begin{itemize}
+    \item \textbf{Bipolar Limb Leads} (Figure \ref{fig:limp}):
     \begin{itemize}
-        \item \textbf{Lead I:} Measures the voltage difference between the right arm and left arm.
-        \item \textbf{Lead II:} Measures the voltage difference between the right arm and left leg.
-        \item \textbf{Lead III:} Measures the voltage difference between the left arm and left leg.
+        \item \textbf{Lead I:} Measures the voltage difference between the left arm (LA) and right arm (RA).
+        \begin{equation}
+            \text{Lead I} = \text{LA} - \text{RA}
+        \end{equation}
+        \item \textbf{Lead II:} Measures the voltage difference between the left leg (LL) and the right arm.
+        \begin{equation}
+            \text{Lead II} = \text{LL} - \text{RA}
+        \end{equation}
+        \item \textbf{Lead III:} Measures the voltage difference between the left leg and the left arm.
+        \begin{equation}
+            \text{Lead III} = \text{LL} - \text{LA}
+        \end{equation}
     \end{itemize}
-    \item \textbf{Augmented Unipolar Limb Leads:} (Figure \ref{fig:augmented})
+    \item \textbf{Augmented Unipolar Limb Leads} (Figure \ref{fig:augmented}):
     \begin{itemize}
         \item \textbf{aVR:} Measures the electrical difference from the right arm to a central point between the left arm and left leg.
-        \item \textbf{aVL:} Measures from the left arm to a central point.
-        \item \textbf{aVF:} Measures from the left leg to a central point.
+        \begin{equation}
+            \text{aVR} = \text{RA} - \frac{1}{2}(\text{LA} + \text{LL})
+        \end{equation}
+        \item \textbf{aVL:} Measures the electrical difference from the left arm to a central point between the right arm and left leg.
+        \begin{equation}
+            \text{aVL} = \text{LA} - \frac{1}{2}(\text{RA} + \text{LL})
+        \end{equation}
+        \item \textbf{aVF:} Measures the electrical difference from the left leg to a central point between the right arm and left arm.
+        \begin{equation}
+            \text{aVF} = \text{LL} - \frac{1}{2}(\text{RA} + \text{LA})
+        \end{equation}
     \end{itemize}
 \end{itemize}
 
-\begin{figure}[H]
+\begin{figure}[h!]
 \centering
 \begin{minipage}{0.4\linewidth}
     \centering
@@ -707,25 +759,19 @@ An electrocardiogram (ECG) is a medical graphical representation of the changes 
 \end{minipage}
 \end{figure}
 
-\noindent \textbf{Precordial Unipolar Leads:} (Figure \ref{fig:vs})
+\noindent The precordial leads are positioned in the horizontal plane, at right angles to the other six leads. These leads consist of six electrodes (V1 through V6) that serve as positive poles for their respective precordial leads. The negative pole for these leads is provided by Wilson's central terminal. \newline
+
+\noindent \textbf{Precordial Unipolar Leads} (Figure \ref{fig:vs}):
 \begin{itemize}
     \item \textbf{V1 to V6:} These leads provide views of the horizontal plane of the heart, from right to left.
 \end{itemize}
 
-\begin{figure}[H]
+\begin{figure}[h!]
 \centering
 \includegraphics[width=0.5\linewidth]{images/vs.jpg}
 \caption{Precordial unipolar leads. (\cite{huszar})}
 \label{fig:vs}
 \end{figure}
-
-\noindent The so called  \textbf{Einthoven's Triangle} (can be seen in Figure \ref{fig:limp}) is a theoretical formation of the limb leads (I, II, III), forming an equilateral triangle with the heart at the center. This relationship helps in understanding the orientation and magnitude of the heart's electrical activity. The voltages in these leads relate to each other in the following way:
-
-\begin{equation}
-    \text{Lead I} + \text{Lead III} = \text{Lead II}.
-\end{equation}
-
-\noindent The voltages in augmented limb leads are calculated by amplifying the electrical difference between one limb electrode and a central point formed by the other limb electrodes. These relationships are based on the principle that the sum of the voltages from all three limb leads should be zero when the heart's electrical axis is normal.
 
 % forcing a page break
 \clearpage
