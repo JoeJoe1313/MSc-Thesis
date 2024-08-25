@@ -794,7 +794,7 @@ For the experiments we are going to use the already available dataser "A Large S
 
 \section{Missing Data Imputation}
 
-In this section, we evaluate PSMF and rPSMF on the task of imputing missing values in 12-lead ECG time-series data. The 12-lead ECG signal is chosen to be one representing a normal heart rhythm (sinus rhythm). As already mentioned each of the $m = 12$ leads contains $n = 5000$ data points. One heart beat (PQRST complex) is of apprixamte lebgth of $300$ data points. That's why, to assess the imputation accuracy, we choose to randomly remove segments of length $300$ from the signal, and construct datasets with $20\%$, $30\%$, and $40\%$ missing data. We compare the results for each dataset against two other baseline sequential methods used in the PSMF paper (\cite{akyildiz2021probabilistic}). The first, which we call MLE-SMF, is a maximum likelihood estimation (MLE) method for online probabilistic matrix factorization where the state transition matrix $C$ remains constant over time. This builds on prior work by \cite{YILDIRIM2012494}, \cite{6288274}, and \cite{6638240}. The second approach adapts the temporal matrix factorization (TMF) optimization technique proposed by \cite{NIPS2016_85422afb}. \newline
+In this section, we evaluate PSMF and rPSMF on the task of imputing missing values in 12-lead ECG time-series data. The 12-lead ECG signal is chosen to be one representing a normal heart rhythm (sinus rhythm). As already mentioned each of the $m = 12$ leads contains $n = 5000$ data points. One heart beat (PQRST complex) is of approximate length of $300$ data points. That's why, to assess the imputation accuracy, we choose to randomly remove segments of length $300$ from the signal, and construct datasets with $20\%$, $30\%$, and $40\%$ missing data. We compare the results for each dataset against two other baseline sequential methods used in the PSMF paper (\cite{akyildiz2021probabilistic}). The first, which we call MLE-SMF, is a maximum likelihood estimation (MLE) method for online probabilistic matrix factorization where the state transition matrix $C$ remains constant over time. This builds on prior work by \cite{YILDIRIM2012494}, \cite{6288274}, and \cite{6638240}. The second approach adapts the temporal matrix factorization (TMF) optimization technique proposed by \cite{NIPS2016_85422afb}. \newline
 
 \noindent For PSMF and rPSMF we choose a random walk subspace model $f_{\theta}(x) = x$, and for the imputation we use the final estimates of $C$ and $X$. We test the four sequential models by setting the rank first to $r = 3$, and then to $r = 10$. As in \cite{akyildiz2021probabilistic}, for TMF we set the weight matrix to identity, for PSMF and MLE- SMF we set $R_k := R = \rho \otimes I_r$, where $\rho = 10$, $P_0 = I_r$, $Q_k := Q = q \otimes I_r$, and $q = 0.1$. For rPSMF we use $R_0 = R$ and $Q_0 = Q$ and choose $\lambda_0 = 1.8$, and for both PSMF and rPSMF we set $V_0 = v_0 \otimes I_r$ with $v_0 = 2$. We evaluate the performance of the four methods PSMF, rPSMF, MLE-SMF, and TMF by running each of them for two epochs. To ensure the robustness and reliability of our findings, we conduct the experiments $100$ times, each time using different initializations and randomly generated patterns of missing data. \newline
 
@@ -836,13 +836,7 @@ TMF & $\underset{{\scriptscriptstyle \;\;\;(20.04)}}{205.67}$ & $\underset{{\scr
 \label{tab:rmse10}
 \end{table}
 
-\noindent We can also measure the proportion of missing values that lie within a $2\sigma$ coverage interval of the approximate posterior distribution. Table 3 shows how our method improves over the uncertainty quantification of MLE-SMF (the other methods do not provide a posterior distribution). This illustrates the added value of the matrix-variate prior on C, as well as our inference scheme. Note that rPSMF obtains a higher coverage percentage than PSMF on three of the datasets, which is due to the sequential updating of the noise covariances. \newline
-
-\noindent  We can evaluate the effectiveness of our uncertainty quantification by calculating the percentage of missing values that fall within a two-standard-deviation ($2\sigma$) interval of the approximate posterior distribution. 
-
-The results, presented in Table 3, demonstrate that our approach enhances the uncertainty quantification compared to the MLE-SMF method (TMF does not provide a posterior distribution). It's worth noting that other methods don't provide a posterior distribution for comparison.
-
-Interestingly, rPSMF achieves a higher coverage percentage than PSMF on three datasets, which can be attributed to its sequential updating of noise covariances.
+\noindent  We can evaluate the effectiveness of our uncertainty quantification by calculating the percentage of missing values that fall within a two-standard-deviation ($2\sigma$) interval of the approximate posterior distribution. The results, presented in Table \ref{tab:coverage}, show that rPSMF has the most coverage compared to PSMF and MLE-SMF (TMF does not provide a posterior distribution). While rPSMF has the highest coverage we can notice that it lowers when the rank is higher. For PSMF the coverage improves as the rank is higher. MLE-SMF has the same coverage for both ranks.
 
 \begin{table}[H]
     \centering
@@ -878,21 +872,10 @@ Interestingly, rPSMF achieves a higher coverage percentage than PSMF on three da
         \end{threeparttable}
     \end{minipage}
     \caption{Average coverage proportion of the missing data by the $2\sigma$ uncertainty bars of the posterior predictive estimates, averaged over 100 repetitions. Left: results for rank 3, right: results for rank 10.}
+    \label{tab:coverage}
 \end{table}
 
-% \begin{figure}[H]
-% \centering
-% \includegraphics[width=0.75\linewidth]{images/missing/psmf_output_300_20_3.pdf}
-% \caption{Input with 300 missing data points per wave.}
-% \label{fig:vs}
-% \end{figure}
-
-% \begin{figure}[H]
-% \centering
-% \includegraphics[width=0.75\linewidth]{images/missing/rpsmf_output_300_20_3.pdf}
-% \caption{Input with 300 missing data points per wave.}
-% \label{fig:vs}
-% \end{figure}
+\noindent In Figure \ref{fig:mrec3} we can see reconstructions of the 12-lead ECG signal with rank $r = 3$ and $20\%$ missing data achieved by applying PSMF (left) and rPSMF (right). The parts in orange correspond to the segments of length $300$ we have randomly removed, the red parts are the non-missing ones from the original signal, and the reconstruction is shown with a blue dashed line. There are missing parts containing a whole heart beat, parts of the heart beat, or parts between two heart beats. We can observe that both PSMF and rPSMF manage to capture the dynamics of the signal, with PSMF visually doing a better job with the high amplitude of the R wave in missing heart beats, especially in the beginning of the signal. Results for MLE-SMF and TMF for the same ranks and missing data can be found in the appendix.
 
 \begin{figure}[H]
 \centering
@@ -906,7 +889,10 @@ Interestingly, rPSMF achieves a higher coverage percentage than PSMF on three da
     \includegraphics[width=\linewidth]{images/missing/rpsmf_output_20_3.pdf}
 \end{minipage}
 \caption{Reconstruction with rank 3 of 20\% missing data. Left: PSMF; Right: rPSMF.}
+\label{fig:mrec3}
 \end{figure}
+
+\noindent In Figure \ref{fig:mrec10}...
 
 \begin{figure}[H]
 \centering
@@ -922,9 +908,14 @@ Interestingly, rPSMF achieves a higher coverage percentage than PSMF on three da
     \label{fig:augmented}
 \end{minipage}
 \caption{Reconstruction with rank 10, 20\% coverage. Left: PSMF; Right: rPSMF.}
+\label{fig:mrec10}
 \end{figure}
 
 \noindent TODO: add more results. here or in the appendix/supplement?
+
+In fifgure...
+
+In conclusion...
 
 \section{R-peaks Detection}
 
@@ -936,6 +927,7 @@ TODO:
     \item (potential) issues, improvements, results
     \item figure caption, more result figures
     \item add the real r peaks in circles on the plots
+    \item compare with the pan sth algorithm?
 \end{itemize}
 
 \begin{figure}[H]
