@@ -676,7 +676,7 @@ An electrocardiogram (ECG) is a medical graphical representation of the changes 
 \label{fig:ecg-huszar}
 \end{figure}
 
-\subsection{R-peak}
+\subsection{R-peak}\label{sec:rpeaks}
 
 The R-peak is the tallest and most prominent wave in the QRS complex of an ECG signal, the peak of the R-wave. It represents the depolarization of the left and right ventricles, which are the main pumping chambers of the heart. The ability to accurately detect R-peaks is crucial for several reasons:
 
@@ -875,7 +875,7 @@ TMF & $\underset{{\scriptscriptstyle \;\;\;(20.04)}}{205.67}$ & $\underset{{\scr
     \label{tab:coverage}
 \end{table}
 
-\noindent In Figure \ref{fig:mrec3} we can see reconstructions of the 12-lead ECG signal with rank $r = 3$ and $20\%$ missing data achieved by applying PSMF (left) and rPSMF (right). The parts in orange correspond to the segments of length $300$ we have randomly removed, the red parts are the non-missing ones from the original signal, and the reconstruction is shown with a blue dashed line. There are missing parts containing a whole heart beat, parts of the heart beat, or parts between two heart beats. We can observe that both PSMF and rPSMF manage to capture the dynamics of the signal, with PSMF visually doing a better job with the high amplitude of the R wave in missing heart beats, especially in the beginning of the signal. Results for MLE-SMF and TMF for the same ranks and missing data can be found in the appendix.
+\noindent In Figure \ref{fig:mrec3} we can see reconstructions of the 12-lead ECG signal with rank $r = 3$ and $20\%$ missing data achieved by applying PSMF (left) and rPSMF (right). The parts in orange correspond to the segments of length $300$ we have randomly removed, the red parts are the non-missing ones from the original signal, and the reconstruction is shown with a blue dashed line. There are missing parts containing a whole heart beat, parts of the heart beat, or parts between two heart beats. We can observe that both PSMF and rPSMF manage to capture the dynamics of the signal, with PSMF visually doing a better job with the high amplitude of the R wave in missing heart beats, especially in the beginning of the signal. Visualisations of the reconstruction for MLE-SMF and TMF for the same ranks and missing data can be found in Appendix \ref{app:mle-smf} and Appendix \ref{app:tmf}.
 
 \begin{figure}[H]
 \centering
@@ -892,7 +892,7 @@ TMF & $\underset{{\scriptscriptstyle \;\;\;(20.04)}}{205.67}$ & $\underset{{\scr
 \label{fig:mrec3}
 \end{figure}
 
-\noindent In Figure \ref{fig:mrec10}...
+\noindent In Figure \ref{fig:mrec10} we can see reconstructions of the same 12-lead ECG signal but with rank $r = 10$ and $20\%$ missing data achieved by applying PSMF (left) and rPSMF (right). It is noticeable that PSMF has generally worse reconstruction than for rank $r = 3$, with some of the R wave amplitudes being too low or too high. For rPSMF in some of the leads we can see very big discrepancies between the reconstruction and the original signal. Visualisations of the reconstruction for MLE-SMF and TMF for the same ranks and missing data can be found in Appendix \ref{app:mle-smf} and Appendix \ref{app:tmf}.
 
 \begin{figure}[H]
 \centering
@@ -911,11 +911,11 @@ TMF & $\underset{{\scriptscriptstyle \;\;\;(20.04)}}{205.67}$ & $\underset{{\scr
 \label{fig:mrec10}
 \end{figure}
 
-\noindent TODO: add more results. here or in the appendix/supplement?
+\noindent All of the visualisations for PSMF, rPSMF, MLE-SMF, and TMF for both ranks $3$ and $4$ and the three scenarios with $20\%$, $30\%$, and $40\%$ missing data can be found in Appendix \ref{app:mdi}. \newline
 
-In fifgure...
+\noindent In this section, we thoroughly evaluated the performance of PSMF and rPSMF on the task of imputing missing values in 12-lead ECG time-series data, comparing them against MLE-SMF and TMF as baselines. Our experiments, conducted across various missing data scenarios and matrix ranks, reveal that PSMF and rPSMF generally outperform the baseline methods in terms of lower imputation RMSE, particularly at a lower rank of $r = 3$. Notably, rPSMF consistently achieved the best performance for rank 3 across all levels of missing data, though its efficacy diminished significantly at the higher rank of $r = 10$, especially as the proportion of missing data increased. This trend was unexpected, as our initial hypothesis suggested that a higher rank would yield better imputation accuracy. Additionally, our uncertainty quantification analysis indicated that rPSMF provided the highest coverage of the missing data within a $2\sigma$ interval, although this coverage decreased with increasing rank. Visual inspection of the reconstructions further corroborated the quantitative findings, with PSMF showing superior performance, particularly in retaining the high amplitude of the R wave. Overall, these results highlight the strengths and limitations of both PSMF and rPSMF in handling missing data in ECG signals and suggest that rank selection plays a crucial role in their effectiveness. Future work could explore more adaptive methods for rank determination to optimize imputation accuracy across different scenarios. \newline
 
-In conclusion...
+\noindent In summary, PSMF and rPSMF outperformed MLE-SMF and TMF for imputing missing values in 12-lead ECG time series data, achieving lower imputation errors, especially at rank $3$. Unexpectedly, higher rank led to worse performance for PSMF and rPSMF. rPSMF provided the best uncertainty quantification, but its coverage decreased at higher rank. Visual reconstructions showed that PSMF and rPSMF captured signal dynamics well at rank $3$, but had some issues at rank $10$. These results are promising, but further investigation is needed to understand the rank effects and to explore imputation in abnormal ECG rhythms.
 
 \section{R-peaks Detection}
 
@@ -1049,7 +1049,7 @@ Why detecting ECG is useful?
 %% Appendix goes here
 \appendix
 
-\chapter{Missing Data Imputation Results}
+\chapter{Missing Data Imputation Results}\label{app:mdi}
 
 Full results of testing on the $20\%$, $30\%$, and $40\%$ missing data with both $r = 3$ and $r = 10$.
 
@@ -1165,7 +1165,7 @@ Full results of testing on the $20\%$, $30\%$, and $40\%$ missing data with both
 \end{minipage}
 \end{figure}
 
-\section{MLE-SMF}
+\section{MLE-SMF}\label{app:mle-smf}
 
 \subsection{$r = 3$}
 
@@ -1221,7 +1221,7 @@ Full results of testing on the $20\%$, $30\%$, and $40\%$ missing data with both
 \end{minipage}
 \end{figure}
 
-\section{TMF}
+\section{TMF}\label{app:tmf}
 
 \subsection{$r = 3$}
 
