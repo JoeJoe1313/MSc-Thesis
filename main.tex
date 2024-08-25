@@ -627,10 +627,10 @@ where \(\overset{c}{=}\) signifies equality up to additive constants that do not
 
 \subsection{Algorithm}
 
-The PSMF algorithm for handling missing data is given in Algorithm \ref{algo:psmf_missing_data}.
+The iterative PSMF algorithm for handling missing data is given in Algorithm \ref{algo:psmf_missing_data}.
 
 \begin{algorithm}[H]
-\caption{PSMF with Missing Data Imputation}
+\caption{Iterative PSMF with Missing Data Imputation}
 \begin{algorithmic}[1]
 \State Initialize $\gamma$, $\theta_0$, $C_0$, $V_0$, $\mu_0$, $P_0$, $(Q)_{k \geq 1}$, $(R)_{k \geq 1}$, and missing data mask $M$.
 \State \textbf{for} $i \geq 1$ \textbf{do}
@@ -651,7 +651,6 @@ The PSMF algorithm for handling missing data is given in Algorithm \ref{algo:psm
 \State \hspace{3em} $P_k = \bar{P}_k - \bar{P}_k C_{k-1}^\top M_k^\top S_k^{-1} M_k C_{k-1} \bar{P}_k$
 \State \hspace{1em} Update parameters:
 \State \hspace{2em} Iterative: $\theta_i = \theta_{i-1} + \gamma \sum_{k=1}^n \nabla \log \tilde{p}_\theta(z_k | z_{1:k-1}) |_{\theta=\theta_{i-1}}$
-\State \hspace{2em} Recursive: $\theta_k = \theta_{k-1} + \gamma \nabla \log \tilde{p}_\theta(z_k | z_{1:k-1}) |_{\theta=\theta_{k-1}}$
 \end{algorithmic}\label{algo:psmf_missing_data}
 \end{algorithm}
 
@@ -913,9 +912,7 @@ TMF & $\underset{{\scriptscriptstyle \;\;\;(20.04)}}{205.67}$ & $\underset{{\scr
 
 \noindent All of the visualisations for PSMF, rPSMF, MLE-SMF, and TMF for both ranks $3$ and $4$ and the three scenarios with $20\%$, $30\%$, and $40\%$ missing data can be found in Appendix \ref{app:mdi}. \newline
 
-\noindent In this section, we thoroughly evaluated the performance of PSMF and rPSMF on the task of imputing missing values in 12-lead ECG time-series data, comparing them against MLE-SMF and TMF as baselines. Our experiments, conducted across various missing data scenarios and matrix ranks, reveal that PSMF and rPSMF generally outperform the baseline methods in terms of lower imputation RMSE, particularly at a lower rank of $r = 3$. Notably, rPSMF consistently achieved the best performance for rank 3 across all levels of missing data, though its efficacy diminished significantly at the higher rank of $r = 10$, especially as the proportion of missing data increased. This trend was unexpected, as our initial hypothesis suggested that a higher rank would yield better imputation accuracy. Additionally, our uncertainty quantification analysis indicated that rPSMF provided the highest coverage of the missing data within a $2\sigma$ interval, although this coverage decreased with increasing rank. Visual inspection of the reconstructions further corroborated the quantitative findings, with PSMF showing superior performance, particularly in retaining the high amplitude of the R wave. Overall, these results highlight the strengths and limitations of both PSMF and rPSMF in handling missing data in ECG signals and suggest that rank selection plays a crucial role in their effectiveness. Future work could explore more adaptive methods for rank determination to optimize imputation accuracy across different scenarios. \newline
-
-\noindent In summary, PSMF and rPSMF outperformed MLE-SMF and TMF for imputing missing values in 12-lead ECG time series data, achieving lower imputation errors, especially at rank $3$. Unexpectedly, higher rank led to worse performance for PSMF and rPSMF. rPSMF provided the best uncertainty quantification, but its coverage decreased at higher rank. Visual reconstructions showed that PSMF and rPSMF captured signal dynamics well at rank $3$, but had some issues at rank $10$. These results are promising, but further investigation is needed to understand the rank effects and to explore imputation in abnormal ECG rhythms.
+\noindent In this section, we thoroughly evaluated the performance of PSMF and rPSMF on the task of imputing missing values in 12-lead ECG time-series data, comparing them against MLE-SMF and TMF as baselines. Our experiments, conducted across various missing data scenarios and matrix ranks, reveal that PSMF and rPSMF generally outperform the baseline methods in terms of lower imputation RMSE, particularly at a lower rank of $r = 3$. Notably, rPSMF consistently achieved the best performance for rank 3 across all levels of missing data, though its efficacy diminished significantly at the higher rank of $r = 10$, especially as the proportion of missing data increased. This trend was unexpected, as our initial hypothesis suggested that a higher rank would yield better imputation accuracy. Additionally, our uncertainty quantification analysis indicated that rPSMF provided the highest coverage of the missing data within a $2\sigma$ interval, although this coverage decreased with increasing rank. Visual inspection of the reconstructions further corroborated the quantitative findings, with PSMF showing superior performance, particularly in retaining the high amplitude of the R wave. Overall, these results highlight the strengths and limitations of both PSMF and rPSMF in handling missing data in ECG signals and suggest that rank selection plays a crucial role in their effectiveness. Future work could explore more adaptive methods for rank determination to optimize imputation accuracy across different scenarios.
 
 \section{R-peaks Detection}
 
@@ -966,16 +963,18 @@ As discussed in Section \ref{sec:rpeaks}, precise R-peak detection is crucial fo
 
 To summarise, the ECG signal we want to apply PSMF to has $n = 1500$ observations, containing $11$ heart beats, and $m = 12$ variables (corresponding to the $12$ leads introduced in Section \ref{sec:12leads}). To model the subspace with PSMF we choose a periodic subspace model
 \begin{equation}
-    xk = fθ (xk 1) = θ1 sin(2πθ2k+θ3xk 1)+θ4 cos(2πθ5k+θ6xk 1
+    x_k = f_{\theta}(x_{k-1}) = \sum_{i=1}^3 \theta_{1,i} \sin(2\pi \theta_{2,i} k + \theta_{3,i} x_{k-1}) + \theta_{4,i} \cos(2\pi \theta_{5,i} k + \theta_{6,i} x_{k-1})
 \end{equation}
-We also use $r = 3$, run iterative PSMF with $100$ iterations, and withhold $10\%$ of the data for testing.
+We also use $r = 3$, run iterative PSMF with $100$ iterations, and withhold $10\%$ of the data for testing purposes. In Figure \ref{fig:reconstr-ecg} we can see the reconstruction on the training data. It is noticable that the fit can model the smaller amplitudes, but when it comes to the R wave the amplitude is very low, close to the baseline. Another observation is that the fit is very periodic around the smoother parts which were initially very noisy.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=1\linewidth]{images/r_peaks/resampled_standardised_denoised_ecg_reconstruction_m.pdf}
-\caption{Resampled Lead II signal (blue), and the reconstruction (orange) of the same signal after applying PSMF to the 12 leads with rank $r = 3$, Fourier basis with $n = 3$ terms, and $100$ iterations.}
+\caption{Lead II signal (blue), and the reconstruction (orange) of the same signal after applying PSMF to the 12 leads with rank $r = 3$, Fourier basis with $n = 3$ terms, and $100$ iterations.}
 \label{fig:reconstr-ecg}
 \end{figure}
+
+\noindent Next, we remove the reconstruction from the original data, and choose a threshold as the $99.2$-th percentile of the differences between the reconstruction and the original data. Figure \ref{fig:diff-ecg} visualises the differences (blue) and the chosen threshold line (red).
 
 \begin{figure}[H]
 \centering
@@ -984,21 +983,16 @@ We also use $r = 3$, run iterative PSMF with $100$ iterations, and withhold $10\
 \label{fig:diff-ecg}
 \end{figure}
 
+\noindent Finally, in Fugure \ref{fig:rpeaks-ecg} we can see the detected R-peaks (red x) which were chosen as the points above the defined threshold, and the true R-peaks (cricle). We can see that the method manages to determine the R-peaks, but in the third heart beat we can see that there is a second point detected as a peak. This is due to the last peak having a noticeably lower amplitude than all of the other peaks, which enforced choosing a lower threshold. This is an example where variable amplitudes might contribute to difficult detection of R-peaks and possibly indicate an issue with the signal such as artifacts, poor electrode contact, etc. This highlights the potential impact of variable amplitudes on R-peak detection and the need for robust methods to handle such variations.
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=1\linewidth]{images/r_peaks/resampled_standardised_denoised_ecg_rpeaks_m.pdf}
-\caption{Detected R-peaks (red) in the resampled, standardised, denoised Lead II signal (blue).}
+\caption{Detected R-peaks (red x) vs the true R-peaks (circle) in the resampled, standardised, denoised Lead II signal (blue).}
 \label{fig:rpeaks-ecg}
 \end{figure}
 
-Full results, appendix - more?
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=1\linewidth]{images/r_peaks/rpeaks_full_m.pdf}
-\caption{Detected R-peaks (red) in the resampled, standardised, denoised 12-Lead ECG signal (blue).}
-\label{fig:rpeaks-ecg}
-\end{figure}
+\noindent In conclusion, the novel R-peak detection method presented in this section effectively harnesses the predictive discrepancies inherent to the PSMF model as a feature rather than a drawback. By deliberately using a model that underestimates the amplitude of R-peaks, we create a predictable deviation from the original ECG signal, which can then be quantitatively identified using a threshold-based approach. Our empirical results demonstrate that this method can reliably detect R-peaks within a resampled, standardized, and denoised ECG signal, Lead II in particular. The method maintains the integrity of critical signal features after substantial data manipulation including resampling and noise reduction. Further refinements may be necessary to address outliers and ensure universal applicability across different types of ECG signals and conditions.
 
 \section{Forecasting}
 
@@ -1011,14 +1005,6 @@ TODO:
     \item encountered issues, conclusions
     \item add figures for the basis, loss curves, forecast (show different experiments results)
 \end{itemize}
-
-\begin{figure}[H]
-\begin{center}
-\includegraphics[scale=1]{images/periodic_fit_1500_6_6_150it.pdf}
-\caption{My caption here}
-\label{somelabelforreference}
-\end{center}
-\end{figure}
 
 \begin{figure}[H]
 \begin{center}
