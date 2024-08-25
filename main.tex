@@ -696,7 +696,7 @@ Many methods have been developed for R-peak detection, such as:
 \end{itemize}
 These algorithms aim to accurately and efficiently detect R-peaks in the presence of noise, baseline wander, and other artifacts commonly found in ECG signals. Accurate R-peak detection is essential for the reliable interpretation of ECG data and the diagnosis of various cardiac conditions.
 
-\subsection{12-Lead ECG}
+\subsection{12-Lead ECG}\label{sec:12leads}
 
 \noindent An ECG can contain 12 ECG traces, called 12-lead ECG. Simply said, a 12-lead ECG provides a comprehensive view of the heart's electrical activity from different angles. It consists of 12 different leads, each representing a specific view of the heart. The leads are divided into two main groups: limb leads and precordial leads. \newline
 
@@ -792,7 +792,7 @@ For the experiments we are going to use the already available dataser "A Large S
 
 % What exactly is tested - 5k points, sample from the points, results, smoothing, no smoothing, differеnt ranks, fourier terms
 
-\section{Missing Data Imputation}
+\section{Missing Data Imputation}\label{sec:exp1}
 
 In this section, we evaluate PSMF and rPSMF on the task of imputing missing values in 12-lead ECG time-series data. The 12-lead ECG signal is chosen to be one representing a normal heart rhythm (sinus rhythm). As already mentioned each of the $m = 12$ leads contains $n = 5000$ data points. One heart beat (PQRST complex) is of approximate length of $300$ data points. That's why, to assess the imputation accuracy, we choose to randomly remove segments of length $300$ from the signal, and construct datasets with $20\%$, $30\%$, and $40\%$ missing data. We compare the results for each dataset against two other baseline sequential methods used in the PSMF paper (\cite{akyildiz2021probabilistic}). The first, which we call MLE-SMF, is a maximum likelihood estimation (MLE) method for online probabilistic matrix factorization where the state transition matrix $C$ remains constant over time. This builds on prior work by \cite{YILDIRIM2012494}, \cite{6288274}, and \cite{6638240}. The second approach adapts the temporal matrix factorization (TMF) optimization technique proposed by \cite{NIPS2016_85422afb}. \newline
 
@@ -919,16 +919,23 @@ TMF & $\underset{{\scriptscriptstyle \;\;\;(20.04)}}{205.67}$ & $\underset{{\scr
 
 \section{R-peaks Detection}
 
-TODO:
+As discussed in Section \ref{sec:rpeaks}, precise R-peak detection is crucial for accurate ECG data interpretation and cardiac condition diagnosis. Our numerous unsuccessful attempts to forecast the high-amplitude, sharp R waves with PSMF resulted in predictions with lower amplitudes and smoother peaks. This consistent forecasting challenge inspired us to explore a novel approach: leveraging this prediction discrepancy as a method for R-peak detection.
+
+\subsection{R-peaks Detection Method}
+
+\noindent Here, we outline the main approach steps for R-peak detection:
 \begin{itemize}
-    \item intro: why it is an important task, mention current methods?
-    \item introduce the idea: smoother peaks, remove reconstruction from the original data
-    \item threshold
-    \item (potential) issues, improvements, results
-    \item figure caption, more result figures
-    \item add the real r peaks in circles on the plots
-    \item compare with the pan sth algorithm?
+    \item Apply PSMF to achieve smoother lower amplitude R wave forecast
+    \item Remove the reconstruction from the original data
+    \item Define a threshold as a percentile of the differences between the reconstruction and the original data
+    \item Determine the points above this threshold as R-peaks
 \end{itemize}
+
+\subsection{Data}
+
+\noindent For this experiment we are going to work with the same sinus rhythm signal as in Section \ref{sec:exp1}. For demonstrating the approach steps we are going to show only the results for the Lead II signal. \newline
+
+\noindent To ease the computational resources needed we are going to work with a resampled version of the signal. The resampling would make the original signal (Figure \ref{fig:orig-ecg}) from containing $5000$ points to containing only $1500$ points (Figure \ref{fig:resampled-ecg}). This is achieved by first applying Fast Fourier Transform (FFT) to transform the original signal into the frequency domain, then removing coefficients from the higher frequency components, effectively performing a low-pass filter, and finally applying an Inverse Fast Fourier Transform (IFFT) to convert the modified frequency domain signal back to the time domain. For clarity, this is done by using the \texttt{resample} function from the Python library \texttt{scipy.signal}. Observing Figure \ref{fig:orig-ecg} and Figure \ref{fig:resampled-ecg} confirms that the original structure and important characteristics of the data are preserved. \newline
 
 \begin{figure}[H]
 \centering
@@ -944,12 +951,24 @@ TODO:
 \label{fig:resampled-ecg}
 \end{figure}
 
+\noindent After that the data is denoised via applying wavelet transform. First, the signal is decomposed into wavelet coefficients at different scales using Daubechies wavelet (known for its efficacy in processing signals with sharp peaks and smooth variations, typical of ECG data). The decomposition level is set to the maximum useful level of decomposition, indicating that the signal is decomposed multiple times to extract various frequency components. This step is done using the function \texttt{wavedec} from the Python library \texttt{PyWavelets}. Next, a threshold to differentiate significant signal components from noise is calculated based on the noise level estimated from the smallest scale coefficients, using median absolute deviation to approximate the standard deviation. The coefficients are subjected to soft thresholding, where values below the threshold are set to zero, and values above the threshold are shrunk towards zero. Finally, the denoised signal is reconstructed from the thresholded wavelet coefficients using the inverse wavelet transform. This process effectively removes high-frequency noise components from the ECG signal while preserving the important signal features, resulting in a cleaner and more interpretable signal. \newline
+
+\noindent Finally, after the data is resampled and denoised we also standardise the data. In Figure \ref{fig:res-st-den-ecg} we can see the resampled, denoised, standardised Lead II signal compared to the resampled and standardised Lead II signal.
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=1\linewidth]{images/r_peaks/resampled_standardised_denoised_ecg_m.pdf}
-\caption{Resampled Lead II signal (blue), and the denoised version (orange) of the same signal after applying wavelet transform.}
+\caption{Resampled and standardised Lead II signal (blue), and the denoised version (orange) of the same signal after applying wavelet transform and standardisation.}
 \label{fig:res-st-den-ecg}
 \end{figure}
+
+\subsection{PSMF Model}
+
+To summarise, the ECG signal we want to apply PSMF to has $n = 1500$ observations, containing $11$ heart beats, and $m = 12$ variables (corresponding to the $12$ leads introduced in Section \ref{sec:12leads}). To model the subspace with PSMF we choose a periodic subspace model
+\begin{equation}
+    xk = fθ (xk 1) = θ1 sin(2πθ2k+θ3xk 1)+θ4 cos(2πθ5k+θ6xk 1
+\end{equation}
+We also use $r = 3$, run iterative PSMF with $100$ iterations, and withhold $10\%$ of the data for testing.
 
 \begin{figure}[H]
 \centering
