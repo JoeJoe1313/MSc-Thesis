@@ -34,6 +34,7 @@
 
 % Graphics, importing figures
 \RequirePackage{graphicx}
+\RequirePackage{xcolor}
 
 % for positioning Imperial logo
 \RequirePackage[absolute]{textpos}
