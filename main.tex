@@ -33,13 +33,13 @@
 
 Matrix factorisation (MF) techniques are highly effective and widely used in unsupervised machine learning. By decomposing the original matrix into multiple simpler lower-dimensional matrices, MF aims to uncover latent structures that are not immediately obvious in the original matrix. MF finds applications in areas such as image processing, natural language processing, missing data imputation, and recommendation systems. Despite considerable progression in the probabilistic versions, there is demand for such methods in applications such as uncertainty quantification, managing time-series data, and executing efficient probabilistic computations. \newline
 
-\noindent In this thesis, we show novel applications of the probabilistic sequential MF algorithm Probabilistic Sequential Matrix Factorisation (PSMF) (\cite{akyildiz2021probabilistic}) to 12-lead ECG data. We explore three tasks related to this complex high-dimensional time-series data with nonlinear subspace: missing data imputation with PSMF and the robust version of PSMF (rPSMF) (\cite{akyildiz2021probabilistic}) and compare their performance with other probabilistic sequential MF algorithms, R-peaks detection, and forecasting an ECG component based on previous normal heart beats using a Fourier basis with multiple terms and rank higher than one. We perform our experiments using the high-quality comprehensive dataset "A Large Scale 12-lead Electrocardiogram Database for Arrhythmia Study" (\cite{cite1}, \cite{cite2}, \cite{cite3}). We describe and outline the experimenting process and the challenges we encountered modelling the complex ECG data, and summarise the experiments results. We find that PSMF performs well when used for imputing missing data, but when it comes to forecasting there are certain challenges which open the door for further research on extending the PSMF algorithm to better handle the complex structure of ECG data. \newline
+\noindent In this thesis, we show three novel applications of the probabilistic sequential MF algorithm Probabilistic Sequential Matrix Factorisation (PSMF) (\cite{akyildiz2021probabilistic}) to 12-lead ECG data. We explore three tasks related to this complex high-dimensional time-series data with nonlinear subspace: missing data imputation with PSMF and the robust version of PSMF (rPSMF) (\cite{akyildiz2021probabilistic}) and compare their performance with other probabilistic sequential MF algorithms, we propose a novel R-peaks detection method, and we attempt to forecast an ECG component based on previous normal heart beats using a Fourier basis with multiple terms and rank higher than one. We perform our experiments using the high-quality comprehensive dataset "A Large Scale 12-lead Electrocardiogram Database for Arrhythmia Study" (\cite{cite1}, \cite{cite2}, \cite{cite3}). We describe and outline the experimenting process and the challenges we encountered modelling the ECG data, and summarise the experiments results. We find that PSMF and rPSMF perform well when used for imputing missing data. We also find that applying PSMF to Lead II signal and then removing the  reconstruction from the original signal indeed results in a useful R-peak detection method, but when it comes to forecasting there are certain challenges with modelling high amplitudes which open the door for further research on extending the PSMF algorithm to better handle the complex structure of ECG data. \newline
 
 \end{abstract}
 
 \begin{acknowledgements}
 
-TODO 
+I extend my deepest gratitude to my supervisor, Dr Deniz Akyildiz, for his support and very useful feedback throughout my research journey for this MSc thesis. I would also like to thank my friends and my family who have supported me through these two very intense years. 
 
 \end{acknowledgements}
 
@@ -100,20 +100,17 @@ Y \approx CX,
 
 \noindent Later, in the paper "Dictionary Filtering: A Probabilistic Approach to Online Matrix Factorization" (DF) (\cite{cite-key}), the authors introduce a novel online MF algorithm known as dictionary filtering. It leverages probabilistic models, specifically using recursive linear filters, and efficiently factorises the original data matrix into a dictionary matrix and a coefficients matrix. This is an online and sequential algorithm, meaning it is suitable for high-dimensional and time-varying data, and it also has easy to tune parameters. DF is efficient for high-dimensional data with its computational complexity of $O(mr^2)$ independent of the number of data points. Although the model can learn non-stationary and dynamic data, it is developed for linear and Gaussian state space models (SSM). Particularly for ECG data, ECG has a nonlinear SSM which doesn't suit the dictionary filtering. \newline
 
-\noindent Two years later, Akyildiz et.al. develop Probabilistic Sequential Matrix Factorization (PSMF) (\cite{akyildiz2021probabilistic}). This method is tailored to time-varying and non-stationary datasets consisting of high-dimensional time-series. Nonlinear Gaussian SSMs are considered, decomposing the original matrix into a dictionary matrix and time-variying coefficient matrix. This time, the matrices are with potentially nonlinear dependencies, with PSMF efficiently capturing temporal dependencies through Markovian structures on the coefficients, making it possible to encode the dependencies into a lower dimensional latent space. The model is demonstrated to work on tasks such as forecasting, changepoint detection, missing data imputation, and is shown to work on real-world data with a periodic subspace. There is also a robust version rPSMF using Student-t filters to handle model misspecification, and a version for imputing missing data. Although the model is suitbale for reducing high-dimensional data with periodic subspaces to lower-dimensional latent space, PSMF might struggle with very large datasets, having many data points. \newline
-
-% \noindent In the unpublished MSc thesis (Imperial College London) of Rina Maletta (\cite{rina}), the author introduces Matrix-Variate Gaussian Matrix Factorization (MVGMF). This is a novel PMF method using matrix-variate Gaussian distributions. The algorithm has fast Gaussian updates which take the form of a preconditioned MF algorithm which is stable. An extension for handling missing data and data imputation is also proposed. The method is tested on the Netflix Prize dataset, London air quality (NO2) data, and Olivetti face image dataset.
+\noindent Two years later, Akyildiz et.al. develop Probabilistic Sequential Matrix Factorization (PSMF) (\cite{akyildiz2021probabilistic}). This method is tailored to time-varying and non-stationary datasets consisting of high-dimensional time-series. Nonlinear Gaussian SSMs are considered, decomposing the original matrix into a dictionary matrix and time-variying coefficient matrix. This time, the matrices are with potentially nonlinear dependencies, with PSMF efficiently capturing temporal dependencies through Markovian structures on the coefficients, making it possible to encode the dependencies into a lower dimensional latent space. The model is demonstrated to work on tasks such as forecasting, changepoint detection, missing data imputation, and is shown to work on real-world data with a periodic subspace. There is also a robust version rPSMF using Student-t filters to handle model misspecification, and a version for imputing missing data. Although the model is suitable for reducing high-dimensional data with periodic subspaces to lower-dimensional latent space, PSMF might struggle with very large datasets, having many data points. \newline
 
 \section{Contributions}
 
 Using probabilistic methods, and specifically probabilistic sequential MF ones, on ECG data is not widely explored. Hence, we aim to introduce a few novel real-world applications of the PSMF method to 12-lead ECG data. The contributions made in this thesis are:
 
 \begin{itemize}
-    \item We show three novel applications of PSMF to complex 12-lead ECG data.
-    \item Application 1: We apply both PSMF and rPSMF for imputing missing data in the ECG signals, and compare the results with other sequential probabilistic MF models.
-    \item Application 2: We show that PSMF can be used for R-peaks detection by introducing a simple approach. We remove the reconstructed signal, which has modelled the R-peaks smoother than the real ones, from the original data, and determine a suitable threshold for selecting the peaks. 
-    \item Application 3: We forecast an ECG component based on previous normal heart beats by incorporating a Fourier basis with multiple Fourier terms and rank higher than 1. 
-    % We experiment with the original high quality data with many points, as well as with a subsample of the data, defining the ECG signals with lower frequency. We also experiment with smoothing the data, standardising it and/or normalising it. We make conclusions based on the done analysis and comparison of performance and results.
+    \item We show three novel applications of PSMF to complex \textbf{12-lead ECG data}.
+    \item \textbf{Application 1:} We apply both PSMF and rPSMF for imputing missing data in the ECG signals, and compare the results with other sequential probabilistic MF models.
+    \item \textbf{Application 2:} We show that PSMF can be used for R-peaks detection by introducing a simple approach. We remove the reconstructed signal, which has modelled the R-peaks smoother than the real ones, from the original data, and determine a suitable threshold for selecting the peaks. 
+    \item \textbf{Application 3:} We forecast an ECG component based on previous normal heart beats by incorporating a Fourier basis with multiple Fourier terms and rank higher than 1. 
 \end{itemize}
 
 \section{Notation}
@@ -133,7 +130,7 @@ We are going to denote the original data matrix as $Y \in \mathbb{R}^{m \times n
 
 \noindent With $I_d \in \mathbb{R}^{d \times d}$ we are going to denote the identity matrix, with $\mathcal{N}(x; \mu, \Sigma)$ the multivariate normal distribution with mean $\mu$ and $\Sigma$ the covariance matrix, with $\mathcal{MN}(X; M, U, V)$ the matrix normal distribution with $M$ the mean-matrix, $U$ the row-covariance, and $V$ the column covariance, with  $\mathcal{IG}(s; \alpha, \beta)$ the inverse gamma distribution with shape $\alpha$ and scale $\beta$, and with $\mathcal{T}(x; \mu, \Sigma, \lambda)$ the multivariate $t$ distribution, where $\mu$ is the mean, $\Sigma$ the scale matrix, and $\lambda$ is the degrees of freedom. \newline
 
-\noindent Finally, with $\odot$ we are going to denote element-wise multiplication.
+\noindent Finally, with $\odot$ we are going to denote element-wise multiplication, with $\text{tr}(.)$ the trace of a matrix, and with $|.|$ the determinant of a matrix.
 
 
 % \noindent  We denote the vectorised forms of the matrices with their respective lower case letters. We can formally define c = vec(C), where vec(·) is the vectorisation operation. The columns of C are stacked on each other, so if C ∈ Rm×r, then c ∈ Rmr×1. We can also define the inverse vectorisation operator C = vec−1(c). \newline
@@ -207,15 +204,11 @@ where $\{a_{ij}\}$, $i \in \{1,...,m\}$, $j \in \{1, ..., n\}$ are the elements 
     (A \otimes B)^{-1} = A^{-1} \otimes B^{-1}.
 \end{equation}
 
-\subsection{Fourier Series}
-
-TODO \newline
-
-\noindent In the next sections we are outlining the PSMF models we are going to use in our experiments with 12-lead ECG data in Chapter \ref{ch:3}. We are going to follow \cite{akyildiz2021probabilistic}. First, we are going to introduce PSMF: model definition, inference, parameter estimation, marginal-likelihood approximation, and algorithm. Then, similarly, we are going to introduce the robust version of PSMF (rPSMF), and finally the version of PSMF for imputing missing data.
-
 \section{PSMF}
 
-We begin by introducing the PSMF model which can be thought of as being a probabilistic dimensionality reduction scheme. The dynamics of the subspace are modeled by a transition density (introduced in Equation \ref{eq:3}), meaning the underlying dynamical structure present in the data will be reflected in the dynamics of the coefficients $x_k$, $k \geq 1$. Simply said, the sequential patterns in the data will be captured and represented by the behaviour of the coefficients over time.
+\noindent In the next sections we are outlining the PSMF models we are going to use in our experiments with 12-lead ECG data in Chapter \ref{ch:3}. We are going to follow \cite{akyildiz2021probabilistic}. First, we are going to introduce PSMF: model definition, inference, parameter estimation, marginal-likelihood approximation, and algorithm. Then, similarly, we are going to introduce the robust version of PSMF (rPSMF), and finally the version of PSMF for imputing missing data. \newline
+
+\noindent We begin by introducing the PSMF model which can be thought of as being a probabilistic dimensionality reduction scheme. The dynamics of the subspace are modeled by a transition density (introduced in Equation \ref{eq:3}), meaning the underlying dynamical structure present in the data will be reflected in the dynamics of the coefficients $x_k$, $k \geq 1$. Simply said, the sequential patterns in the data will be captured and represented by the behaviour of the coefficients over time.
 
 \subsection{Model}
 
@@ -389,7 +382,7 @@ where $\overset{c}{=}$ signifies equality up to additive constants that do not d
 
 The iterative version of the PSMF algorithm is given in Algorithm \ref{algo:1}. The online, recursive version of PSMF is not given here but can be found in the original PSMF paper (\cite{akyildiz2021probabilistic}).
 
-\begin{algorithm}[H]
+\begin{algorithm}[h]
 \caption{Iterative PSMF}
 \begin{algorithmic}[1]
 \State Initialize $\gamma$, $\theta_0$, $C_0$, $V_0$, $\mu_0$, $P_0$, $(Q)_k{\geq1}$, $(R)_k{\geq1}$.
@@ -509,16 +502,17 @@ The parameter estimation in rPSMF is analogous to the one in PSMF outlined in Se
 \subsection{Approximating the marginal-likelihood}
 
 Following the approach in Section \ref{subsec:aml}, for the negative log-likelihood it can be obtained (\cite{akyildiz2021probabilistic})
-\begin{equation}
-    -\log \Tilde{p}_{\theta}(y_k | y_{1:k-1}) \overset{c}{=} \frac{d}{2} \log \left(\Vert f_{\theta}(\mu_{k-1}) \Vert_{V_{k-1}}^2 + \eta_k\right) + \left(\frac{\lambda_{k-1} + d}{2}\right) \log \left(1 + \frac{\Vert y_k - C_{k-1} f_{\theta}(\mu_{k-1}) \Vert^2}{\lambda_{k-1}\left(\Vert f_{\theta}(\mu_{k-1}) \Vert^2_{V_{k-1}} + \eta_k\right)}\right),
-\end{equation}
+\begin{align}
+    -\log \Tilde{p}_{\theta}(y_k | y_{1:k-1}) &\overset{c}{=} \frac{d}{2} \log \left(\Vert f_{\theta}(\mu_{k-1}) \Vert_{V_{k-1}}^2 + \eta_k\right) + \nonumber \\
+    &\quad + \left(\frac{\lambda_{k-1} + d}{2}\right) \log \left(1 + \frac{\Vert y_k - C_{k-1} f_{\theta}(\mu_{k-1}) \Vert^2}{\lambda_{k-1}\left(\Vert f_{\theta}(\mu_{k-1}) \Vert^2_{V_{k-1}} + \eta_k\right)}\right),
+\end{align}
 where $\overset{c}{=}$ signifies equality up to additive constants that do not depend on $\theta$.
 
 \subsection{rPSMF Algorithm}
 
 The iterative version of the rPSMF algorithm is given in Algorithm \ref{algo:2}. The online, recursive version of rPSMF is not given here but can be found in the original PSMF paper (\cite{akyildiz2021probabilistic}).
 
-\begin{algorithm}[H]
+\begin{algorithm}[h]
 \caption{Iterative rPSMF}
 \begin{algorithmic}[1]
 \State Initialize $\gamma, \theta_0, C_0, V_0, \mu_0, P_0, Q_0, R_0$.
@@ -629,7 +623,7 @@ where \(\overset{c}{=}\) signifies equality up to additive constants that do not
 
 The iterative PSMF algorithm for handling missing data is given in Algorithm \ref{algo:psmf_missing_data}.
 
-\begin{algorithm}[H]
+\begin{algorithm}[h]
 \caption{Iterative PSMF with Missing Data Imputation}
 \begin{algorithmic}[1]
 \State Initialize $\gamma$, $\theta_0$, $C_0$, $V_0$, $\mu_0$, $P_0$, $(Q)_{k \geq 1}$, $(R)_{k \geq 1}$, and missing data mask $M$.
@@ -654,8 +648,6 @@ The iterative PSMF algorithm for handling missing data is given in Algorithm \re
 \end{algorithmic}\label{algo:psmf_missing_data}
 \end{algorithm}
 
-\clearpage
-
 \section{Introduction to ECG}
 
 \subsection{ECG}
@@ -668,9 +660,9 @@ An electrocardiogram (ECG) is a medical graphical representation of the changes 
 
 \noindent In Figure \ref{fig:ecg-huszar} we can see the components of the ECG trace. A closer look at one of the repeating waveforms in an ECG rhythm strip (PQRST complex) reveals several distinct components, each representing a specific phase of the cardiac cycle. The P wave corresponds to atrial depolarization, while the QRS complex represents ventricular depolarization. The T wave, which follows the QRS complex, indicates ventricular repolarization. The PR interval is the time taken for the depolarization wave to travel through the atria and the atrioventricular (AV) node. The QT interval encompasses the entire period of ventricular depolarization and repolarization. Between the QRS complex and the T wave lies the ST segment, an isoelectric period during which the entire ventricle is in a depolarized state.
 
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
-\includegraphics[width=1\linewidth]{images/ecg.png}
+\includegraphics[width=0.5\linewidth]{images/ecg.png}
 \caption{Components of the ECG trace. (\cite{alma991000225790601591})}
 \label{fig:ecg-huszar}
 \end{figure}
@@ -741,7 +733,7 @@ These algorithms aim to accurately and efficiently detect R-peaks in the presenc
     \end{itemize}
 \end{itemize}
 
-\begin{figure}[h!]
+\begin{figure}[h]
 \centering
 \begin{minipage}{0.4\linewidth}
     \centering
@@ -750,7 +742,7 @@ These algorithms aim to accurately and efficiently detect R-peaks in the presenc
     \label{fig:limp}
 \end{minipage}%
 \hspace{0.05\linewidth}
-\begin{minipage}{0.4\linewidth}
+\begin{minipage}{0.35\linewidth}
     \centering
     \includegraphics[width=\linewidth]{images/augmented.jpg}
     \caption{Augmented unipolar limb leads. (\cite{huszar})}
@@ -765,9 +757,9 @@ These algorithms aim to accurately and efficiently detect R-peaks in the presenc
     \item \textbf{V1 to V6:} These leads provide views of the horizontal plane of the heart, from right to left.
 \end{itemize}
 
-\begin{figure}[h!]
+\begin{figure}[h]
 \centering
-\includegraphics[width=0.5\linewidth]{images/vs.jpg}
+\includegraphics[width=0.35\linewidth]{images/vs.jpg}
 \caption{Precordial unipolar leads. (\cite{huszar})}
 \label{fig:vs}
 \end{figure}
@@ -777,26 +769,13 @@ These algorithms aim to accurately and efficiently detect R-peaks in the presenc
 
 \chapter{Experiments and Results} \label{ch:3}
 
-For the experiments we are going to use the already available dataser "A Large Scale 12-lead Electrocardiogram Database for Arrhythmia Study" (\cite{cite1}, \cite{cite2}, \cite{cite3}). This is a comprehensive database of high-quality 12-lead ECG signals collected from $45 152$ patients. Each signal is with length of $10$ seconds corresponding to $5 000$ data points. The dataset is designed to support arrhythmia research, containing labeled data for various cardiac conditions such as atrial fibrillation, premature ventricular contractions, and bundle branch blocks. This large dataset has high-quality labels from professional experts, diverse arrhythmia types, and additional cardiovascular conditions, making it suitable for performing our tests on it. \newline
-
-Code to reproduce our experiments is available in an online repository. 1??
-
-% • Presents a comprehensive database of 12-lead ECG signals collected from 45,152 patients. Each signal is with length of 10 seconds corresponding to 5000 data points.
-% • The dataset is designed to support arrhythmia research, containing labeled data for various cardiac conditions such as atrial fibrillation, premature ventricular contractions, and bundle branch blocks.
-% • ECG data is non-invasive and critical for diagnosing cardiovascular conditions, but analyzing such large
-% datasets requires efficient automated methods.
-% • Large dataset, high-quality labels from professional experts, diverse arrhythmia types, and additional cardiovascular conditions. \newline
-
-
-% Pre,post, processing
-
-% What exactly is tested - 5k points, sample from the points, results, smoothing, no smoothing, differеnt ranks, fourier terms
+For the experiments we are going to use the already available dataset "A Large Scale 12-lead Electrocardiogram Database for Arrhythmia Study" (\cite{cite1}, \cite{cite2}, \cite{cite3}). This is a comprehensive database of high-quality 12-lead ECG signals collected from $45 152$ patients. Each signal is with length of $10$ seconds corresponding to $5 000$ data points. The dataset is designed to support arrhythmia research, containing labeled data for various cardiac conditions such as atrial fibrillation, premature ventricular contractions, and bundle branch blocks. This large dataset has high-quality labels from professional experts, diverse arrhythmia types, and additional cardiovascular conditions, making it suitable for performing our tests on it. Code to reproduce our experiments is available in an online repository.\footnote{See: https://github.com/JoeJoe1313/rPSMF} \newline
 
 \section{Missing Data Imputation}\label{sec:exp1}
 
 In this section, we evaluate PSMF and rPSMF on the task of imputing missing values in 12-lead ECG time-series data. The 12-lead ECG signal is chosen to be one representing a normal heart rhythm (sinus rhythm). As already mentioned each of the $m = 12$ leads contains $n = 5000$ data points. One heart beat (PQRST complex) is of approximate length of $300$ data points. That's why, to assess the imputation accuracy, we choose to randomly remove segments of length $300$ from the signal, and construct datasets with $20\%$, $30\%$, and $40\%$ missing data. We compare the results for each dataset against two other baseline sequential methods used in the PSMF paper (\cite{akyildiz2021probabilistic}). The first, which we call MLE-SMF, is a maximum likelihood estimation (MLE) method for online probabilistic matrix factorization where the state transition matrix $C$ remains constant over time. This builds on prior work by \cite{YILDIRIM2012494}, \cite{6288274}, and \cite{6638240}. The second approach adapts the temporal matrix factorization (TMF) optimization technique proposed by \cite{NIPS2016_85422afb}. \newline
 
-\noindent For PSMF and rPSMF we choose a random walk subspace model $f_{\theta}(x) = x$, and for the imputation we use the final estimates of $C$ and $X$. We test the four sequential models by setting the rank first to $r = 3$, and then to $r = 10$. As in \cite{akyildiz2021probabilistic}, for TMF we set the weight matrix to identity, for PSMF and MLE- SMF we set $R_k := R = \rho \otimes I_r$, where $\rho = 10$, $P_0 = I_r$, $Q_k := Q = q \otimes I_r$, and $q = 0.1$. For rPSMF we use $R_0 = R$ and $Q_0 = Q$ and choose $\lambda_0 = 1.8$, and for both PSMF and rPSMF we set $V_0 = v_0 \otimes I_r$ with $v_0 = 2$. We evaluate the performance of the four methods PSMF, rPSMF, MLE-SMF, and TMF by running each of them for two epochs. To ensure the robustness and reliability of our findings, we conduct the experiments $100$ times, each time using different initializations and randomly generated patterns of missing data. \newline
+\noindent For PSMF and rPSMF we choose a random walk subspace model $f_{\theta}(x) = x$, and for the imputation we use the final estimates of $C$ and $X$. We test the four sequential models by setting the rank first to $r = 3$, and then to $r = 10$. As in \cite{akyildiz2021probabilistic}, for TMF we set the weight matrix to identity, for PSMF and MLE- SMF we set $R_k := R = \rho \otimes I_r$, where $\rho = 10$, $P_0 = I_r$, $Q_k := Q = q \otimes I_r$, and $q = 0.1$. For rPSMF we use $R_0 = R$ and $Q_0 = Q$ and choose $\lambda_0 = 1.8$, and for both PSMF and rPSMF we set $V_0 = v_0 \otimes I_r$ with $v_0 = 2$. We evaluate the performance of the four methods PSMF, rPSMF, MLE-SMF, and TMF by running each of them for two epochs. To ensure the robustness and reliability of our findings, we conduct the experiments $100$ times, each time using different initialization and randomly generated patterns of missing data. \newline
 
 \noindent Table \ref{tab:rmse3} presents the results for rank $r = 3$ across scenarios with $20\%$, $30\%$, and $40\%$ missing data. The findings show that PSMF and rPSMF achieve lower imputation Root Mean Square Errors (RMSEs) than MLE-SMF and TMF, with rPSMF slightly outperforming PSMF. For rank $r = 10$, as shown in Table \ref{tab:rmse10}, PSMF emerges as the top performer across all test cases. While MLE-SMF and TMF results remain relatively consistent with their rank r = 3 performance, rPSMF shows a significant decline in performance, worsening as the percentage of missing data increases. PSMF's performance is also worse than for $r = 3$ but it is not that much affected as rPSMF. This observation contradicts our initial hypothesis that higher rank would lead to lower imputation RMSE. \newline
 
@@ -913,7 +892,9 @@ TMF & $\underset{{\scriptscriptstyle \;\;\;(20.04)}}{205.67}$ & $\underset{{\scr
 
 \noindent All of the visualisations for PSMF, rPSMF, MLE-SMF, and TMF for both ranks $3$ and $4$ and the three scenarios with $20\%$, $30\%$, and $40\%$ missing data can be found in Appendix \ref{app:mdi}. \newline
 
-\noindent In this section, we evaluated the performance of PSMF and rPSMF on the task of imputing missing values in 12-lead ECG time-series data, comparing them against MLE-SMF and TMF as baselines. Our experiments, conducted across various missing data scenarios and matrix ranks, reveal that PSMF and rPSMF generally outperform the baseline methods in terms of lower imputation RMSE, particularly at a lower rank of $r = 3$. Notably, rPSMF consistently achieved the best performance for rank 3 across all levels of missing data, though its efficacy diminished significantly at the higher rank of $r = 10$, especially as the proportion of missing data increased. This trend was unexpected, as our initial hypothesis suggested that a higher rank would yield better imputation accuracy. Additionally, our uncertainty quantification analysis indicated that rPSMF provided the highest coverage of the missing data within a $2\sigma$ interval, although this coverage decreased with increasing rank. Visual inspection of the reconstructions further corroborated the quantitative findings, with PSMF showing superior performance, particularly in retaining the high amplitude of the R wave. Overall, these results highlight the strengths and limitations of both PSMF and rPSMF in handling missing data in ECG signals and suggest that rank selection plays a crucial role in their effectiveness. Future work could explore more adaptive methods for rank determination to optimize imputation accuracy across different scenarios.
+\noindent In this section, we evaluated the performance of PSMF and rPSMF on the task of imputing missing values in 12-lead ECG time-series data, comparing them against MLE-SMF and TMF as baselines. Our experiments, conducted across various missing data scenarios and matrix ranks, reveal that PSMF and rPSMF generally outperform the baseline methods in terms of lower imputation RMSE, particularly at a lower rank of $r = 3$. Notably, rPSMF consistently achieved the best performance for rank 3 across all levels of missing data, though its efficacy diminished significantly at the higher rank of $r = 10$, especially as the proportion of missing data increased. This trend was unexpected, as our initial hypothesis suggested that a higher rank would yield better imputation accuracy. Additionally, our uncertainty quantification analysis indicated that rPSMF provided the highest coverage of the missing data within a $2\sigma$ interval, although this coverage decreased with increasing rank. Visual inspection of the reconstructions further corroborated the quantitative findings, with PSMF showing superior performance, particularly in retaining the high amplitude of the R wave. Overall, these results highlight the strengths and limitations of both PSMF and rPSMF in handling missing data in ECG signals and suggest that rank selection plays a crucial role in their effectiveness.
+
+\clearpage
 
 \section{R-peaks Detection}\label{sec:rpeaksdet}
 
@@ -935,14 +916,14 @@ As discussed in Section \ref{sec:rpeaks}, precise R-peak detection is crucial fo
 
 \noindent To ease the computational resources needed we are going to work with a resampled version of the signal. The resampling would make the original signal (Figure \ref{fig:orig-ecg}) from containing $5000$ points to containing only $1500$ points (Figure \ref{fig:resampled-ecg}). This is achieved by first applying Fast Fourier Transform (FFT) to transform the original signal into the frequency domain, then removing coefficients from the higher frequency components, effectively performing a low-pass filter, and finally applying an Inverse Fast Fourier Transform (IFFT) to convert the modified frequency domain signal back to the time domain. For clarity, this is done by using the \texttt{resample} function from the Python library \texttt{scipy.signal}. Observing Figure \ref{fig:orig-ecg} and Figure \ref{fig:resampled-ecg} confirms that the original structure and important characteristics of the data are preserved. \newline
 
-\begin{figure}[H]
+\begin{figure}[h]
 \centering
 \includegraphics[width=1\linewidth]{images/r_peaks/original_ecg_m.pdf}
 \caption{Original Lead II signal, 5000 points.}
 \label{fig:orig-ecg}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}[h]
 \centering
 \includegraphics[width=1\linewidth]{images/r_peaks/resampled_ecg_m.pdf}
 \caption{Resampled Lead II signal, 1500 points.}
@@ -953,7 +934,7 @@ As discussed in Section \ref{sec:rpeaks}, precise R-peak detection is crucial fo
 
 \noindent Finally, after the data is resampled and denoised we also standardise the data. In Figure \ref{fig:res-st-den-ecg} we can see the resampled, denoised, standardised Lead II signal compared to the resampled and standardised Lead II signal.
 
-\begin{figure}[H]
+\begin{figure}[h]
 \centering
 \includegraphics[width=1\linewidth]{images/r_peaks/resampled_standardised_denoised_ecg_m.pdf}
 \caption{Resampled and standardised Lead II signal (blue), and the denoised version (orange) of the same signal after applying wavelet transform and standardisation.}
@@ -966,9 +947,9 @@ To summarise, the ECG signal we want to apply PSMF to has $n = 1500$ observation
 \begin{equation}
     x_k = f_{\theta}(x_{k-1}) = \sum_{i=1}^3 \theta_{1,i} \sin(2\pi \theta_{2,i} k + \theta_{3,i} x_{k-1}) + \theta_{4,i} \cos(2\pi \theta_{5,i} k + \theta_{6,i} x_{k-1})
 \end{equation}
-We also use $r = 3$, run iterative PSMF with $100$ iterations, and withhold $10\%$ of the data for testing purposes. In Figure \ref{fig:reconstr-ecg} we can see the reconstruction on the training data. It is noticable that the fit can model the smaller amplitudes, but when it comes to the R wave the amplitude is very low, close to the baseline. Another observation is that the fit is very periodic around the smoother parts which were initially very noisy.
+We also use $r = 3$, run iterative PSMF with $100$ iterations, and withhold $10\%$ of the data for testing purposes. In Figure \ref{fig:reconstr-ecg} we can see the reconstruction on the training data. It is noticeable that the fit can model the smaller amplitudes, but when it comes to the R wave the amplitude is very low, close to the baseline. Another observation is that the fit is very periodic around the smoother parts which were initially very noisy.
 
-\begin{figure}[H]
+\begin{figure}[h]
 \centering
 \includegraphics[width=1\linewidth]{images/r_peaks/resampled_standardised_denoised_ecg_reconstruction_m.pdf}
 \caption{Lead II signal (blue), and the reconstruction (orange) of the same signal after applying PSMF to the 12 leads with rank $r = 3$, Fourier basis with $n = 3$ terms, and $100$ iterations.}
@@ -977,16 +958,16 @@ We also use $r = 3$, run iterative PSMF with $100$ iterations, and withhold $10\
 
 \noindent Next, we remove the reconstruction from the original data, and choose a threshold as the $99.2$-th percentile of the differences between the reconstruction and the original data. Figure \ref{fig:diff-ecg} visualises the differences (blue) and the chosen threshold line (red).
 
-\begin{figure}[H]
+\begin{figure}[h]
 \centering
 \includegraphics[width=1\linewidth]{images/r_peaks/resampled_standardised_denoised_ecg_rpeaks_algo_m.pdf}
 \caption{Removed reconstruction from the modelled ECG signal (blue), and threshold (red) for isolating the R-peaks.}
 \label{fig:diff-ecg}
 \end{figure}
 
-\noindent Finally, in Fugure \ref{fig:rpeaks-ecg} we can see the detected R-peaks (red x) which were chosen as the points above the defined threshold, and the true R-peaks (cricle). We can see that the method manages to determine the R-peaks, but in the third heart beat we can see that there is a second point detected as a peak. This is due to the last peak having a noticeably lower amplitude than all of the other peaks, which enforced choosing a lower threshold. This is an example where variable amplitudes might contribute to difficult detection of R-peaks and possibly indicate an issue with the signal such as artifacts, poor electrode contact, etc. This highlights the potential impact of variable amplitudes on R-peak detection and the need for robust methods to handle such variations.
+\noindent Finally, in Figure \ref{fig:rpeaks-ecg} we can see the detected R-peaks (red x) which were chosen as the points above the defined threshold, and the true R-peaks (circle). We can see that the method manages to determine the R-peaks, but in the third heart beat we can see that there is a second point detected as a peak. This is due to the last peak having a noticeably lower amplitude than all of the other peaks, which enforced choosing a lower threshold. This is an example where variable amplitudes might contribute to difficult detection of R-peaks and possibly indicate an issue with the signal such as artifacts, poor electrode contact, etc. This highlights the potential impact of variable amplitudes on R-peak detection and the need for robust methods to handle such variations.
 
-\begin{figure}[H]
+\begin{figure}[h]
 \centering
 \includegraphics[width=1\linewidth]{images/r_peaks/resampled_standardised_denoised_ecg_rpeaks_m.pdf}
 \caption{Detected R-peaks (red x) and the true R-peaks (circle) in the resampled, standardised, denoised Lead II signal (blue).}
@@ -994,9 +975,8 @@ We also use $r = 3$, run iterative PSMF with $100$ iterations, and withhold $10\
 \end{figure}
 
 \noindent In conclusion, the novel R-peak detection method presented in this section effectively harnesses the predictive discrepancies inherent to the PSMF model as a feature rather than a drawback. By deliberately using a model that underestimates the amplitude of R-peaks, we create a predictable deviation from the original ECG signal, which can then be quantitatively identified using a threshold-based approach. Our empirical results demonstrate that this method can reliably detect R-peaks within a resampled, standardized, and denoised ECG signal, Lead II in particular. The method maintains the integrity of critical signal features after substantial data manipulation including resampling and noise reduction. Further refinements may be necessary to address outliers and ensure universal applicability across different types of ECG signals and conditions.
-\newline
-sth about using only Lead 2?
-Full results?
+
+\clearpage
 
 \section{Forecasting}
 
@@ -1026,13 +1006,13 @@ We also use $r = 6$, run iterative PSMF with $400$ iterations, and withhold $20\
 
 \begin{figure}[h]
 \begin{center}
-\includegraphics[scale=0.45]{images/example.pdf}
+\includegraphics[scale=0.4]{images/example.pdf}
 \caption{A visualisation of the high sharp-peak amplitudes being described by fewer data points compared to the other waves.}
 \label{problem}
 \end{center}
 \end{figure}
 
-\noindent Figure \ref{loss} shows how the Frobenius norm $\Vert Y - CX \Vert^2_F$ between the reconstructed data and the true data behaves with the number of iterations. The training loss starts very high but rapidly decreases in the first few iterations, stabilizing around a lower value by approximately $50$ iterations. This indicates that the model is quickly learning to fit the training data. After the initial drop, the training loss continues to decrease gradually but remains relatively stable, indicating that the model has reached a point where additional iterations yield only marginal improvements. The prediction loss is initially lower than the training loss but shows more fluctuation. After about $50$ iterations, it starts to stabilize as well, though it remains consistently higher than the training loss. This gap between the training and prediction loss suggests that the model may be overfitting the training data, as it performs better on the training set than on the prediction task. Experimenting with stopping the training earlier resulted in predictions which had worse wave amplitudes and were shifted compared to the original data.
+\noindent Figure \ref{loss} shows how the Frobenius norm $\Vert Y - CX \Vert^2_F$ between the reconstructed data and the true data behaves with the number of iterations. The training loss starts very high but rapidly decreases in the first few iterations, stabilizing around a lower value by approximately $50$ iterations. This indicates that the model is quickly learning to fit the training data. After the initial drop, the training loss continues to decrease gradually but remains relatively stable, indicating that the model has reached a point where additional iterations yield only marginal improvements. The prediction loss is initially lower than the training loss but shows more fluctuation. After about $50$ iterations, it starts to stabilize as well, though it remains consistently higher than the training loss. This gap between the training and prediction loss suggests that the model may be overfitting the training data, as it performs better on the training set than on the prediction task. Experimenting with stopping the training earlier resulted in predictions which had worse wave amplitudes and were shifted compared to the original data. Figure \ref{bases} shows how the underlying subspace is recovered. \newline
 
 \begin{figure}[h]
 \begin{center}
@@ -1042,11 +1022,9 @@ We also use $r = 6$, run iterative PSMF with $400$ iterations, and withhold $20\
 \end{center}
 \end{figure}
 
-\noindent Figure \ref{bases} shows how the underlying subspace is recovered.
-
 \begin{figure}[h]
 \begin{center}
-\includegraphics[scale=1]{images/forecast/periodic_bases.pdf}
+\includegraphics[scale=0.6]{images/forecast/periodic_bases.pdf}
 \caption{Recovered subspace.}
 \label{bases}
 \end{center}
@@ -1056,19 +1034,23 @@ We also use $r = 6$, run iterative PSMF with $400$ iterations, and withhold $20\
 
 \chapter{Conclusion}
 
-TODO: summarise results
+In this thesis, we presented novel applications of the probabilistic sequential matrix factorization (PSMF) algorithm to 12-lead ECG data. Our goal was to explore the potential of PSMF in addressing tasks related to this complex, high-dimensional time-series data with nonlinear subspace. \newline
+
+\noindent We began by introducing the PSMF model and its robust variant, rPSMF, along with the relevant mathematical framework. We also outlined the inference process, parameter estimation techniques, and the algorithms for both PSMF and rPSMF. Additionally, we discussed the adaptation of PSMF for handling missing data in ECG signals. \newline
+
+\noindent In Chapter 3, we demonstrated three applications of PSMF to 12-lead ECG data:
+\begin{itemize}
+    \item \textbf{Missing data imputation:} We applied both PSMF and rPSMF to impute missing data in ECG signals and compared their performance with other probabilistic sequential matrix factorization algorithms. Our results showed that PSMF and rPSMF generally outperformed the baseline methods, particularly at lower matrix ranks. We also concluded that PSMF and rPSMF perform better when the rank is lower.
+    \item \textbf{R-peak detection:} We introduced a novel approach for R-peak detection by leveraging the discrepancy between the original ECG signal and the PSMF reconstruction. By removing the smoother reconstructed signal from the original data and applying a suitable threshold, we successfully identified R-peaks in the ECG signal.
+    \item \textbf{Forecasting:} We attempted to forecast an ECG component based on previous normal heartbeats by incorporating a Fourier basis with multiple terms and rank higher than one. While the PSMF model captured the general dynamics of the ECG signal, it faced challenges in accurately modeling the high-amplitude, sharp peaks associated with R waves.
+\end{itemize}
+Our experiments, conducted on a comprehensive, high-quality 12-lead ECG dataset, demonstrated the potential of PSMF in handling complex ECG data. However, we also identified limitations and challenges, particularly in forecasting tasks involving rapid depolarization events like R waves. \newline
+
+\noindent In conclusion, this thesis highlights the applicability of PSMF to real-world ECG data and its effectiveness in tasks such as missing data imputation and R-peak detection. However, further research is needed to refine the model and improve its performance in forecasting complex ECG features. Future work could focus on model enhancements, probabilistic extensions, alternative inference techniques, and real-time applications to fully harness the potential of PSMF in ECG analysis and monitoring.
 
 \section{Future work}
 
-TODO:
-\begin{itemize}
-    \item More complex model to better suit the complexity of the ECG data
-    \item Better computational efficiency
-\end{itemize}
-
-Why modelling ecg is usefu? SPecifically normal sinus rhythm.
-
-Why detecting ECG is useful?
+Given the findings of this thesis, one promising direction is to refine the PSMF model to better handle the sharp, high-amplitude peaks in ECG signals, particularly the R waves. This could involve modifying the periodic subspace model to account for rapid depolarization events more effectively. If this cannot be achieved, the PSMF model can be further extended by adopting different likelihoods and different dynamics which can better capture such complex signal dynamics. Another possibility is to work on enhancing the computational efficiency, and provide new computational tools for inference. In summary, future research efforts should focus on refining the PSMF model to better capture the complexities of ECG signals, exploring probabilistic extensions and alternative inference techniques, and transitioning the model to real-time applications. By addressing these challenges and expanding the scope of PSMF's application, we can unlock its full potential in ECG analysis and beyond, ultimately contributing to improved cardiac monitoring and patient care.
 
 \clearpage
  %% reset page counter and start appendix pages with A
