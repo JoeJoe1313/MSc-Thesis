@@ -33,7 +33,7 @@
 
 Matrix factorisation (MF) techniques are highly effective and widely used in unsupervised machine learning. By decomposing the original matrix into multiple simpler lower-dimensional matrices, MF aims to uncover latent structures that are not immediately obvious in the original matrix. MF finds applications in areas such as image processing, natural language processing, missing data imputation, and recommendation systems. Despite considerable progression in the probabilistic versions, there is demand for such methods in applications such as uncertainty quantification, managing time-series data, and executing efficient probabilistic computations. \newline
 
-\noindent In this thesis, we show three novel applications of the probabilistic sequential MF algorithm Probabilistic Sequential Matrix Factorisation (PSMF) (\cite{akyildiz2021probabilistic}) to 12-lead ECG data. We explore three tasks related to this complex high-dimensional time-series data with nonlinear subspace: missing data imputation with PSMF and the robust version of PSMF (rPSMF) (\cite{akyildiz2021probabilistic}) and compare their performance with other probabilistic sequential MF algorithms, we propose a novel R-peaks detection method, and we attempt to forecast an ECG component based on previous normal heart beats using a Fourier basis with multiple terms and rank higher than one. We perform our experiments using the high-quality comprehensive dataset "A Large Scale 12-lead Electrocardiogram Database for Arrhythmia Study" (\cite{cite1}, \cite{cite2}, \cite{cite3}). We describe and outline the experimenting process and the challenges we encountered modelling the ECG data, and summarise the experiments results. We find that PSMF and rPSMF perform well when used for imputing missing data. We also find that applying PSMF to Lead II signal and then removing the  reconstruction from the original signal indeed results in a useful R-peak detection method, but when it comes to forecasting there are certain challenges with modelling high amplitudes which open the door for further research on extending the PSMF algorithm to better handle the complex structure of ECG data. \newline
+\noindent In this thesis, we show three novel applications of the probabilistic sequential MF algorithm Probabilistic Sequential Matrix Factorisation (PSMF) (\cite{akyildiz2021probabilistic}) to 12-lead ECG data. We explore the following tasks related to this complex high-dimensional time-series data with nonlinear subspace: missing data imputation with PSMF and the robust version of PSMF (rPSMF) (\cite{akyildiz2021probabilistic}) and compare their performance with other probabilistic sequential MF algorithms, we propose a novel R-peaks detection method, and we attempt to forecast an ECG component based on previous normal heart beats using a Fourier basis with multiple terms and rank higher than one. We perform our experiments using the high-quality comprehensive dataset "A Large Scale 12-lead Electrocardiogram Database for Arrhythmia Study" (\cite{cite1}, \cite{cite2}, \cite{cite3}). We describe and outline the experimenting process and the challenges we encountered modelling the ECG data, and summarise our results. We find that PSMF and rPSMF perform well when used for imputing missing data. We also find that applying PSMF to Lead II signal and then removing the  reconstruction from the original signal indeed results in a useful R-peak detection method, but when it comes to forecasting there are certain challenges with modelling high amplitudes which open the door for further research on extending the PSMF algorithm to better handle the complex structure of ECG data. \newline
 
 \end{abstract}
 
@@ -64,7 +64,7 @@ Matrix factorisation (or also matrix decomposition) in the context of linear alg
 \begin{equation}
 Y \approx CX,
 \end{equation} \newline
-\noindent where $C \in \mathbb{R}^{m \times r}$ is the \textit{dictionary matrix}, $X \in \mathbb{R}^{r \times n}$ is the \textit{coefficients matrix} (with columns the coefficients), and $r$ is the \textit{approximation rank} (\cite{cite-key}). Visually we can present the problem as
+\noindent where $C \in \mathbb{R}^{m \times r}$ is the \textit{dictionary matrix}, $X \in \mathbb{R}^{r \times n}$ is the \textit{coefficient matrix} (with columns the coefficients), and $r$ is the \textit{approximation rank} (\cite{cite-key}). Visually we can present the problem as
 
 \begin{equation}
 \underbrace{
@@ -92,13 +92,13 @@ Y \approx CX,
 
 \noindent There are also probabilistic versions of MF which incorporate probabilistic models to better handle uncertainty and variability in the data, leading to more accurate predictions. Such methodologies postulate a prior distribution over the latent factors and necessitate the computation of the posterior distribution to derive updated estimates. With that the matrix is not only decomposed but probabilistic interpretations of the factors are also possible. \newline
 
-\noindent We should also note that some algorithms are suitable for sequential data - updating $C$ and $X$ incrementally as new data points are observed and thus incorporating temporal dynamics and sequential dependencies into the factorisation process, and others are non-sequential - treating the dataset as a batch, independent of the time varying component. \newline
+\noindent We should also note that some algorithms are suitable for sequential data: updating $C$ and $X$ incrementally as new data points are observed and thus incorporating temporal dynamics and sequential dependencies into the factorisation process, and others are non-sequential: treating the dataset as a batch, independent of the time varying component. \newline
 
-\noindent Throughout this thesis we are going to focus on probabilistic sequential MF algorithms, along with their application to 12-lead ECG data, targeting the problem of managing high-dimensional time-series data with nonlinear subspace. Some examples of probabilistic MF algorithms are Probabilistic Matrix Factorisation (PMF) (\cite{NIPS2007_d7322ed7}) - non-sequential, Dictionary filtering (\cite{cite-key}), Probabilistic Sequential Matrix Factorization (PSMF) (\cite{akyildiz2021probabilistic}). \newline
+\noindent Throughout this thesis we are going to focus on probabilistic sequential MF algorithms, along with their application to 12-lead ECG data, targeting the problem of managing high-dimensional time-series data with nonlinear subspace. Some examples of probabilistic MF algorithms are Probabilistic Matrix Factorisation (PMF) (\cite{NIPS2007_d7322ed7}), Dictionary filtering (\cite{cite-key}), Probabilistic Sequential Matrix Factorization (PSMF) (\cite{akyildiz2021probabilistic}). \newline
 
 \noindent The paper "Probabilistic matrix factorisation" (PMF) (\cite{NIPS2007_d7322ed7}) introduces an efficient and scalable probabilistic model for collaborative filtering. The algorithm performs well on large, sparse and imbalanced datasets. This is demonstrated by using a Netflix dataset, where PMF models the user preference matrix $R$ as a product of two lower-dimensional matrices: user feature matrix $U$ and movie feature matrix $V$. The conditional distribution over observed ratings is modeled using Gaussian noise, and zero-mean spherical Gaussian priors are placed on the user and movie feature vectors. The paper also presents two extensions to the initial PMF model: incorporating \textit{adaptive priors} to automatically control the model complexity through these priors over the model parameters, and a \textit{constrained PMF} version to handle and improve predictions for users with few ratings by incorporating constraints based on the assumption that users with similar movie ratings have similar preferences. The authors show that PMF significantly outperforms traditional Singular Value Decomposition (SVD) (\cite{4ba978eb-d878-342d-a11e-6d7554474b2d}) models and scales linearly with the number of observations. It's worth noting that PMF treats each rating as an independent event meaning the time varying component is not taken into consideration, making PMF a batch learning model designed to process large datasets in a non-sequential manner. \newline
 
-\noindent Later, in the paper "Dictionary Filtering: A Probabilistic Approach to Online Matrix Factorization" (DF) (\cite{cite-key}), the authors introduce a novel online MF algorithm known as dictionary filtering. It leverages probabilistic models, specifically using recursive linear filters, and efficiently factorises the original data matrix into a dictionary matrix and a coefficients matrix. This is an online and sequential algorithm, meaning it is suitable for high-dimensional and time-varying data, and it also has easy to tune parameters. DF is efficient for high-dimensional data with its computational complexity of $O(mr^2)$ independent of the number of data points. Although the model can learn non-stationary and dynamic data, it is developed for linear and Gaussian state space models (SSM). Particularly for ECG data, ECG has a nonlinear SSM which doesn't suit the dictionary filtering. \newline
+\noindent Later, in the paper "Dictionary Filtering: A Probabilistic Approach to Online Matrix Factorization" (DF) (\cite{cite-key}), the authors introduce a novel online MF algorithm known as dictionary filtering. It leverages probabilistic models, specifically using recursive linear filters, and efficiently factorises the original data matrix into a dictionary matrix and a coefficients matrix. This is an online and sequential algorithm, meaning it is suitable for high-dimensional and time-varying data, and it also has easy to tune parameters. DF is efficient for high-dimensional data with its computational complexity of $O(mr^2)$ independent of the number of data points. Although the model can learn non-stationary and dynamic data, it is developed for linear and Gaussian state space models (SSM). \newline
 
 \noindent Two years later, Akyildiz et.al. develop Probabilistic Sequential Matrix Factorization (PSMF) (\cite{akyildiz2021probabilistic}). This method is tailored to time-varying and non-stationary datasets consisting of high-dimensional time-series. Nonlinear Gaussian SSMs are considered, decomposing the original matrix into a dictionary matrix and time-variying coefficient matrix. This time, the matrices are with potentially nonlinear dependencies, with PSMF efficiently capturing temporal dependencies through Markovian structures on the coefficients, making it possible to encode the dependencies into a lower dimensional latent space. The model is demonstrated to work on tasks such as forecasting, changepoint detection, missing data imputation, and is shown to work on real-world data with a periodic subspace. There is also a robust version rPSMF using Student-t filters to handle model misspecification, and a version for imputing missing data. Although the model is suitable for reducing high-dimensional data with periodic subspaces to lower-dimensional latent space, PSMF might struggle with very large datasets, having many data points. \newline
 
@@ -107,28 +107,25 @@ Y \approx CX,
 Using probabilistic methods, and specifically probabilistic sequential MF ones, on ECG data is not widely explored. Hence, we aim to introduce a few novel real-world applications of the PSMF method to 12-lead ECG data. The contributions made in this thesis are:
 
 \begin{itemize}
-    \item We show three novel applications of PSMF to complex \textbf{12-lead ECG data}.
-    \item \textbf{Application 1:} We apply both PSMF and rPSMF for imputing missing data in the ECG signals, and compare the results with other sequential probabilistic MF models.
+    \item \textbf{Application 1:} We use both PSMF and rPSMF for imputing missing data in the ECG signals, and compare the results with other sequential probabilistic MF models.
     \item \textbf{Application 2:} We show that PSMF can be used for R-peaks detection by introducing a simple approach. We remove the reconstructed signal, which has modelled the R-peaks smoother than the real ones, from the original data, and determine a suitable threshold for selecting the peaks. 
     \item \textbf{Application 3:} We forecast an ECG component based on previous normal heart beats by incorporating a Fourier basis with multiple Fourier terms and rank higher than 1. 
 \end{itemize}
 
 \section{Notation}
 
-We are going to denote the original data matrix as $Y \in \mathbb{R}^{m \times n}$, and let $y_k$ denote the $k$-th column of the matrix. Also, let $y = \text{vec}(Y) \in \mathbb{R}^{nm}$ be the vectorization of the matrix $Y$:
-
+We are going to denote the original data matrix as $Y \in \mathbb{R}^{m \times n}$, and let $y_k$ denote the $k$-th column of the matrix. Also, let $y = \text{vec}(Y) \in \mathbb{R}^{nm}$ be the vectorization of the matrix $Y$, where
 \begin{equation}
-    y := vec(Y) = \begin{bmatrix}
+    y := \text{vec}(Y) = \begin{bmatrix}
         y_1 \\
         y_2 \\
         \vdots \\
         y_n, 
-    \end{bmatrix}
+    \end{bmatrix},
 \end{equation}
+and $y_1, ..., y_n$ are the columns of $Y$. The inverse is denoted as $Y := \text{vec}^{-1}(Y, m, n)$, where $m$, and $n$ specify the size of the resulting matrix. With $y_{1:k} = \{y_1, ..., y_k\}$ we are going to denote sequences. Further, let $C \in \mathbb{R}^{m \times r}$ be the dictionary matrix, $X \in \mathbb{R}^{r \times n}$ be the coefficient matrix, and $r$ be the approximation rank. \newline
 
-\noindent where $y_1, ..., y_n$ are the columns of $Y$. The inverse is denoted as $Y := \text{vec}^{-1}(Y, m, n)$, where $m$, and $n$ specify the size of the resulting matrix. With $y_{1:k} = \{y_1, ..., y_k\}$ we are going to denote sequences. Further, let $C \in \mathbb{R}^{m \times r}$ be the dictionary matrix, $X \in \mathbb{R}^{r \times n}$ be the coefficients matrix, and $r$ be the approximation rank. \newline
-
-\noindent With $I_d \in \mathbb{R}^{d \times d}$ we are going to denote the identity matrix, with $\mathcal{N}(x; \mu, \Sigma)$ the multivariate normal distribution with mean $\mu$ and $\Sigma$ the covariance matrix, with $\mathcal{MN}(X; M, U, V)$ the matrix normal distribution with $M$ the mean-matrix, $U$ the row-covariance, and $V$ the column covariance, with  $\mathcal{IG}(s; \alpha, \beta)$ the inverse gamma distribution with shape $\alpha$ and scale $\beta$, and with $\mathcal{T}(x; \mu, \Sigma, \lambda)$ the multivariate $t$ distribution, where $\mu$ is the mean, $\Sigma$ the scale matrix, and $\lambda$ is the degrees of freedom. \newline
+\noindent With $I_m \in \mathbb{R}^{m \times m}$ we are going to denote the identity matrix, with $\mathcal{N}(x; \mu, \Sigma)$ the multivariate normal distribution with mean $\mu$ and $\Sigma$ the covariance matrix, with $\mathcal{MN}(X; M, U, V)$ the matrix normal distribution with $M$ the mean-matrix, $U$ the row-covariance, and $V$ the column covariance, with  $\mathcal{IG}(s; \alpha, \beta)$ the inverse gamma distribution with shape $\alpha$ and scale $\beta$, and with $\mathcal{T}(x; \mu, \Sigma, \lambda)$ the multivariate $t$ distribution, where $\mu$ is the mean, $\Sigma$ the scale matrix, and $\lambda$ is the degrees of freedom. \newline
 
 \noindent Finally, with $\odot$ we are going to denote element-wise multiplication, with $\text{tr}(.)$ the trace of a matrix, and with $|.|$ the determinant of a matrix.
 
@@ -206,13 +203,13 @@ where $\{a_{ij}\}$, $i \in \{1,...,m\}$, $j \in \{1, ..., n\}$ are the elements 
 
 \section{PSMF}
 
-\noindent In the next sections we are outlining the PSMF models we are going to use in our experiments with 12-lead ECG data in Chapter \ref{ch:3}. We are going to follow \cite{akyildiz2021probabilistic}. First, we are going to introduce PSMF: model definition, inference, parameter estimation, marginal-likelihood approximation, and algorithm. Then, similarly, we are going to introduce the robust version of PSMF (rPSMF), and finally the version of PSMF for imputing missing data. \newline
+\noindent In the next sections we are outlining the PSMF models we are going to use in our experiments with 12-lead ECG data in Chapter \ref{ch:3}. We are going to follow \cite{akyildiz2021probabilistic}. First, we are going to introduce PSMF: model definition, inference, parameter estimation, marginal-likelihood approximation, and algorithm. Then, similarly, we are going to introduce the robust version of PSMF (rPSMF), and finally the version of PSMF for handling missing data. \newline
 
 \noindent We begin by introducing the PSMF model which can be thought of as being a probabilistic dimensionality reduction scheme. The dynamics of the subspace are modeled by a transition density (introduced in Equation \ref{eq:3}), meaning the underlying dynamical structure present in the data will be reflected in the dynamics of the coefficients $x_k$, $k \geq 1$. Simply said, the sequential patterns in the data will be captured and represented by the behaviour of the coefficients over time.
 
 \subsection{Model}
 
-For observations $y_k \in \mathbb{R}^{m}$, $k \geq 1$, latent coefficients $x_k \in \mathbb{R}^{r}$, $k \geq 1$, and a dictionary matrix $C \in \mathbb{R}^{m \times r}$ the PSMF model can be described with the following state-space equations (\cite{akyildiz2021probabilistic}):
+For observations $y_k \in \mathbb{R}^{m}$, $k \geq 1$, latent coefficients $x_k \in \mathbb{R}^{r}$, $k \geq 1$, and a dictionary matrix $C \in \mathbb{R}^{m \times r}$ the PSMF model can be described with the following state-space equations (\cite{akyildiz2021probabilistic})
 \begin{equation} \label{eq:1}
     p(C) = \mathcal{MN}(C; C_0, I_m, V_0)
 \end{equation}
@@ -235,13 +232,13 @@ In this section, we outline the algorithm for conducting sequential inference (\
 
 For the optimal inference recursions we have $\theta$ fixed, and we assume we know the following filters at time $k - 1$: $p(x_{k-1}|y_{1:k-1})$ and $p(c|y_{1:k-1})$. \newline
 
-\noindent The \textbf{predictive distribution}, which is in the base of the update steps, is given by:
+\noindent The \textbf{predictive distribution}, which is in the base of the update steps, is given by
 \begin{equation} \label{eq:5}
     p(x_k \mid y_{1:k-1}) = \int p(x_{k-1} \mid y_{1:k-1}) p(x_k \mid x_{k-1}) dx_{k-1}.
 \end{equation}
 Given that past marginal is known, Equation (\ref{eq:5}) is independent of the dictionary. \newline
 
-\noindent In order to be able to compute updates, we state the \textbf{incremental marginal likelihood}:
+\noindent In order to be able to compute updates, we state the \textbf{incremental marginal likelihood}
 \begin{equation}
     p(y_k \mid y_{1:k-1}) = \int \int p(y_k \mid c, x_k) p(x_k \mid y_{1:k-1}) p(c \mid y_{1:k-1}) dx_k dc.
 \end{equation}
@@ -261,13 +258,13 @@ where
 \begin{equation}
     p(y_k | x_k, y_{1:k-1}) = \int p(y_k | x_k, c) p(c | y_{1:k-1})\text{d}c.
 \end{equation}
-As mentioned earlier, the integrals can be computed but the resulting distributions are not suitable for precise implementations of the update rules.
+As mentioned earlier, the integrals can be computed but the resulting distributions are not suitable for exact implementations of the update rules.
 
 \subsubsection{Approximate Sequential Inference}
 
 In this section we make the recursions tractable through using approximations, and outline the approximate sequential inference. Equation (\ref{eq:1}) can be rewritten as 
 \begin{equation}
-    p(c) = \mathcal{N}(c; c_0, V_0 \otimes I_d).
+    p(c) = \mathcal{N}(c; c_0, V_0 \otimes I_m).
 \end{equation}
 Let the given filters at time $k-1$ be 
 \begin{equation}
@@ -275,7 +272,7 @@ Let the given filters at time $k-1$ be
 \end{equation}
 and
 \begin{equation}
-    p(c | y_{1:k-1}) = \mathcal{N}(c; c_{k-1}, V_{k-1} \otimes I_d)
+    p(c | y_{1:k-1}) = \mathcal{N}(c; c_{k-1}, V_{k-1} \otimes I_m)
 \end{equation}
 Once again, using these distributions cannot give us exact updates for $p(c | y_{1:k})$ and $p(x_k | y_{1:k})$. Hence, let's introduce the notation $\Tilde{p}(.)$ for the approximate densities when the distribution is not exact. \newline
 
@@ -285,7 +282,7 @@ Once again, using these distributions cannot give us exact updates for $p(c | y_
 \end{equation}
 where $\bar{\mu}_k = f_{\theta}(\mu_{k-1})$, $\bar{P}_k = F_k P_{k-1} F^{T}_{k} + Q_k$, and $F_K = \frac{\partial f_{\theta}(x)}{\partial x} \vert_{x = \bar{\mu}_{k-1}}$ is the Jacobian of $f_{\theta}$ calculated at $\bar{\mu}_{k-1}$. \newline
 
-\noindent For the \textbf{update} step we are once again interested in the dictionary update and the coefficient update. All of the derivation details of the updates can be found in (\cite{akyildiz2021probabilistic}). Here, we are just going to outline the main steps of the update rules. First, we can see that (\ref{eq:14}) can be computed as
+\noindent For the \textbf{update} step we are once again interested in the dictionary update and the coefficient update. All of the derivation details of the updates can be found in \cite{akyildiz2021probabilistic}. Here, we are just going to outline the main steps of the update rules. First, we can see that (\ref{eq:14}) can be computed as
 \begin{equation} \label{eq:17}
     p(y_k | c, y_{1:k-1}) = \mathcal{N}(y_k; C \bar{\mu}_k, R_k + C \bar{P}_k C^T),
 \end{equation}
@@ -295,11 +292,11 @@ but to make this update tractable we make use of the approximation
 \end{equation}
 and apply it to (\ref{eq:17}), making this update tractable with likelihood $\mathcal{N}(y_k; C \bar{\mu}_k, R_k + C_{k-1} \bar{P}_k C_{k-1}^T)$. We also choose a Gaussian with a constant diagonal covariance, and we obtain the approximation
 \begin{equation}\label{eq:18}
-    \Tilde{p}(y_k | c, y_{1:k-1}) = \mathcal{N}(y_k; C \bar{\mu}_k, \eta_k \otimes I_d),
+    \Tilde{p}(y_k | c, y_{1:k-1}) = \mathcal{N}(y_k; C \bar{\mu}_k, \eta_k \otimes I_m),
 \end{equation}
 where 
 \begin{equation}
-    \eta_k = \frac{\text{tr}(R_k + C_{k-1} \bar{P}_{k} C_{k-1}^{T})}{d},
+    \eta_k = \frac{\text{tr}(R_k + C_{k-1} \bar{P}_{k} C_{k-1}^{T})}{m},
 \end{equation}
 which allows the analytical computation of the dictionary update $\Tilde{p}(c | y_{1:k})$. In order to obtain the approximate \textbf{dictionary update} $\Tilde{p}(c | y_{1:k})$ we have to make use of Proposition 1 in \cite{akyildiz2021probabilistic}:
 \begin{proposition}\label{prop:1}
@@ -331,7 +328,7 @@ which allows the analytical computation of the dictionary update $\Tilde{p}(c | 
     See \cite{akyildiz2021probabilistic}.
 \end{proof}\newline
 
-\noindent We can approximate Equation \ref{eq:21} as follows:
+\noindent We can approximate Equation \ref{eq:21} as
 \begin{equation}
     \Tilde{p}(y_k | y_{1:k-1}, x_k) = \mathcal{N}(C_{k-1} x_k, \bar{R}_k),
 \end{equation}
@@ -372,15 +369,15 @@ at the $i$-th iteration. We have that $\nabla \log p_{\theta}(y_{1:n})$ is intra
 
 \subsection{Approximating the marginal-likelihood}\label{subsec:aml}
 
-We are left with the task of approximating the the log-marginal likelihood $\log \Tilde{p}_{\theta}(y_k | y_{1:k-1})$. Given $\Tilde{p}_{\theta}(y_k | y_{1:k-1}, c) = \mathcal{N}(y_k; C f_{\theta}(\mu_{k-1}), \eta_k \otimes I_d)$ (from (\ref{eq:18})), and $\Tilde{p}(c | y_{1:k-1}) = \mathcal{N}(c; c_{k-1}, V_{k-1} \otimes I_d)$, for the negative log-likelihood we have (\cite{akyildiz2021probabilistic})
+We are left with the task of approximating the the log-marginal likelihood $\log \Tilde{p}_{\theta}(y_k | y_{1:k-1})$. Given $\Tilde{p}_{\theta}(y_k | y_{1:k-1}, c) = \mathcal{N}(y_k; C f_{\theta}(\mu_{k-1}), \eta_k \otimes I_m)$ (from (\ref{eq:18})), and $\Tilde{p}(c | y_{1:k-1}) = \mathcal{N}(c; c_{k-1}, V_{k-1} \otimes I_m)$, for the negative log-likelihood we have (\cite{akyildiz2021probabilistic})
 \begin{equation}
-    -\log \Tilde{p}_{\theta}(y_k | y_{1:k-1}) \overset{c}{=} \frac{d}{2} \log \left(\Vert f_{\theta}(\mu_{k-1}) \Vert_{V_{k-1}}^2 + \eta_k\right) + \frac{1}{2} \frac{\Vert y_k - C_{k-1} f_{\theta}(\mu_{k-1}) \Vert^2}{\eta_k + \Vert f_{\theta}(\mu_{k-1}) \Vert^2_{V_{k-1}}},
+    -\log \Tilde{p}_{\theta}(y_k | y_{1:k-1}) \overset{c}{=} \frac{m}{2} \log \left(\Vert f_{\theta}(\mu_{k-1}) \Vert_{V_{k-1}}^2 + \eta_k\right) + \frac{1}{2} \frac{\Vert y_k - C_{k-1} f_{\theta}(\mu_{k-1}) \Vert^2}{\eta_k + \Vert f_{\theta}(\mu_{k-1}) \Vert^2_{V_{k-1}}},
 \end{equation}
 where $\overset{c}{=}$ signifies equality up to additive constants that do not depend on $\theta$. The gradients of the negative log-likelihood can be obtained through automatic differentiation for any general coefficient dynamics $f_{\theta}$.
 
 \subsection{PSMF Algorithm}
 
-The iterative version of the PSMF algorithm is given in Algorithm \ref{algo:1}. The online, recursive version of PSMF is not given here but can be found in the original PSMF paper (\cite{akyildiz2021probabilistic}).
+The iterative version of the PSMF algorithm is given in Algorithm \ref{algo:1}. The online, recursive version of PSMF is not given here but can be found in \cite{akyildiz2021probabilistic}.
 
 \begin{algorithm}[h]
 \caption{Iterative PSMF}
@@ -395,6 +392,7 @@ The iterative version of the PSMF algorithm is given in Algorithm \ref{algo:1}. 
 \State \hspace{3em} $\bar{P}_k = F_k P_{k-1} F_k^\top + Q_k$, with $F_k = \left. \frac{\partial f(x)}{\partial x} \right|_{x=\bar{\mu}_{k-1}}$
 \State \hspace{2em} Update dictionary mean $C_k$:
 \State \hspace{3em} $C_k = C_{k-1} + \frac{(y_k - C_{k-1} \bar{\mu}_k) \bar{\mu}_k^T V_{k-1}^T}{\bar{\mu}_k^T V_{k-1} \bar{\mu}_k + \eta_k}$
+\State \hspace{2em} where $\eta_k = \text{tr}(C_{k-1} \bar{P}_k C_{k-1}^\top + R_{k}) / m$.
 \State \hspace{2em} Update dictionary covariance $V_k$:
 \State \hspace{3em} $V_k = V_{k-1} - \frac{V_{k-1} \bar{\mu}_k \bar{\mu}_k^T V_{k-1}}{\bar{\mu}_k^T V_{k-1} \bar{\mu}_k + \eta_k}$
 \State \hspace{2em} Update coefficient mean $\mu_k$:
@@ -441,18 +439,18 @@ where $s$ is an inverse-gamma-distributed scale variable, $R_0$ and $Q_0$ are th
 \end{definition}
 
 \begin{definition}
-    The \textit{multivariate t distribution} over $y \in \mathbb{R}^{d}$ with $\lambda$ degrees of freedom is defined as
+    The \textit{multivariate t distribution} over $y \in \mathbb{R}^{m}$ with $\lambda$ degrees of freedom is defined as
     \begin{equation}
-        \mathcal{T}(y; \mu, \Sigma, \lambda) = \frac{1}{(\pi \lambda)^{d/2} |\Sigma|^{1/2}} \frac{\Gamma((\lambda + d)/2)}{\Gamma(\lambda / 2)} \left(1 + \frac{\Delta^2}{\lambda}\right)^{-(\lambda + d) / 2},
+        \mathcal{T}(y; \mu, \Sigma, \lambda) = \frac{1}{(\pi \lambda)^{m/2} |\Sigma|^{1/2}} \frac{\Gamma((\lambda + m)/2)}{\Gamma(\lambda / 2)} \left(1 + \frac{\Delta^2}{\lambda}\right)^{-(\lambda + m) / 2},
     \end{equation}
     where $\Delta^2 = (y - \mu)^T \Sigma^{-1} (y-\mu)$.
 \end{definition}
 
 \subsection{Inference}
 
-The inference in rPSMF follows the one for PSMF, but with some modifications to accommodate the usage of the multivariate $t$ distribution. The introduction of multivariate $t$ distribution leads to an increase of the degrees of freedom in the update equations by $d$ at every iteration:
+The inference in rPSMF follows the one for PSMF, but with some modifications to accommodate the usage of the multivariate $t$ distribution. The introduction of multivariate $t$ distribution leads to an increase of the degrees of freedom in the update equations by $m$ at every iteration:
 \begin{equation}
-    \lambda_k = \lambda_{k-1} + d.
+    \lambda_k = \lambda_{k-1} + m.
 \end{equation}
 If we let 
 \begin{equation}
@@ -460,7 +458,7 @@ If we let
 \end{equation}
 and 
 \begin{equation}
-    \omega_k = (\lambda_{k-1} + \Delta^2_{1,k}) / (\lambda_{k-1} + d),
+    \omega_k = (\lambda_{k-1} + \Delta^2_{1,k}) / (\lambda_{k-1} + m),
 \end{equation}
 then (\cite{akyildiz2021probabilistic})
 \begin{equation}
@@ -491,9 +489,9 @@ then the update of $V_k$ (Equation \ref{eq:19}) becomes
 \end{equation}
 where 
 \begin{equation}
-    \varphi_k = \frac{\lambda_{k-1} + \Delta^2_{2,k}}{\lambda_{k-1} + d}
+    \varphi_k = \frac{\lambda_{k-1} + \Delta^2_{2,k}}{\lambda_{k-1} + m}
 \end{equation}
-Detailed derivation can be seen in Supp. F in \cite{akyildiz2021probabilistic}.
+Detailed derivation can be found in Supp. F in \cite{akyildiz2021probabilistic}.
 
 \subsection{Parameter Estimation}
 
@@ -503,14 +501,14 @@ The parameter estimation in rPSMF is analogous to the one in PSMF outlined in Se
 
 Following the approach in Section \ref{subsec:aml}, for the negative log-likelihood it can be obtained (\cite{akyildiz2021probabilistic})
 \begin{align}
-    -\log \Tilde{p}_{\theta}(y_k | y_{1:k-1}) &\overset{c}{=} \frac{d}{2} \log \left(\Vert f_{\theta}(\mu_{k-1}) \Vert_{V_{k-1}}^2 + \eta_k\right) + \nonumber \\
-    &\quad + \left(\frac{\lambda_{k-1} + d}{2}\right) \log \left(1 + \frac{\Vert y_k - C_{k-1} f_{\theta}(\mu_{k-1}) \Vert^2}{\lambda_{k-1}\left(\Vert f_{\theta}(\mu_{k-1}) \Vert^2_{V_{k-1}} + \eta_k\right)}\right),
+    -\log \Tilde{p}_{\theta}(y_k | y_{1:k-1}) &\overset{c}{=} \frac{m}{2} \log \left(\Vert f_{\theta}(\mu_{k-1}) \Vert_{V_{k-1}}^2 + \eta_k\right) + \nonumber \\
+    &\quad + \left(\frac{\lambda_{k-1} + m}{2}\right) \log \left(1 + \frac{\Vert y_k - C_{k-1} f_{\theta}(\mu_{k-1}) \Vert^2}{\lambda_{k-1}\left(\Vert f_{\theta}(\mu_{k-1}) \Vert^2_{V_{k-1}} + \eta_k\right)}\right),
 \end{align}
 where $\overset{c}{=}$ signifies equality up to additive constants that do not depend on $\theta$.
 
 \subsection{rPSMF Algorithm}
 
-The iterative version of the rPSMF algorithm is given in Algorithm \ref{algo:2}. The online, recursive version of rPSMF is not given here but can be found in the original PSMF paper (\cite{akyildiz2021probabilistic}).
+The iterative version of the rPSMF algorithm is given in Algorithm \ref{algo:2}. The online, recursive version of rPSMF is not given here but can be found in \cite{akyildiz2021probabilistic}.
 
 \begin{algorithm}[h]
 \caption{Iterative rPSMF}
@@ -524,20 +522,20 @@ The iterative version of the rPSMF algorithm is given in Algorithm \ref{algo:2}.
 \State \hspace{2em} Predictive covariance of $x_k$:
 \State \hspace{3em} $\bar{P}_k = F_k P_{k-1} F_k^\top + Q_k$, \hspace{1em} where \hspace{1em} $F_k = \left. \frac{\partial f(x)}{\partial x} \right|_{x=\bar{\mu}_{k-1}}$
 \State \hspace{2em} Compute scaling factor for the dictionary update
-\State \hspace{3em} $\varphi_k = \frac{\lambda_{k-1}}{\lambda_{k-1} + d} + \frac{(y_k - C_{k-1} \bar{\mu}_k)^\top (y_k - C_{k-1} \bar{\mu}_k)}{\bar{\mu}_k^\top V_{k-1} \bar{\mu}_k + \eta_k}$
-\State \hspace{2em} where $\eta_k = \text{Tr}(C_{k-1} \bar{P}_k C_{k-1}^\top + R_{k-1}) / d$.
+\State \hspace{3em} $\varphi_k = \frac{\lambda_{k-1}}{\lambda_{k-1} + m} + \frac{(y_k - C_{k-1} \bar{\mu}_k)^\top (y_k - C_{k-1} \bar{\mu}_k)}{\bar{\mu}_k^\top V_{k-1} \bar{\mu}_k + \eta_k}$
+\State \hspace{2em} where $\eta_k = \text{tr}(C_{k-1} \bar{P}_k C_{k-1}^\top + R_{k-1}) / m$.
 \State \hspace{2em} Mean and covariance updates of the dictionary
 \State \hspace{3em} $C_k = C_{k-1} + \frac{(y_k - C_{k-1} \bar{\mu}_k) \bar{\mu}_k^\top V_{k-1}}{\bar{\mu}_k^\top V_{k-1} \bar{\mu}_k + \eta_k}$ and \hspace{1em} $V_k = \varphi_k \left( V_{k-1} - \frac{V_{k-1} \bar{\mu}_k \bar{\mu}_k^\top V_{k-1}}{\bar{\mu}_k^\top V_{k-1} \bar{\mu}_k + \eta_k} \right)$
 \State \hspace{2em} Compute scaling factor for the coefficient update
 \State \hspace{3em} $\omega_k = \lambda_{k-1} + (y_k - C_{k-1} \bar{\mu}_k)^\top S_k^{-1} (y_k - C_{k-1} \bar{\mu}_k)$
 
-\State \hspace{2em} where $S_k = C_{k-1} \bar{P}_k C_{k-1}^\top + \bar{R}_k$ and \hspace{1em} $\bar{R}_k = R_{k-1} + \bar{\mu}_k^\top V_{k-1} \bar{\mu}_k \otimes I_d$.
+\State \hspace{2em} where $S_k = C_{k-1} \bar{P}_k C_{k-1}^\top + \bar{R}_k$ and \hspace{1em} $\bar{R}_k = R_{k-1} + \bar{\mu}_k^\top V_{k-1} \bar{\mu}_k \otimes I_m$.
 \State \hspace{2em} Mean and covariance updates of coefficients
 \State \hspace{3em} $\mu_k = \bar{\mu}_k + \bar{P}_k C_{k-1}^\top S_k^{-1} (y_k - C_{k-1} \bar{\mu}_k)$ and \hspace{1em} $P_k = \omega_k (\bar{P}_k - \bar{P}_k C_{k-1}^\top S_k^{-1} C_{k-1} \bar{P}_k)$
 \State \hspace{2em} Update noise covariances:
 \State \hspace{3em} $Q_k = \omega_k Q_{k-1}$ and $R_k = \omega_k R_{k-1}$
 \State \hspace{2em} Update degrees of freedom: 
-\State \hspace{3em} $\lambda_k = \lambda_{k-1} + d$
+\State \hspace{3em} $\lambda_k = \lambda_{k-1} + m$
 \State \hspace{1em} Parameter update: 
 \State \hspace{2em} $\theta_i = \theta_{i-1} + \gamma \sum_{k=1}^T \nabla_\theta \log p_\theta (y_k | y_{1:k-1}) |_{\theta = \theta_{i-1}}$
 \end{algorithmic}\label{algo:2}
@@ -575,7 +573,7 @@ Let
 \end{equation}
 and 
 \begin{equation}
-    \Tilde{p}(z_k | c, z_{1:k-1}) = \mathcal{N}(z_k; M_k C \bar{\mu}_k, \eta_k \otimes I_d), 
+    \Tilde{p}(z_k | c, z_{1:k-1}) = \mathcal{N}(z_k; M_k C \bar{\mu}_k, \eta_k \otimes I_m), 
 \end{equation}
 where 
 \begin{equation}
@@ -583,15 +581,19 @@ where
 \end{equation}
 By applying the property given in (\ref{eq:vecms}) we get
 \begin{equation}
-    \Tilde{p}(z_k | c, z_{1:k-1}) = \mathcal{N}(z_k; H_k c, \eta_k \otimes I_d),
+    \Tilde{p}(z_k | c, z_{1:k-1}) = \mathcal{N}(z_k; H_k c, \eta_k \otimes I_m),
 \end{equation}
-where $c = \text{vec}(C)$, and $H_k = \bar{\mu}_K^T \otimes M_k$. Following the proof of Proposition \ref{prop:1} (refer to \cite{akyildiz2021probabilistic}) along with the approximation $\bar{\mu}_k^T V_{k-1} \bar{\mu}_k \otimes M_k \approx \bar{\mu}_k^T V_{k-1} I_d$ for the covariance update it follows
+where $c = \text{vec}(C)$, and $H_k = \bar{\mu}_K^T \otimes M_k$. Following the proof of Proposition \ref{prop:1} (refer to \cite{akyildiz2021probabilistic}) along with the approximation
 \begin{equation}
-    P_k = V_{k-1} \otimes I_d - \frac{V_{k-1} \bar{\mu}_k \bar{\mu}_k^T V_{k-1}}{\bar{\mu}_k^T V_{k-1} \bar{\mu}_k + \eta_k} \otimes M_k,
+    \bar{\mu}_k^T V_{k-1} \bar{\mu}_k \otimes M_k \approx \bar{\mu}_k^T V_{k-1} \bar{\mu}_k \otimes I_m
+\end{equation}
+for the covariance update it follows
+\begin{equation}
+    P_k = V_{k-1} \otimes I_m - \frac{V_{k-1} \bar{\mu}_k \bar{\mu}_k^T V_{k-1}}{\bar{\mu}_k^T V_{k-1} \bar{\mu}_k + \eta_k} \otimes M_k,
 \end{equation}
 but this can't be simplified so we have to approximate it as
 \begin{equation}
-    P_k \approx V_k \otimes I_d,
+    P_k \approx V_k \otimes I_m,
 \end{equation}
 
 \noindent where $V_k = V_{k-1} - \frac{V_{k-1} \bar{\mu}_k \bar{\mu}^T_k V_{k-1}}{\bar{\mu}_k^T V_{k-1} \bar{\mu}_k + \eta_k}$. \newline
@@ -615,9 +617,9 @@ where
 
 Finally, for the negative log-likelihood \(-\log \tilde{p}_\theta (z_k | z_{1:k-1})\) we have (\cite{akyildiz2021probabilistic})
 \begin{equation}
--\log \tilde{p}_\theta (z_k | z_{1:k-1}) \overset{c}{=} \frac{1}{2} \sum_{j=1}^{d} \log u_{jk} + \frac{1}{2} (z_k - M_k C_{k-1} f_\theta(\mu_{k-1}))^\top U_k^{-1} (z_k - M_k C_{k-1} f_\theta(\mu_{k-1})),
+-\log \tilde{p}_\theta (z_k | z_{1:k-1}) \overset{c}{=} \frac{1}{2} \sum_{j=1}^{m} \log u_{jk} + \frac{1}{2} (z_k - M_k C_{k-1} f_\theta(\mu_{k-1}))^\top U_k^{-1} (z_k - M_k C_{k-1} f_\theta(\mu_{k-1})),
 \end{equation}
-where \(\overset{c}{=}\) signifies equality up to additive constants that do not depend on $\theta$ and \(U_k = \|f_\theta(\mu_{k-1})\|_{V_{k-1}^2} \otimes M_k + \eta_k \otimes I_d\) is a \(d\)-dimensional diagonal matrix with elements \(u_{jk}\) for \(j = 1, \ldots, d\). \newline
+where \(\overset{c}{=}\) signifies equality up to additive constants that do not depend on $\theta$ and \(U_k = \|f_\theta(\mu_{k-1})\|_{V_{k-1}^2} \otimes M_k + \eta_k \otimes I_m\) is a \(m\)-dimensional diagonal matrix with elements \(u_{jk}\) for \(j = 1, \ldots, m\). \newline
 
 \subsection{Algorithm}
 
@@ -636,6 +638,7 @@ The iterative PSMF algorithm for handling missing data is given in Algorithm \re
 \State \hspace{3em} $\bar{P}_k = F_k P_{k-1} F_k^\top + Q_k$, with $F_k = \left. \frac{\partial f(x)}{\partial x} \right|_{x=\bar{\mu}_{k-1}}$
 \State \hspace{2em} Update dictionary mean $C_k$:
 \State \hspace{3em} $C_k = C_{k-1} + \frac{(z_k - M_k C_{k-1} \bar{\mu}_k)\bar{\mu}_k^\top V_{k-1}^\top}{\bar{\mu}_k^\top V_{k-1} \bar{\mu}_k + \eta_k}$
+\State \hspace{2em} where $\eta_k = \text{tr}(C_{k-1} \bar{P}_k C_{k-1}^\top + R_{k}) / m$.
 \State \hspace{2em} Update dictionary covariance $V_k$:
 \State \hspace{3em} $V_k = V_{k-1} - \frac{V_{k-1} \bar{\mu}_k \bar{\mu}_k^\top V_{k-1}}{\bar{\mu}_k^\top V_{k-1} \bar{\mu}_k + \eta_k}$
 \State \hspace{2em} Update coefficient mean $\mu_k$:
@@ -697,7 +700,7 @@ These algorithms aim to accurately and efficiently detect R-peaks in the presenc
     \text{Lead I} + \text{Lead III} = \text{Lead II}.
 \end{equation}
 
-\noindent The voltages in augmented limb leads are calculated by amplifying the electrical difference between one limb electrode and a central point formed by the other limb electrodes. These relationships are based on the principle that the sum of the voltages from all three limb leads should be zero when the heart's electrical axis is normal. Let's outline the lead regarding the limb leads group: \newline
+\noindent The voltages in augmented limb leads are calculated by amplifying the electrical difference between one limb electrode and a central point formed by the other limb electrodes. These relationships are based on the principle that the sum of the voltages from all three limb leads should be zero when the heart's electrical axis is normal. Let's outline the leads in the limb leads group: \newline
 
 \noindent \textbf{Limb Leads:} The electrodes for these signals are one on each arm and one on the left leg.
 \begin{itemize}
@@ -759,7 +762,7 @@ These algorithms aim to accurately and efficiently detect R-peaks in the presenc
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.35\linewidth]{images/vs.jpg}
+\includegraphics[width=0.3\linewidth]{images/vs.jpg}
 \caption{Precordial unipolar leads. (\cite{huszar})}
 \label{fig:vs}
 \end{figure}
@@ -773,11 +776,11 @@ For the experiments we are going to use the already available dataset "A Large S
 
 \section{Missing Data Imputation}\label{sec:exp1}
 
-In this section, we evaluate PSMF and rPSMF on the task of imputing missing values in 12-lead ECG time-series data. The 12-lead ECG signal is chosen to be one representing a normal heart rhythm (sinus rhythm). As already mentioned each of the $m = 12$ leads contains $n = 5000$ data points. One heart beat (PQRST complex) is of approximate length of $300$ data points. That's why, to assess the imputation accuracy, we choose to randomly remove segments of length $300$ from the signal, and construct datasets with $20\%$, $30\%$, and $40\%$ missing data. We compare the results for each dataset against two other baseline sequential methods used in the PSMF paper (\cite{akyildiz2021probabilistic}). The first, which we call MLE-SMF, is a maximum likelihood estimation (MLE) method for online probabilistic matrix factorization where the state transition matrix $C$ remains constant over time. This builds on prior work by \cite{YILDIRIM2012494}, \cite{6288274}, and \cite{6638240}. The second approach adapts the temporal matrix factorization (TMF) optimization technique proposed by \cite{NIPS2016_85422afb}. \newline
+In this section, we evaluate PSMF and rPSMF on the task of imputing missing values in 12-lead ECG time-series data. The 12-lead ECG signal is chosen to be one representing a normal heart rhythm (sinus rhythm). As already mentioned each of the $m = 12$ leads contains $n = 5000$ data points. One heart beat (PQRST complex) is of approximate length of $300$ data points. That's why, to assess the imputation accuracy, we choose to randomly remove segments of length $300$ from the signal, and construct datasets with $20\%$, $30\%$, and $40\%$ missing data. We compare the results for each dataset against two other baseline sequential methods used in \cite{akyildiz2021probabilistic}. The first, which we call MLE-SMF, is a maximum likelihood estimation (MLE) method for online probabilistic matrix factorization where the state transition matrix $C$ remains constant over time. This builds on prior work by \cite{YILDIRIM2012494}, \cite{6288274}, and \cite{6638240}. The second approach adapts the temporal matrix factorization (TMF) optimization technique proposed by \cite{NIPS2016_85422afb}. \newline
 
 \noindent For PSMF and rPSMF we choose a random walk subspace model $f_{\theta}(x) = x$, and for the imputation we use the final estimates of $C$ and $X$. We test the four sequential models by setting the rank first to $r = 3$, and then to $r = 10$. As in \cite{akyildiz2021probabilistic}, for TMF we set the weight matrix to identity, for PSMF and MLE- SMF we set $R_k := R = \rho \otimes I_r$, where $\rho = 10$, $P_0 = I_r$, $Q_k := Q = q \otimes I_r$, and $q = 0.1$. For rPSMF we use $R_0 = R$ and $Q_0 = Q$ and choose $\lambda_0 = 1.8$, and for both PSMF and rPSMF we set $V_0 = v_0 \otimes I_r$ with $v_0 = 2$. We evaluate the performance of the four methods PSMF, rPSMF, MLE-SMF, and TMF by running each of them for two epochs. To ensure the robustness and reliability of our findings, we conduct the experiments $100$ times, each time using different initialization and randomly generated patterns of missing data. \newline
 
-\noindent Table \ref{tab:rmse3} presents the results for rank $r = 3$ across scenarios with $20\%$, $30\%$, and $40\%$ missing data. The findings show that PSMF and rPSMF achieve lower imputation Root Mean Square Errors (RMSEs) than MLE-SMF and TMF, with rPSMF slightly outperforming PSMF. For rank $r = 10$, as shown in Table \ref{tab:rmse10}, PSMF emerges as the top performer across all test cases. While MLE-SMF and TMF results remain relatively consistent with their rank r = 3 performance, rPSMF shows a significant decline in performance, worsening as the percentage of missing data increases. PSMF's performance is also worse than for $r = 3$ but it is not that much affected as rPSMF. This observation contradicts our initial hypothesis that higher rank would lead to lower imputation RMSE. \newline
+\noindent Table \ref{tab:rmse3} presents the results for rank $r = 3$ across scenarios with $20\%$, $30\%$, and $40\%$ missing data. The findings show that PSMF and rPSMF achieve lower imputation Root Mean Square Errors (RMSEs) than MLE-SMF and TMF, with rPSMF slightly outperforming PSMF. For rank $r = 10$, as shown in Table \ref{tab:rmse10}, PSMF emerges as the top performer across all test cases. While MLE-SMF and TMF results remain relatively consistent with their rank r = 3 performance, rPSMF shows a significant decline in performance, severely worsening as the percentage of missing data increases. PSMF's performance is also worse than for $r = 3$ but it is not that much affected as rPSMF. This observation contradicts our initial hypothesis that higher rank would lead to lower imputation RMSE. \newline
 
 \begin{table}[H]
 \centering
@@ -930,7 +933,7 @@ As discussed in Section \ref{sec:rpeaks}, precise R-peak detection is crucial fo
 \label{fig:resampled-ecg}
 \end{figure}
 
-\noindent After that the data is denoised via applying wavelet transform. First, the signal is decomposed into wavelet coefficients at different scales using Daubechies wavelet (known for its efficacy in processing signals with sharp peaks and smooth variations, typical of ECG data). The decomposition level is set to the maximum useful level of decomposition, indicating that the signal is decomposed multiple times to extract various frequency components. This step is done using the function \texttt{wavedec} from the Python library \texttt{PyWavelets}. Next, a threshold to differentiate significant signal components from noise is calculated based on the noise level estimated from the smallest scale coefficients, using median absolute deviation to approximate the standard deviation. The coefficients are subjected to soft thresholding, where values below the threshold are set to zero, and values above the threshold are shrunk towards zero. Finally, the denoised signal is reconstructed from the thresholded wavelet coefficients using the inverse wavelet transform. This process effectively removes high-frequency noise components from the ECG signal while preserving the important signal features, resulting in a cleaner and more interpretable signal. \newline
+\noindent After that, the data is denoised via applying wavelet transform. First, the signal is decomposed into wavelet coefficients at different scales using Daubechies wavelet, known for its efficacy in processing signals with sharp peaks and smooth variations, typical of ECG data. The decomposition level is set to the maximum useful level of decomposition, indicating that the signal is decomposed multiple times to extract various frequency components. This step is done using the function \texttt{wavedec} from the Python library \texttt{PyWavelets}. Next, a threshold to differentiate significant signal components from noise is calculated based on the noise level estimated from the smallest scale coefficients, using median absolute deviation to approximate the standard deviation. The coefficients are subjected to soft thresholding, where values below the threshold are set to zero, and values above the threshold are shrunk towards zero. Finally, the denoised signal is reconstructed from the thresholded wavelet coefficients using the inverse wavelet transform. This process effectively removes high-frequency noise components from the ECG signal while preserving the important signal features, resulting in a cleaner and more interpretable signal. \newline
 
 \noindent Finally, after the data is resampled and denoised we also standardise the data. In Figure \ref{fig:res-st-den-ecg} we can see the resampled, denoised, standardised Lead II signal compared to the resampled and standardised Lead II signal.
 
@@ -943,11 +946,11 @@ As discussed in Section \ref{sec:rpeaks}, precise R-peak detection is crucial fo
 
 \subsection{PSMF Model}
 
-To summarise, the ECG signal we want to apply PSMF to has $n = 1500$ observations, containing $11$ heart beats, and $m = 12$ variables (corresponding to the $12$ leads introduced in Section \ref{sec:12leads}). To model the subspace with PSMF we choose a periodic subspace model
+To summarise, the ECG signal we want to apply PSMF to has $n = 1500$ observations, containing $11$ heart beats, and $m = 12$ variables (corresponding to the $12$ leads introduced in Section \ref{sec:12leads}). To model the subspace with PSMF we choose a periodic subspace model (Fourier basis)
 \begin{equation}
-    x_k = f_{\theta}(x_{k-1}) = \sum_{i=1}^3 \theta_{1,i} \sin(2\pi \theta_{2,i} k + \theta_{3,i} x_{k-1}) + \theta_{4,i} \cos(2\pi \theta_{5,i} k + \theta_{6,i} x_{k-1})
+    x_k = f_{\theta}(x_{k-1}) = \sum_{i=1}^3 \theta_{1,i} \sin(2\pi \theta_{2,i} k + \theta_{3,i} x_{k-1}) + \theta_{4,i} \cos(2\pi \theta_{5,i} k + \theta_{6,i} x_{k-1}),
 \end{equation}
-We also use $r = 3$, run iterative PSMF with $100$ iterations, and withhold $10\%$ of the data for testing purposes. In Figure \ref{fig:reconstr-ecg} we can see the reconstruction on the training data. It is noticeable that the fit can model the smaller amplitudes, but when it comes to the R wave the amplitude is very low, close to the baseline. Another observation is that the fit is very periodic around the smoother parts which were initially very noisy.
+where $\theta_{1,i}, \theta_{4,i} \in \mathbb{R}^{r \times r}$ and $\theta_{2,i}, \theta_{3,i}, \theta_{5,i}, \theta_{6,i} \in \mathbb{R}^{r \times 1}$ for $i = 1, 2, 3$. We also set $r = 3$, run iterative PSMF with $100$ iterations, and withhold $10\%$ of the data for testing purposes. In Figure \ref{fig:reconstr-ecg} we can see the reconstruction on the training data. It is noticeable that the fit can model the smaller amplitudes, but when it comes to the R wave the amplitude is very low, close to the baseline. Another observation is that the fit is very periodic around the smoother parts which were initially very noisy.
 
 \begin{figure}[h]
 \centering
@@ -980,7 +983,7 @@ We also use $r = 3$, run iterative PSMF with $100$ iterations, and withhold $10\
 
 \section{Forecasting}
 
-In this section we are going to show our attempt at forecasting 12-lead ECG data. We apply PSMF to 12-lead ECG data containing $2$ whole heart beats, and attempt to make a forecast for the next heart beat, or a part of it.
+In this section we are going to show our attempt at forecasting 12-lead ECG data. We apply PSMF to 12-lead ECG data containing $2$ whole heart beats, and attempt to make a forecast for the future ECG behaviour.
 
 \subsection{Data}
 
@@ -990,11 +993,11 @@ The data used and the preprocessing is the same as the one described in Section 
 
 The ECG signal we want to apply PSMF to has $n = 400$ observations, containing $3$ heart beats, and $m = 12$ variables (corresponding to the $12$ leads introduced in Section \ref{sec:12leads}). To model the subspace with PSMF we choose a periodic subspace model
 \begin{equation}
-    x_k = f_{\theta}(x_{k-1}) = \sum_{i=1}^3 \theta_{1,i} \sin(2\pi \theta_{2,i} k + \theta_{3,i} x_{k-1}) + \theta_{4,i} \cos(2\pi \theta_{5,i} k + \theta_{6,i} x_{k-1})
+    x_k = f_{\theta}(x_{k-1}) = \sum_{i=1}^3 \theta_{1,i} \sin(2\pi \theta_{2,i} k + \theta_{3,i} x_{k-1}) + \theta_{4,i} \cos(2\pi \theta_{5,i} k + \theta_{6,i} x_{k-1}),
 \end{equation}
-We also use $r = 6$, run iterative PSMF with $400$ iterations, and withhold $20\%$ of the data for prediction. In other words, we use an observed time series of length $320$ (corresponding to $2$ heart beats) and a series of unobserved future data of length $80$ (corresponding to approximately $1$ heart beat). \newline
+where $\theta_{1,i}, \theta_{4,i} \in \mathbb{R}^{r \times r}$ and $\theta_{2,i}, \theta_{3,i}, \theta_{5,i}, \theta_{6,i} \in \mathbb{R}^{r \times 1}$ for $i = 1, 2, 3$. We also set $r = 6$, run iterative PSMF with $400$ iterations, and withhold $20\%$ of the data for prediction. In other words, we use an observed time series of length $320$ (corresponding to $2$ heart beats) and a series of unobserved future data of length $80$ (corresponding to approximately $1$ heart beat). \newline
 
-\noindent In Figure \ref{forecast} we can see the PSMF fitting on 12-lead ECG data with rank $r = 6$, $n = 3$ Fourier terms, over $400$ iterations. The observed time series is shown in blue, the unobserved future data is shown in yellow, and the reconstruction from the model is shown in red. We can see, as mentioned in Section \ref{sec:rpeaksdet}, that the model has a hard time with modelling the high amplitudes. This also affects the forecast, although we can see that the prediction stays in reasonable bounds and manages to follow the dynamics of the signal. If we refer to Figure \ref{problem} we can notice that the high amplitudes with sharp peaks corresponding mainly to the R waves are described by a lot less points compared to the other waves from the PQRST complex. This is due to the R wave representing the rapid depolarization of the ventricles, particularly the left ventricle. This quick process creates a sharp, narrow spike on the ECG with high amplitude but short duration, requiring fewer points to capture it compared to slower waves like the P or T waves. These fewer points in the part towards the peak might be considered by the PSMF as outliers, or it might just be the case that the ECG data is too complex for the PSMF model. \newline
+\noindent In Figure \ref{forecast} we can see the PSMF fitting on 12-lead ECG data with rank $r = 6$, $n = 3$ Fourier terms, over $400$ iterations. The observed time series is shown in blue, the unobserved future data is shown in yellow, and the reconstruction from the model is shown in red. We can see, as mentioned in Section \ref{sec:rpeaksdet}, that the model has a hard time with modelling the high amplitudes. This also affects the forecast, although we can see that the prediction stays in reasonable bounds and manages to follow the dynamics of the signal. If we refer to Figure \ref{problem} we can notice that the high amplitudes with sharp peaks corresponding mainly to the R waves are described by significantly less points compared to the other waves from the PQRST complex. This is due to the R wave representing the rapid depolarization of the ventricles, particularly the left ventricle. This quick process creates a sharp, narrow spike on the ECG with high amplitude but short duration, requiring fewer points to capture it compared to slower waves like the P or T waves. These fewer points in the part towards the peak might be considered by the PSMF as outliers, or it might just be the case that the ECG data is too complex for the PSMF model. \newline
 
 \begin{figure}[h]
 \begin{center}
@@ -1056,6 +1059,11 @@ Given the findings of this thesis, one promising direction is to refine the PSMF
  %% reset page counter and start appendix pages with A
 \pagenumbering{arabic}
 \renewcommand*{\thepage}{A\arabic{page}}
+
+%%References part of appendices
+% References: modify the file refs.bib
+\bibliographystyle{plainnat}
+\bibliography{refs}
 
 %% Appendix goes here
 \appendix
@@ -1287,10 +1295,5 @@ Full results of testing on the $20\%$, $30\%$, and $40\%$ missing data with both
     \caption{$40\%$ missing data.}
 \end{minipage}
 \end{figure}
-
-%%References part of appendices
-% References: modify the file refs.bib
-\bibliographystyle{plainnat}
-\bibliography{refs}
 
 \end{document}
