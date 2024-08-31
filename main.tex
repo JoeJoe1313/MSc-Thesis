@@ -979,8 +979,6 @@ where $\theta_{1,i}, \theta_{4,i} \in \mathbb{R}^{r \times r}$ and $\theta_{2,i}
 
 \noindent In conclusion, the novel R-peak detection method presented in this section effectively harnesses the predictive discrepancies inherent to the PSMF model as a feature rather than a drawback. By deliberately using a model that underestimates the amplitude of R-peaks, we create a predictable deviation from the original ECG signal, which can then be quantitatively identified using a threshold-based approach. Our empirical results demonstrate that this method can reliably detect R-peaks within a resampled, standardized, and denoised ECG signal, Lead II in particular. The method maintains the integrity of critical signal features after substantial data manipulation including resampling and noise reduction. Further refinements may be necessary to address outliers and ensure universal applicability across different types of ECG signals and conditions.
 
-\clearpage
-
 \section{Forecasting}
 
 In this section we are going to show our attempt at forecasting 12-lead ECG data. We apply PSMF to 12-lead ECG data containing $2$ whole heart beats, and attempt to make a forecast for the future ECG behaviour.
