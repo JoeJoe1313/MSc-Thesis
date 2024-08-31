@@ -983,7 +983,7 @@ where $\theta_{1,i}, \theta_{4,i} \in \mathbb{R}^{r \times r}$ and $\theta_{2,i}
 
 \section{Forecasting}
 
-In this section we are going to show our attempt at forecasting 12-lead ECG data. We apply PSMF to 12-lead ECG data containing $2$ whole heart beats, and attempt to make a forecast for the future ECG behaviour.
+In this section we are going to show our attempt at forecasting 12-lead ECG data with PSMF. We apply the algorithm to 12-lead ECG data containing $2$ whole heart beats, and attempt to make a forecast for the future ECG behaviour.
 
 \subsection{Data}
 
@@ -997,7 +997,7 @@ The ECG signal we want to apply PSMF to has $n = 400$ observations, containing $
 \end{equation}
 where $\theta_{1,i}, \theta_{4,i} \in \mathbb{R}^{r \times r}$ and $\theta_{2,i}, \theta_{3,i}, \theta_{5,i}, \theta_{6,i} \in \mathbb{R}^{r \times 1}$ for $i = 1, 2, 3$. We also set $r = 6$, $R_k = I_m$, $P_0 = I_r$, $Q_0 = I_r$, $V_0 = v_0 \otimes I_r$ with $v_0 = 5$, and run iterative PSMF with $400$ iterations, and withhold $20\%$ of the data for prediction. In other words, we use an observed time series of length $320$ (corresponding to $2$ heart beats) and a series of unobserved future data of length $80$ (corresponding to approximately $1$ heart beat). \newline
 
-\subsection{PSMF Results}
+\subsection{Results}
 
 \noindent In Figure \ref{forecast} we can see the PSMF fitting on 12-lead ECG data with rank $r = 6$, $n = 3$ Fourier terms, over $400$ iterations. The observed time series is shown in blue, the unobserved future data is shown in yellow, and the reconstruction from the model is shown in red. We can see, as mentioned in Section \ref{sec:rpeaksdet}, that the model has a hard time with modelling the high amplitudes. This also affects the forecast, although we can see that the prediction stays in reasonable bounds and manages to follow the dynamics of the signal. If we refer to Figure \ref{problem} we can notice that the high amplitudes with sharp peaks corresponding mainly to the R waves are described by significantly less points compared to the other waves from the PQRST complex. This is due to the R wave representing the rapid depolarization of the ventricles, particularly the left ventricle. This quick process creates a sharp, narrow spike on the ECG with high amplitude but short duration, requiring fewer points to capture it compared to slower waves like the P or T waves. These fewer points in the part towards the peak might be considered by the PSMF as outliers, or it might just be the case that the ECG data is too complex for the PSMF model. \newline
 
@@ -1017,8 +1017,6 @@ where $\theta_{1,i}, \theta_{4,i} \in \mathbb{R}^{r \times r}$ and $\theta_{2,i}
 \end{center}
 \end{figure}
 
-\noindent Figure \ref{loss} shows how the Frobenius norm $\Vert Y - CX \Vert^2_F$ between the reconstructed data and the true data behaves with the number of iterations. The training loss starts very high but rapidly decreases in the first few iterations, stabilizing around a lower value by approximately $50$ iterations. This indicates that the model is quickly learning to fit the training data. After the initial drop, the training loss continues to decrease gradually but remains relatively stable, indicating that the model has reached a point where additional iterations yield only marginal improvements. The prediction loss is initially lower than the training loss but shows more fluctuation. After about $50$ iterations, it starts to stabilize as well, though it remains consistently higher than the training loss. This gap between the training and prediction loss suggests that the model may be overfitting the training data, as it performs better on the training set than on the prediction task. Experimenting with stopping the training earlier resulted in predictions which had worse wave amplitudes and were shifted compared to the original data. Finally, Figure \ref{bases} shows how the underlying subspace is recovered. \newline
-
 \begin{figure}[h]
 \begin{center}
 \includegraphics[scale=1]{images/forecast/periodic_cost.pdf}
@@ -1026,6 +1024,8 @@ where $\theta_{1,i}, \theta_{4,i} \in \mathbb{R}^{r \times r}$ and $\theta_{2,i}
 \label{loss}
 \end{center}
 \end{figure}
+
+\noindent Figure \ref{loss} shows how the Frobenius norm $\Vert Y - CX \Vert^2_F$ between the reconstructed data and the true data behaves with the number of iterations. The training loss starts very high but rapidly decreases in the first few iterations, stabilizing around a lower value by approximately $50$ iterations. This indicates that the model is quickly learning to fit the training data. After the initial drop, the training loss continues to decrease gradually but remains relatively stable, indicating that the model has reached a point where additional iterations yield only marginal improvements. The prediction loss is initially lower than the training loss but shows more fluctuation. After about $50$ iterations, it starts to stabilize as well, though it remains consistently higher than the training loss. This gap between the training and prediction loss suggests that the model may be overfitting the training data, as it performs better on the training set than on the prediction task. Experimenting with stopping the training earlier resulted in predictions which had worse wave amplitudes and were shifted compared to the original data. Finally, Figure \ref{bases} shows how the underlying subspace is recovered. \newline
 
 \begin{figure}[h]
 \begin{center}
@@ -1037,7 +1037,7 @@ where $\theta_{1,i}, \theta_{4,i} \in \mathbb{R}^{r \times r}$ and $\theta_{2,i}
 
 \subsection{Conclusion}
 
-\noindent In this section, we applied a Periodic Subspace Model Forecasting (PSMF) method to forecast a 12-lead ECG signal, using a model trained on two heartbeats. The results showed that while the model could reasonably follow the dynamics of the ECG signal, it struggled with accurately capturing high-amplitude sharp peaks, particularly the R waves. These peaks are described by fewer data points due to the rapid depolarization process they represent, which challenges the model's ability to forecast them accurately. The training and prediction loss analysis indicated that the model might be overfitting, as it performed better on the training data than on the unobserved future data. Despite these challenges, the PSMF model maintained predictions within reasonable bounds, though with some limitations in amplitude accuracy and timing. Further improvements might involve refining the model to better handle complex features of ECG data or experimenting with alternative forecasting approaches.
+\noindent In this section, we applied PSMF trained on two heartbeats to forecast a 12-lead ECG signal. The results showed that while the model could reasonably follow the dynamics of the ECG signal, it struggled with accurately capturing high-amplitude sharp peaks, particularly the R waves. The training and prediction loss analysis indicated that the model might be overfitting, as it performed better on the training data than on the unobserved future data. Despite these challenges, the PSMF model maintained predictions within reasonable bounds, though with some limitations in amplitude accuracy and timing.
 
 \chapter{Conclusion}
 
