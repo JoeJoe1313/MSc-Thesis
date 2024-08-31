@@ -1035,14 +1035,6 @@ where $\theta_{1,i}, \theta_{4,i} \in \mathbb{R}^{r \times r}$ and $\theta_{2,i}
 \end{center}
 \end{figure}
 
-\subsection{rPSMF Model}
-
-Here, we aim to make a forecast with rPSMF. After numerous attempts with different hyperparameter settings we did not achieve better results than the ones from PSMF. Hence, we are going to define the rPSMF with the same parameters and subspace model as the ones set for PSMF in Section \ref{exp3:psmfmodel}. The only additional parameter is $\lambda_0 = 1.8$. We run iterative rPSMF with $400$ iterations, and withhold $20\%$ of the data for prediction. This allows us to compare the results for PSMF and rPSMF under very similar model settings.
-
-\subsection{rPSMF Results}
-
-
-
 \subsection{Conclusion}
 
 \noindent In this section, we applied a Periodic Subspace Model Forecasting (PSMF) method to forecast a 12-lead ECG signal, using a model trained on two heartbeats. The results showed that while the model could reasonably follow the dynamics of the ECG signal, it struggled with accurately capturing high-amplitude sharp peaks, particularly the R waves. These peaks are described by fewer data points due to the rapid depolarization process they represent, which challenges the model's ability to forecast them accurately. The training and prediction loss analysis indicated that the model might be overfitting, as it performed better on the training data than on the unobserved future data. Despite these challenges, the PSMF model maintained predictions within reasonable bounds, though with some limitations in amplitude accuracy and timing. Further improvements might involve refining the model to better handle complex features of ECG data or experimenting with alternative forecasting approaches.
